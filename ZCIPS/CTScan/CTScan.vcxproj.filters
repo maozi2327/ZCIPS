@@ -54,9 +54,6 @@
     <ClCompile Include="raypanelmotionwidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="linescainterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -142,6 +139,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ct2scan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ctscanexport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -235,6 +235,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\util\tcpserver.h">
       <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="ctscanexport.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ctscan_global.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -62,11 +62,30 @@ CTScan::CTScan(QWidget *parent)
 
 	for (auto& matrixItr : d_setupData->coneJointRotScanData)
 		d_panelDetScanModeMap[{ matrixItr.Ray, matrixItr.Det }].push_back(ScanMode::CONE_JOINT_ROT_SCAN);
+
+	if (d_panelDetScanWidget[{0, 0}].get() == nullptr)
+	{
+		auto widget = new ConeScanWidget(d_motorControl.get(), 0, 0,
+			d_panelDetScanModeMap[{0, 0}], d_setupData.get(), nullptr, d_controller.get(), this);
+		d_panelDetScanWidget[{0, 0}].reset(widget);
+	}
+
+	if (d_scanWidget != nullptr && d_scanWidget->isVisible())
+		d_scanWidget->hide();
+
+	d_scanWidget = d_panelDetScanWidget[{0, 0}].get();
+	d_scanWidget->setGeometry((QRect(400, 400, 1520, 1730)));
+	d_scanWidget->show();
 }
 
 CTScan::~CTScan()
 {
 
+}
+
+QWidget * CTScan::getWidget()
+{
+	return d_scanWidget;
 }
 
 void CTScan::on_ray0LineDet0Button_clicked()

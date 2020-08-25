@@ -23,6 +23,7 @@ public:
     CTScan(QWidget *parent = Q_NULLPTR);
 	~CTScan();
 
+	QWidget* getWidget();
 private slots:
 	void on_ray0LineDet0Button_clicked();
 	void on_ray0PanelDet0Button_clicked();

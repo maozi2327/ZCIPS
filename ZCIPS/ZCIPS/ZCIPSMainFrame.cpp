@@ -3,6 +3,7 @@
 #include "AddMarcoWidget.h"
 #include "LoadMarcoWidget.h"
 #include "ImageWidget.h"
+#include "../CTScan/ctscanexport.h"
 /**************************************************************
 函数名： ZCIPSMainFrame
 
@@ -1190,6 +1191,10 @@ void ZCIPSMainFrame::InitialUI()
 	//数据库界面
 	DataBaseUIInit();
 
+
+	auto controlWidget = CtScanExport::loadCtScanWidget(ui.DeviceControlTab);
+	controlWidget->setGeometry((QRect(400, 400, 1520, 1730)));
+	controlWidget->show();
 }
 
 /**************************************************************

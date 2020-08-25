@@ -1,5 +1,7 @@
 #pragma once
 #include <QUndoCommand>
+#include "ImageInstance.h"
+
 /*********************** 撤销和重做类 *****************
 描述：包含撤销和重做的所有操作
 创建时间：2020.08.13
