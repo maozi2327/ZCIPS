@@ -26,7 +26,5 @@ CtScanExport::~CtScanExport()
 QWidget * CtScanExport::loadCtScanWidget(QWidget* in_parent)
 {
 	static std::unique_ptr<CTScan> handle(std::make_unique<CTScan>(in_parent));
-	return handle.get();
-	//return 
-	//	pimp->d_ctScan.getWidget();
+	return handle.get()->getWidget();
 }

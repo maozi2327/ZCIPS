@@ -408,3 +408,8 @@ struct COMM_PACKET
 	BYTE	data[RTBUF_LEN - 6];			//ÃüÁî²ÎÊı
 };
 
+
+struct tempData
+{
+
+};

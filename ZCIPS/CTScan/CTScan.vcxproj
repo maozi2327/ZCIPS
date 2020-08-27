@@ -154,6 +154,7 @@
     <ClCompile Include="linedetscanwidget.cpp" />
     <ClCompile Include="linescainterface.cpp" />
     <ClCompile Include="motorcontrolwidget.cpp" />
+    <ClCompile Include="motorwidget.cpp" />
     <ClCompile Include="msglistbox.cpp" />
     <ClCompile Include="raypanelmotionwidget.cpp" />
     <ClCompile Include="setupdataparser.cpp" />
@@ -269,6 +270,11 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
     </QtMoc>
+    <QtMoc Include="motorwidget.h">
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
+    </QtMoc>
     <ClInclude Include="resource.h" />
     <ClInclude Include="simotioncontroller.h" />
     <ClInclude Include="stdafx.h" />
@@ -288,6 +294,7 @@
     </CustomBuild>
     <QtUic Include="linedetscanwidget.ui" />
     <QtUic Include="motorcontrolwidget.ui" />
+    <QtUic Include="motorwidget.ui" />
     <QtUic Include="msglistbox.ui" />
     <QtUic Include="raypanelmotion.ui" />
     <QtUic Include="scanprogresswidget.ui" />

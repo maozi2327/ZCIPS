@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ctscan.h"
 #include "motorcontrolwidget.h"
+#include "motorwidget.h"
 #include "raypanelmotionwidget.h"
 #include "simotioncontroller.h"
 #include "linedetscanwidget.h"
@@ -16,7 +17,7 @@
 #include "msglistbox.h"
 
 CTScan::CTScan(QWidget *parent)
-    : QMainWindow(parent)
+    : QWidget(parent)
 	, d_scanWidget(nullptr)
 	, d_rayPanelMotion(new RayPanelMotion()), d_imageWidgetManager(new ImageWidgetManager())
 	, d_controller(new SimotionController()), d_motorControl(new MotorControlWidget(d_controller.get()))
@@ -63,19 +64,42 @@ CTScan::CTScan(QWidget *parent)
 	for (auto& matrixItr : d_setupData->coneJointRotScanData)
 		d_panelDetScanModeMap[{ matrixItr.Ray, matrixItr.Det }].push_back(ScanMode::CONE_JOINT_ROT_SCAN);
 
-	if (d_panelDetScanWidget[{0, 0}].get() == nullptr)
+	for (auto& mode : d_panelDetScanModeMap)
 	{
-		auto widget = new ConeScanWidget(d_motorControl.get(), 0, 0,
-			d_panelDetScanModeMap[{0, 0}], d_setupData.get(), nullptr, d_controller.get(), this);
-		d_panelDetScanWidget[{0, 0}].reset(widget);
+		auto widget = new ConeScanWidget(d_motorControl.get(), mode.first.first, mode.first.second,
+			d_panelDetScanModeMap[mode.first], d_setupData.get(), nullptr, d_controller.get(), nullptr);
+		d_panelDetScanWidget[mode.first].reset(widget);
 	}
 
-	if (d_scanWidget != nullptr && d_scanWidget->isVisible())
-		d_scanWidget->hide();
+	for (auto& mode : d_lineDetScanModeMap)
+	{
+		auto widget = new LineDetScanWidget(d_motorControl.get(), mode.first.first, mode.first.second,
+			d_lineDetScanModeMap[mode.first], d_setupData.get(), d_lineDetNetWorkMap[0].get(), d_controller.get(), nullptr);
+		d_lineDetScanWidget[mode.first].reset(widget);
+	}
 
-	d_scanWidget = d_panelDetScanWidget[{0, 0}].get();
-	d_scanWidget->setGeometry((QRect(400, 400, 1520, 1730)));
-	d_scanWidget->show();
+	d_scanWidget = d_lineDetScanWidget[{0, 0}].get();
+	QVBoxLayout* layout = new QVBoxLayout;
+	layout->addWidget(d_scanWidget, 0, 0);
+	QSpacerItem* vSpacer = new QSpacerItem(0, 0, QSizePolicy::Maximum, QSizePolicy::Expanding);
+	layout->addItem(vSpacer);
+	ui.scanTable->setLayout(layout);
+	//添加layout使位于中间
+	QGridLayout* layout1 = new QGridLayout;
+	d_motorWidget.reset(new MotorWidget(nullptr));
+	layout1->addWidget(d_motorWidget.get(), 0, 0);
+	auto size = d_motorWidget->sizeHint();
+	auto width = d_motorWidget->width();
+	auto height = d_motorWidget->height();
+	ui.motorControlGroupBox->setMinimumSize(size.width() + 5, height + 5);
+	ui.motorControlGroupBox->setMaximumSize(size.width() + 20, height + 20);
+	ui.motorControlGroupBox->setLayout(layout1);
+
+	ui.xRayGroupBox->setMinimumSize(width, height);
+
+	QGridLayout* layout2 = new QGridLayout;
+	layout2->addWidget(this, 0, 0);
+	parent->setLayout(layout2);
 }
 
 CTScan::~CTScan()
@@ -85,7 +109,7 @@ CTScan::~CTScan()
 
 QWidget * CTScan::getWidget()
 {
-	return d_scanWidget;
+	return this;
 }
 
 void CTScan::on_ray0LineDet0Button_clicked()
@@ -101,11 +125,8 @@ void CTScan::on_ray0LineDet0Button_clicked()
 		d_scanWidget->hide();
 
 	d_scanWidget = d_lineDetScanWidget[{0, 0}].get();
-	d_scanWidget->setGeometry((QRect(400, 400, 520, 730)));
+	d_scanWidget->setGeometry((QRect(0, 0, 520, 730)));
 	d_scanWidget->show();
-	//hide();
-	//QString fileName("0000.tif");
-	//d_panelImageProcess->loadAirData(fileName);
 }
 
 void CTScan::on_ray0PanelDet0Button_clicked()
@@ -121,7 +142,7 @@ void CTScan::on_ray0PanelDet0Button_clicked()
 		d_scanWidget->hide();
 
 	d_scanWidget = d_panelDetScanWidget[{0, 0}].get();
-	d_scanWidget->setGeometry((QRect(400, 400, 1520, 1730)));
+	d_scanWidget->setGeometry((QRect(0, 0, 1520, 1730)));
 	d_scanWidget->show();
 }
 
@@ -135,9 +156,14 @@ void CTScan::on_ray1PanelDet0Button_clicked()
 
 }
 
+void CTScan::on_showMotorWidgetButton_clicked()
+{
+	ui.motorControlGroupBox->setVisible(!ui.motorControlGroupBox->isVisible());
+}
+
 void CTScan::controllerNetWorkStsSlot(bool sts)
 {
-	//d_line1Det1ScanWidget->onNetworkStsChanged(sts);
+
 }
 
 void CTScan::errorMsgSlot(QString msg)
@@ -167,34 +193,27 @@ void CTScan::on_activatedSysTrayIcon(QSystemTrayIcon::ActivationReason reason)
 	}
 }
 
-//void CTScan::on_pushButton_clicked()
-//{
-//	//if(!d_rayPanelMotion->isVisible())
-//	//	d_rayPanelMotion->show();
-//	d_imageWidgetManager->showImageInNewWindow(QString());
-//}
 void CTScan::cut()
 {
 	hide();                 /* 最小化到托盘 */
 	d_tray->show();
 }
 
-
 void CTScan::copy()
 {
-	//infoLabel->setText(tr("Invoked <b>Edit|Copy</b>"));
 }
 
 void CTScan::paste()
 {
-	//infoLabel->setText(tr("Invoked <b>Edit|Paste</b>"));
 }
+
 void CTScan::contextMenuEvent(QContextMenuEvent *event)
 {
 	cutAct = new QAction(tr("Cu&t"), this);
 	cutAct->setShortcuts(QKeySequence::Cut);
 	cutAct->setStatusTip(tr("Cut the current selection's contents to the "
 		"clipboard"));
+
 	connect(cutAct, &QAction::triggered, this, &CTScan::cut);
 
 	copyAct = new QAction(tr("&Copy"), this);

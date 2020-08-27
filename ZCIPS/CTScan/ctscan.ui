@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>CTScanClass</class>
- <widget class="QMainWindow" name="CTScanClass">
+ <widget class="QWidget" name="CTScanClass">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>634</width>
-    <height>731</height>
+    <width>317</width>
+    <height>713</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="contextMenuPolicy">
    <enum>Qt::DefaultContextMenu</enum>
@@ -16,29 +22,89 @@
   <property name="windowTitle">
    <string>CTScan</string>
   </property>
-  <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>30</y>
-      <width>112</width>
-      <height>260</height>
-     </rect>
-    </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QGroupBox" name="xRayGroupBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>加速器</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3"/>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="showMotorWidgetButton">
+     <property name="text">
+      <string>PushButton</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="motorControlGroupBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>100</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>电机控制</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="controlTabWidget">
+     <property name="minimumSize">
+      <size>
+       <width>250</width>
+       <height>300</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
+     <widget class="QWidget" name="scanTable">
+      <attribute name="title">
+       <string>扫描</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="spreadTab">
+      <attribute name="title">
+       <string>状态</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>校准</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+   <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QPushButton" name="ray0LineDet0Button">
        <property name="minimumSize">
         <size>
-         <width>110</width>
-         <height>60</height>
+         <width>1</width>
+         <height>1</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>110</width>
-         <height>60</height>
+         <width>1</width>
+         <height>1</height>
         </size>
        </property>
        <property name="text">
@@ -50,14 +116,14 @@
       <widget class="QPushButton" name="ray0PanelDet0Button">
        <property name="minimumSize">
         <size>
-         <width>110</width>
-         <height>60</height>
+         <width>1</width>
+         <height>1</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>110</width>
-         <height>60</height>
+         <width>1</width>
+         <height>1</height>
         </size>
        </property>
        <property name="text">
@@ -69,14 +135,14 @@
       <widget class="QPushButton" name="ray1LineDet0Button">
        <property name="minimumSize">
         <size>
-         <width>110</width>
-         <height>60</height>
+         <width>1</width>
+         <height>1</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>110</width>
-         <height>60</height>
+         <width>1</width>
+         <height>1</height>
         </size>
        </property>
        <property name="text">
@@ -94,14 +160,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>110</width>
-         <height>60</height>
+         <width>1</width>
+         <height>1</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>110</width>
-         <height>60</height>
+         <width>1</width>
+         <height>1</height>
         </size>
        </property>
        <property name="text">
@@ -109,23 +175,28 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="minimumSize">
+        <size>
+         <width>1</width>
+         <height>1</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>1</width>
+         <height>1</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>PushButton</string>
+       </property>
+      </widget>
+     </item>
     </layout>
-   </widget>
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>310</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>PushButton</string>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+   </item>
+  </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

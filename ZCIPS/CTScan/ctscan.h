@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QtWidgets/QMainWindow>
+#include <QtWidgets>
 #include "ui_ctscan.h"
 #include "imagewidgetmanager.h"
 #include <memory>
@@ -14,8 +14,9 @@ class LineDetNetWork;
 class MsgListBox;
 class LineDetScanInterface;
 class ConeScanWidget;
+class MotorWidget;
 
-class CTScan : public QMainWindow
+class CTScan : public QWidget
 {
     Q_OBJECT
 
@@ -29,7 +30,7 @@ private slots:
 	void on_ray0PanelDet0Button_clicked();
 	void on_ray1LineDet0Button_clicked();
 	void on_ray1PanelDet0Button_clicked();
-
+	void on_showMotorWidgetButton_clicked();
 private slots:
 	void cut();
 	void copy();
@@ -55,6 +56,7 @@ private:
 	std::unique_ptr<RayPanelMotion> d_rayPanelMotion;
 	std::unique_ptr<ControllerInterface> d_controller;
 	std::unique_ptr<MotorControlWidget> d_motorControl;
+	std::unique_ptr<MotorWidget> d_motorWidget;
 	std::unique_ptr<ConeScanWidget> d_panle1Det1ScanWidget;
 	std::unique_ptr<MsgListBox> d_msg;
 	std::map<int, std::unique_ptr<LineDetNetWork>> d_lineDetNetWorkMap;

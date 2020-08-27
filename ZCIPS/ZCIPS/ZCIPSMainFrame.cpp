@@ -1193,8 +1193,7 @@ void ZCIPSMainFrame::InitialUI()
 
 
 	auto controlWidget = CtScanExport::loadCtScanWidget(ui.DeviceControlTab);
-	controlWidget->setGeometry((QRect(400, 400, 1520, 1730)));
-	controlWidget->show();
+
 }
 
 /**************************************************************

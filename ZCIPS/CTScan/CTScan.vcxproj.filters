@@ -144,6 +144,9 @@
     <ClCompile Include="ctscanexport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="motorwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -230,9 +233,6 @@
     <ClInclude Include="drscan.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ct2scan.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\util\tcpserver.h">
       <Filter>Header Files\utility</Filter>
     </ClInclude>
@@ -240,6 +240,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ctscan_global.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ct2scan.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -286,6 +289,9 @@
     <QtMoc Include="conescanInterface.h">
       <Filter>Source Files</Filter>
     </QtMoc>
+    <QtMoc Include="motorwidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ctscan.ui">
@@ -307,6 +313,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="scanprogresswidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="motorwidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
