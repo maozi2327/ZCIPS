@@ -82,20 +82,26 @@ CTScan::CTScan(QWidget *parent)
 	QVBoxLayout* layout = new QVBoxLayout;
 	layout->addWidget(d_scanWidget, 0, 0);
 	QSpacerItem* vSpacer = new QSpacerItem(0, 0, QSizePolicy::Maximum, QSizePolicy::Expanding);
+	//auto width = d_scanWidget->width();
+	//auto height = d_scanWidget->height();
+	//ui.controlTabWidget->setMinimumSize(width, height + 5);
+
 	layout->addItem(vSpacer);
+	//layout->setSizeConstraint(QLayout::SetFixedSize);
 	ui.scanTable->setLayout(layout);
 	//添加layout使位于中间
 	QGridLayout* layout1 = new QGridLayout;
 	d_motorWidget.reset(new MotorWidget(nullptr));
 	layout1->addWidget(d_motorWidget.get(), 0, 0);
-	auto size = d_motorWidget->sizeHint();
-	auto width = d_motorWidget->width();
-	auto height = d_motorWidget->height();
-	ui.motorControlGroupBox->setMinimumSize(size.width() + 5, height + 5);
-	ui.motorControlGroupBox->setMaximumSize(size.width() + 20, height + 20);
+	//auto size = d_motorWidget->sizeHint();
+	//auto width = d_motorWidget->width();
+	//auto height = d_motorWidget->height();
+	//ui.motorControlGroupBox->setMinimumSize(width + 5, height + 5);
+	//ui.motorControlGroupBox->setMaximumSize(width + 20, height + 20);
+	layout1->setMargin(0);
 	ui.motorControlGroupBox->setLayout(layout1);
 
-	ui.xRayGroupBox->setMinimumSize(width, height);
+	//ui.xRayGroupBox->setMinimumSize(width, height);
 
 	QGridLayout* layout2 = new QGridLayout;
 	layout2->addWidget(this, 0, 0);
