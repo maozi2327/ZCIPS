@@ -25,10 +25,10 @@ void LineDetScanInterface::stopScan()
 	d_lineDetNetWork->clearRowList();
 }
 
-void LineDetScanInterface::saveOrgFile()
+void LineDetScanInterface::saveOrgFile(LineDetList* in_List)
 {
 	QString fileFullName(d_orgPath + d_fileName);
-	d_lineDetImageProcess->saveOrgFile(fileFullName, &d_ictHeader, d_lineDetNetWork->getRowList(), 1);
+	d_lineDetImageProcess->saveOrgFile(fileFullName, &d_ictHeader, in_List, 1);
 }
 
 bool LineDetScanInterface::setGenerialFileHeader()

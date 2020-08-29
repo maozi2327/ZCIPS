@@ -5,10 +5,13 @@
 #include "ctrldata.h"
 #include "../Public/util/macro.h"
 #include <memory>
+#include <chrono>
+
 class Thread;
 class LineDetNetWork;
 class LineDetImageProcess;
 class ControllerInterface;
+class LineDetList;
 class LineDetScanInterface : public QObject
 {
 	Q_OBJECT
@@ -32,6 +35,8 @@ protected:
 	float d_viewDiameter;
 	bool d_standardInterpolation;
 	int d_matrix;
+
+	std::chrono::steady_clock::time_point d_start_time;
 	LineDetNetWork* d_lineDetNetWork;
 	LineDetImageProcess* d_lineDetImageProcess;
 	ControllerInterface* d_controller;
@@ -40,7 +45,7 @@ protected:
 	SetupData* d_setupData;
 	static ICT_HEADER23 d_ictHeader;
 	virtual void scanThread() = 0;
-	void saveOrgFile();
+	void saveOrgFile(LineDetList* in_list);
 	virtual bool setGenerialFileHeader();
 	virtual void sendCmdToControl() = 0;
 	void CalculateView_ValidDetector(float in_diameter);

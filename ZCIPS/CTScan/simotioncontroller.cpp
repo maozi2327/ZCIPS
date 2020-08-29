@@ -20,8 +20,8 @@ SimotionController::SimotionController() : d_bytesReceived(0) , d_netWorkBuffer(
 
 	in_addr hostAddr;
 	hostAddr.S_un.S_addr = INADDR_ANY;
-	d_server.reset(new TcpServer(sizeof(tagCOMM_PACKET1), 2, 4, sendFun, decodeFun,
-		hostAddr, d_port));
+//	d_server.reset(new TcpServer(sizeof(tagCOMM_PACKET1), 2, 4, sendFun, decodeFun,
+//		hostAddr, d_port));
 	auto intervel = std::chrono::milliseconds(100);
 
 	std::thread([this, intervel] 

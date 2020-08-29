@@ -70,7 +70,7 @@ void LineDetAirTune::scanThread()
 
 void LineDetAirTune::saveFile()
 {
-	saveOrgFile();
+	saveOrgFile(d_lineDetNetWork->getRowList());
 	d_lineDetImageProcess->createBkgDat(d_fileName, d_installDirectory);
 }
 

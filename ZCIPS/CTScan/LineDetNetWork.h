@@ -64,6 +64,7 @@ struct LineDetList
 struct RowList
 {
 private:
+	std::mutex d_mutex;
 	LineDetList* d_listHead;
 	LineDetList* d_ptr;
 	int d_size;
@@ -77,10 +78,13 @@ public:
 	}
 	~RowList()
 	{
+		std::lock_guard<std::mutex> lock(d_mutex);
 		clear();
 	}
 	void push_back(unsigned long* in_mem)
 	{
+		std::lock_guard<std::mutex> lock(d_mutex);
+
 		if (d_size == 0)
 		{
 			d_ptr = new LineDetList;
@@ -107,6 +111,7 @@ public:
 
 	void clear()
 	{
+		std::lock_guard<std::mutex> lock(d_mutex);
 		d_ptr = d_listHead;
 
 		while(d_ptr != 0)
@@ -122,7 +127,14 @@ public:
 
 	LineDetList* getList()
 	{
+		std::lock_guard<std::mutex> lock(d_mutex);
 		return d_listHead;
+	}
+
+	int getListSize()
+	{
+		std::lock_guard<std::mutex> lock(d_mutex);
+		return d_size;
 	}
 };
 
@@ -154,11 +166,12 @@ private:
 	int d_dataSizePerPulse;
 	int d_channelNum;
 	RowList d_dataList;
+	bool setParameterAfterConnect();
 
 	//线阵探测器每次发送数据格式
 	//									数据长度|
 	//第一个大板子(分度号|脉冲号|64个通道|校验和)|第二个大板子|......|最后一个大板子|
-	//		  (----------------------第一个个脉冲数据------------------------------------)
+	//		  (----------------------第一个脉冲数据------------------------------------)
 	//        ------------------------其他脉冲数据-----------------------------------
 	//        -----------------------最后一个脉冲数据-----------------------------------
 	std::vector<unsigned int> d_nonBlockModuleMap;
@@ -186,13 +199,17 @@ public:
 	bool ReadDelayTime();
 	bool startExtTrigAcquire();
 	void DecodePackages(char* in_buff, int in_size);
+
+	int getListItemSize();
+	int getListItemNum();
 	int getGraduationCount();
 	int CollectUsefulData(char * in_buff, int in_size);
 	LineDetList* getRowList();
 	void clearRowList();
 
 	bool getConnected();
-	LineDetNetWork(unsigned short in_port);
+	LineDetNetWork(unsigned short in_port, unsigned short in_fifoMask, unsigned short in_channelDepth, unsigned short in_delayTime,
+		unsigned short in_intTime, unsigned short in_ampSize);
 	~LineDetNetWork();
 };
 

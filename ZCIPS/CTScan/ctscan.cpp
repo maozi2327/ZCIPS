@@ -44,7 +44,11 @@ CTScan::CTScan(QWidget *parent)
 
 	for (int i = 0; i != d_setupData->lineDetNum; ++i)
 	{
-		std::unique_ptr<LineDetNetWork> ptr(new LineDetNetWork(d_setupData->lineDetData[i].nAcquireClientPort));
+		std::unique_ptr<LineDetNetWork> ptr(new LineDetNetWork(d_setupData->lineDetData[i].nAcquireClientPort,
+			d_setupData.get()->lineDetData[i].nChnnelMask, d_setupData.get()->lineDetData[i].nFIFOdepth, 
+			d_setupData.get()->lineDetData[i].DelayTime, d_setupData.get()->lineDetData[i].IntegralTime, 
+			d_setupData.get()->lineDetData[i].AmplifyMultiple));
+
 		d_lineDetNetWorkMap.insert({ d_setupData->lineDetData[i].ID,  std::move(ptr) });
 	}
 

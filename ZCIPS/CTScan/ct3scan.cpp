@@ -12,6 +12,8 @@
 #include "../Public/util/macro.h"
 #include "simotioncontroller.h"
 
+std::chrono::minutes CT3Scan::d_intervalForSaveTempFile = std::chrono::minutes(3);
+
 CT3Scan::CT3Scan(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWork, 
 	CT3Data& in_data) : LineDetScanInterface(in_controller, in_lineDetNetWork)
 	, d_ct3Data(in_data)
@@ -38,14 +40,29 @@ bool CT3Scan::setScanParameter(float in_layer, int in_matrix, float in_view,
 
 //更新进度条
 //检查扫描结束
+//每间隔固定时间保存一个零时文件，扫描完成后合成
 void CT3Scan::scanThread()
 {
 	if (d_lineDetNetWork->startExtTrigAcquire())
 	{
+		d_start_time = std::chrono::steady_clock::now();
+
+		static std::chrono::steady_clock::time_point last_time;
+		//std::chrono::system_clock().now;
 		sendCmdToControl();
 
 		while (d_threadRun)
 		{
+			auto now = std::chrono::steady_clock::now();
+
+			if (now > last_time + d_intervalForSaveTempFile)
+			{
+				auto listTempHead = d_lineDetNetWork->getRowList();
+				d_lineDetNetWork->clearRowList();
+				saveTempFile(listTempHead);
+				last_time = now;
+			}
+
 			emit(signalGraduationCount(d_lineDetNetWork->getGraduationCount()));
 
 			if (d_controller->readSaveStatus())
@@ -95,13 +112,29 @@ void CT3Scan::sendCmdToControl()
 	d_controller->sendToControl(buf, 6 + sizeof(CT23ScanCmdData));
 }
 
-
 void CT3Scan::saveFile()
 {
-	saveOrgFile();
-	QString orgFilaName(d_orgPath + d_fileName + ".org");
-	QString disposedFilaName(d_orgPath + d_fileName);
-	d_lineDetImageProcess->dispose(d_installDirectory, orgFilaName, disposedFilaName);
+	std::unique_ptr<RowList> finalList(new RowList);
+
+	for (auto& tempFile : d_tempFileVec)
+	{
+		QFile file;
+		file.setFileName(tempFile);
+		file.open(QIODevice::ReadWrite);
+		auto byteArray = file.readAll();
+		int listItemNum = byteArray.size() / d_lineDetNetWork->getListItemSize();
+		auto listItemSize = d_lineDetNetWork->getListItemSize();
+		char* memory = new char[byteArray.size()];
+		memcpy(memory, byteArray.data(), byteArray.size());
+
+		for (int i = 0; i != listItemNum; ++i)
+			finalList->push_back((unsigned long*)(memory + listItemSize * i));
+	}	
+	
+	saveOrgFile(finalList.get()->getList());
+	QString orgFileName(d_orgPath + d_fileName + ".org");
+	QString disposedFileName(d_orgPath + d_fileName);
+	d_lineDetImageProcess->dispose(d_installDirectory, orgFileName, disposedFileName);
 }
 
 bool CT3Scan::beginScan()
@@ -183,6 +216,30 @@ bool CT3Scan::canScan()
 	}
 
 	return true;
+}
+
+void CT3Scan::saveTempFile(LineDetList* in_listHead)
+{
+	auto listItem = in_listHead;
+	auto listItemNum = d_lineDetNetWork->getListItemNum();
+	auto listItemSize = d_lineDetNetWork->getListItemSize();
+	char* fileMemory = new char(listItemNum * listItemSize);
+	int itemCount = 0;
+
+	while (listItem->d_next != nullptr)
+	{
+		memcpy(fileMemory + itemCount * listItemSize, listItem->d_item, listItemSize);
+		++itemCount;
+	}
+
+	QString tempFileName = d_tempFileDir + '/' + QString::number(++d_tempFileNum);
+	QFile file;
+	file.setFileName(tempFileName);
+	file.open(QIODevice::WriteOnly);
+	file.write(fileMemory, listItemNum * listItemSize);
+	file.flush();
+	file.close();
+	d_tempFileVec.push_back(tempFileName);
 }
 
 void CT3Scan::stopScan()

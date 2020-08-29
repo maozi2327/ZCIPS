@@ -1,21 +1,23 @@
 #include "stdafx.h"
 #include "LineDetNetWork.h"
-#include "../Public/util/TcpServer.h"
+#include "../Public/util/tcpserver.h"
 #include <chrono>
 #include <algorithm>
-LineDetNetWork::LineDetNetWork(unsigned short in_port)
+
+static in_addr hostAddr;
+
+LineDetNetWork::LineDetNetWork(unsigned short in_port, unsigned short in_fifoMask, unsigned short in_channelDepth, unsigned short in_delayTime,
+	unsigned short in_intTime, unsigned short in_ampSize)
 	: d_server
 	(
-		nullptr
-		//new TcpServer(4, 4, 0
-		//, [] {; }
-		//, [this](char* in_char, int in_size) { DecodePackages(in_char, in_size); }
-		//, QHostAddress::Any, 4000)
+		new TcpServer(4, 4, 0
+		, [this] { setParameterAfterConnect(); }
+		, [this](char* in_char, int in_size) { DecodePackages(in_char, in_size); }
+		, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), 4000)
 	)
 {
-	//connect(d_server.get(), SIGNAL(netWorkStatusSignal(bool)), this, SLOT(netWorkStatusSlot));
-}
 
+}
 
 LineDetNetWork::~LineDetNetWork()
 {
@@ -30,6 +32,19 @@ void LineDetNetWork::netWorkStatusSlot(bool sts)
 bool LineDetNetWork::getConnected()
 {
 	return d_server->getConnected();
+}
+
+bool LineDetNetWork::setParameterAfterConnect()
+{
+	ARMTest();
+	ChannelSelect();
+	ChannelDepthSet();
+	StartCI();
+	DetectorTest();
+	SetDelayTime(0);
+	SetIntTime(0);
+	SetAmpSize(0);
+	return false;
 }
 
 bool LineDetNetWork::recvServer_DATA()
@@ -267,6 +282,16 @@ void LineDetNetWork::DecodePackages(char * in_buff, int in_size)
 	}
 }
 
+int LineDetNetWork::getListItemSize()
+{
+	return (d_channelNum + 2);
+}
+
+int LineDetNetWork::getListItemNum()
+{
+	return d_dataList.getListSize();
+}
+
 int LineDetNetWork::getGraduationCount()
 {
 	return 0;
@@ -279,11 +304,10 @@ int LineDetNetWork::CollectUsefulData(char * in_buff, int in_size)
 
 	for (int pulseIndex = 0; pulseIndex != pulseNum; ++pulseIndex)
 	{
-		//总通道数+分度计数+脉冲计数
+		//分度计数+脉冲计数+总通道数
 		unsigned long* item = new unsigned long[d_channelNum + 2];
 		int smIndex = 0;
 
-		
 		for (int smIndex = 0; smIndex != d_smallBoardNum; ++smIndex)
 		{
 			memmove(in_buff + 2 * sizeof(unsigned int) + smIndex * smallBS

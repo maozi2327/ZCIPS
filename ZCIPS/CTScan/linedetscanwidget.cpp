@@ -6,7 +6,8 @@
 #include "../Public/headers/setupData.h"
 #include "ct3scan.h"
 
-LineDetScanWidget::LineDetScanWidget(MotorControlWidget* in_motorControl, int in_rayId, int in_lineDetId, const	std::vector<ScanMode>& in_scanMode, SetupData* in_setupData, 
+LineDetScanWidget::LineDetScanWidget(MotorControlWidget* in_motorControl, int in_rayId, int in_lineDetId, 
+	const	std::vector<ScanMode>& in_scanMode, SetupData* in_setupData, 
 	LineDetNetWork* in_lineDetNetWork, ControllerInterface* in_controller, QWidget *parent)
 : QWidget(parent), d_motorControlDialog(in_motorControl)
 	, d_rayNum(in_rayId), d_detNum(in_lineDetId)
