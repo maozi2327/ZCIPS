@@ -100,19 +100,19 @@ bool ConeScanInterface::canScan()
 	
 	if (!checkMemory())
 	{
-		LOG_ERROR(str.fromLocal8Bit("Ó²ÅÌ¿Õ¼ä²»×ã"));
+		LOG_ERROR("Ó²ÅÌ¿Õ¼ä²»×ã");
 		return false;
 	}
 
 	if (!d_controller->checkReadyToScan())
 	{
-		LOG_ERROR(str.fromLocal8Bit("¿ØÖÆÆ÷Î´¾ÍÐ÷"));
+		LOG_ERROR("¿ØÖÆÆ÷Î´¾ÍÐ÷");
 		return false;
 	}
 
 	if (!d_panel->getReady())
 	{
-		LOG_ERROR(str.fromLocal8Bit("Ì½²âÆ÷Î´¾ÍÐ÷"));
+		LOG_ERROR("Ì½²âÆ÷Î´¾ÍÐ÷");
 		return false;
 	}
 

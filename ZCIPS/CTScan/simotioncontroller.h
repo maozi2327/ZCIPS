@@ -119,7 +119,7 @@ public:
 	virtual bool getConnected();
 	virtual bool checkReadyToScan();
 
-	virtual bool initialSend();
+	virtual bool initialSend(SOCKET in_sock);
 	virtual bool stopAll();
 	virtual bool initialiseController();
 	virtual bool axisSeekZero(Axis in_axis);

@@ -3,7 +3,7 @@
 #include <thread>
 
 TcpServer::TcpServer(int in_packetHeadSize, int in_packetSizeLenth, int in_packetSizePos
-	, std::function<void()> in_sendDataCallBack
+	, std::function<bool(SOCKET) > in_sendDataCallBack
 	, std::function<void(char*, int in_size)> in_dataHandlerCallBack
 	, in_addr in_hosetAddress, unsigned short in_serverPort)
 	: d_packetHeadSize(in_packetHeadSize), d_packetSizeLenth(in_packetSizeLenth), d_packetSizePos(in_packetSizePos)
@@ -121,7 +121,11 @@ void TcpServer::sendThread(std::promise<bool>& in_promise)
 				continue;
 
 			d_connected = true;
-			d_sendInitiliseCallBack();
+
+			if (!d_sendInitiliseCallBack(d_client))
+			{
+				continue;
+			}
 
 			while (d_connected)
 			{

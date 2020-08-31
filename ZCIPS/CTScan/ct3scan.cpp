@@ -45,10 +45,20 @@ void CT3Scan::scanThread()
 {
 	if (d_lineDetNetWork->startExtTrigAcquire())
 	{
-		d_start_time = std::chrono::steady_clock::now();
+		int graduation = loadTempFile();
 
+		if (graduation == -1)
+		{
+
+			return;
+		}
+		else
+		{
+
+		}
+
+		d_start_time = std::chrono::steady_clock::now();
 		static std::chrono::steady_clock::time_point last_time;
-		//std::chrono::system_clock().now;
 		sendCmdToControl();
 
 		while (d_threadRun)
@@ -204,16 +214,7 @@ bool CT3Scan::canScan()
 	QString str;
 
 	if(!LineDetScanInterface::canScan())
-	{
-		LOG_ERROR(str.fromLocal8Bit("¿ØÖÆÆ÷Î´¾ÍÐ÷"));
 		return false;
-	}
-
-	if (!d_controller->checkReadyToScan())
-	{
-		LOG_ERROR(str.fromLocal8Bit("¿ØÖÆÆ÷Î´¾ÍÐ÷"));
-		return false;
-	}
 
 	return true;
 }

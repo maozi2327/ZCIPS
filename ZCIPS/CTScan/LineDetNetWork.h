@@ -4,6 +4,7 @@
 #include <condition_variable>
 #include <mutex>
 #include <vector>
+#include <QTimer>
 class TcpServer;
 #define	CTOSRTBUF_NUM	20						//定义接收/发送缓冲区个数
 #define	CTOSRTBUF_LEN	256						//定义接收/发送缓冲区长度
@@ -142,6 +143,8 @@ class LineDetNetWork : public QObject
 {
 	Q_OBJECT
 private:
+
+	QTimer* d_timer;
 	std::unique_ptr<TcpServer> d_server;
 	enum DataType
 	{
@@ -166,7 +169,9 @@ private:
 	int d_dataSizePerPulse;
 	int d_channelNum;
 	RowList d_dataList;
-	bool setParameterAfterConnect();
+	bool setParameterAfterConnect(SOCKET in_sock);
+
+	int d_netWorkCounter;
 
 	//线阵探测器每次发送数据格式
 	//									数据长度|
@@ -178,7 +183,7 @@ private:
 
 public slots:
 	void netWorkStatusSlot(bool sts);
-
+	void updateNetStatusTimerSlot();
 signals:
 	void netWorkStatusSignal(bool sts);
 public:

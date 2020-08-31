@@ -24,7 +24,7 @@ public:
 	virtual bool getConnected() = 0;
 	virtual bool checkReadyToScan() = 0;
 
-	virtual bool initialSend() = 0;
+	virtual bool initialSend(SOCKET in_sock) = 0;
 	virtual bool stopAll() = 0;
 	virtual bool initialiseController() = 0;
 	virtual bool axisSeekZero(Axis in_axis) = 0;

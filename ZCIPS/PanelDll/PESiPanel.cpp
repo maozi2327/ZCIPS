@@ -13,7 +13,6 @@ PESiPanel::PESiPanel() : d_binModeName(
 	 { BinMode::BinMode5, {QString("1x1"), 1}}}),
 	Panel()
 {
-	
 	ptrPESiPanel = this;
 }
 
@@ -36,7 +35,7 @@ bool PESiPanel::initialise()
 
 	if ((iRet = Acquisition_EnumSensors(&uiNumSensors, 1, FALSE)) != HIS_ALL_OK)
 	{
-		LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_EnumSensors", iRet));
+		LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_EnumSensors", iRet);
 		return false;
 	}
 
@@ -47,7 +46,7 @@ bool PESiPanel::initialise()
 	{
 		if ((iRet = Acquisition_GetNextSensor(&Pos, &hAcqDesc)) != HIS_ALL_OK)
 		{
-			LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_GetNextSensor", iRet));
+			LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_GetNextSensor", iRet);
 		}
 			
 	} 
@@ -58,7 +57,7 @@ bool PESiPanel::initialise()
 	
 	if ((iRet = Acquisition_GetCommChannel(hAcqDesc, &nChannelType, &nChannelNr)) != HIS_ALL_OK) 
 	{
-		LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_GetCommChannel", iRet));
+		LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_GetCommChannel", iRet);
 		return false;
 	}
 
@@ -91,41 +90,41 @@ bool PESiPanel::initialise()
 		}
 	}
 	//ªÒ»°ÃΩ≤‚∆˜¿‡–Õº∞±‡∫≈
-	LOG_INFO(makeMessage("channel type : %d  ChannelNr : %d", nChannelType, nChannelNr));
+	LOG_INFO("channel type : %d  ChannelNr : %d", nChannelType, nChannelNr);
 	
 	switch (nChannelType) 
 	{
 	case HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto:
-		LOG_INFO(makeMessage("%s%d", "HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto:", nChannelType));
+		LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto:", nChannelType);
 		break;
 	case HIS_BOARD_TYPE_ELTEC_XRD_FGX:
-		LOG_INFO(makeMessage("%s%d", "HIS_BOARD_TYPE_ELTEC_XRD_FGX:", nChannelType));
+		LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_XRD_FGX:", nChannelType);
 		break;
 	case HIS_BOARD_TYPE_ELTEC:
-		LOG_INFO(makeMessage("%s%d", "HIS_BOARD_TYPE_ELTEC:", nChannelType));
+		LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC:", nChannelType);
 		break;
 	case HIS_BOARD_TYPE_ELTEC_GbIF:
-		LOG_INFO(makeMessage("%s%d", "HIS_BOARD_TYPE_ELTEC_GbIF:", nChannelType));
+		LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_GbIF:", nChannelType);
 		break;
 	case HIS_BOARD_TYPE_ELTEC_EMBEDDED:
-		LOG_INFO(makeMessage("%s%d", "HIS_BOARD_TYPE_ELTEC_EMBEDDED:", nChannelType));
+		LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_EMBEDDED:", nChannelType);
 		break;
 	default:
-		LOG_INFO(makeMessage("%s%d", "Unknown ChanelType::", nChannelType));
+		LOG_INFO("%s%d", "Unknown ChanelType::", nChannelType);
 		break;
 	}
 	//ªÒ»°ÃΩ≤‚∆˜≈‰÷√
 	if ((iRet = Acquisition_GetConfiguration(hAcqDesc, 0, &d_height, &d_width, 0,
 											0, 0, 0, 0, 0, 0)) != HIS_ALL_OK) 
 	{
-		LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_GetConfiguration", iRet));
+		LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_GetConfiguration", iRet);
 		return false;
 	}
 	
 	if ((iRet = Acquisition_SetCallbacksAndMessages(hAcqDesc, NULL, 0,
 		0, ::OnEndPESiDetFrameCallback, ::OnEndPESiDetAcqCallback)) != HIS_ALL_OK)		//…Ë÷√≤…ºØªÿµ˜∫Ø ˝
 	{
-		LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetCallbacksAndMessages", iRet));
+		LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetCallbacksAndMessages", iRet);
 		return false;
 	}
 
@@ -175,11 +174,11 @@ bool PESiPanel::setSampleTime(int in_milliseconds)
 
 	if ((iRet = Acquisition_SetCameraMode(hPESiAcqDesc, d_sampleTime)) == HIS_ALL_OK)
 	{
-		LOG_INFO(makeMessage("…Ë÷√∆ÿπ‚ ±º‰:%d", d_sampleTime));
+		LOG_INFO("…Ë÷√∆ÿπ‚ ±º‰:%d", d_sampleTime);
 	}
 	else 
 	{
-		LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetCameraMode", iRet));
+		LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetCameraMode", iRet);
 	}
 
 	return true;
@@ -194,13 +193,13 @@ bool PESiPanel::setBinMode(BinMode in_binMode)
 
 	if ((iRet = Acquisition_SetCameraBinningMode(hPESiAcqDesc, binFmt)) == HIS_ALL_OK)
 	{
-		LOG_INFO(makeMessage("…Ë÷√∫œ≤¢ƒ£ Ω:%d", std::get<1>(it->second)));
+		LOG_INFO("…Ë÷√∫œ≤¢ƒ£ Ω:%d", std::get<1>(it->second));
 		d_binMode = in_binMode;
 		return true;
 	}
 	else
 	{
-		LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetCameraBinningMode", iRet));
+		LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetCameraBinningMode", iRet);
 		return false;
 	}
 
@@ -213,10 +212,10 @@ bool PESiPanel::setSampleMode(SampleMode in_sampleMode)
 	if ((iRet = Acquisition_SetCameraTriggerMode(hPESiAcqDesc, 1)) == HIS_ALL_OK)
 	{
 		if ((iRet = Acquisition_SetFrameSyncTimeMode(hPESiAcqDesc, d_sampleTime, d_cycleTime)) == HIS_ALL_OK)
-			LOG_INFO(makeMessage("…Ë÷√—”≥Ÿ ±º‰:%d ms", d_cycleTime));
+			LOG_INFO("…Ë÷√—”≥Ÿ ±º‰:%d ms", d_cycleTime);
 		else
 		{
-			LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetCameraBinningMode", iRet));
+			LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetCameraBinningMode", iRet);
 			return false;
 		}
 		
@@ -227,18 +226,18 @@ bool PESiPanel::setSampleMode(SampleMode in_sampleMode)
 			d_cycleTime,	//—”≥Ÿ ±º‰
 			0, 0)) == HIS_ALL_OK)
 		{
-			LOG_INFO(makeMessage("…Ë÷√TriggerOut—”≥Ÿ:%d ms", d_cycleTime));
+			LOG_INFO("…Ë÷√TriggerOut—”≥Ÿ:%d ms", d_cycleTime);
 		}
 		else 
 		{
-			LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetTriggerOutSignalOptions", iRet));
+			LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetTriggerOutSignalOptions", iRet);
 			return false;
 		}
 
 	}
 	else 
 	{
-		LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetCameraTriggerMode", iRet));
+		LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetCameraTriggerMode", iRet);
 		return false;
 	}
 
@@ -250,12 +249,12 @@ bool PESiPanel::setGainFactor(int in_gainFactor)
 	
 	if ((iRet = Acquisition_SetCameraGain(hPESiAcqDesc, d_gainFactor)) == HIS_ALL_OK)
 	{
-		LOG_INFO(makeMessage("…Ë÷√ÃΩ≤‚‘ˆ“Ê:%d", d_gainFactor));
+		LOG_INFO("…Ë÷√ÃΩ≤‚‘ˆ“Ê:%d", d_gainFactor);
 		return true;
 	}
 	else
 	{
-		LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetCameraGain", iRet));
+		LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetCameraGain", iRet);
 		return false;
 	}
 }
@@ -267,7 +266,7 @@ bool PESiPanel::beginAcquire(unsigned short d_quantity)
 
 	if (Acquisition_SetAcqData(hPESiAcqDesc, (void*)&dwDemoParam) != HIS_ALL_OK)
 	{
-		LOG_INFO(makeMessage("Acquisition_SetAcqData  ß∞‹£°"));
+		LOG_INFO("Acquisition_SetAcqData  ß∞‹£°");
 		return false;
 	}
 	
@@ -286,7 +285,7 @@ bool PESiPanel::beginAcquire(unsigned short d_quantity)
 
 	if (iRet != HIS_ALL_OK)
 	{
-		LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_DefineDestBuffers", iRet));
+		LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_DefineDestBuffers", iRet);
 		return false;
 	}
 	
@@ -301,7 +300,7 @@ bool PESiPanel::beginAcquire(unsigned short d_quantity)
 	
 	if (iRet != HIS_ALL_OK)
 	{
-		LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_Acquire_Image", iRet));
+		LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_Acquire_Image", iRet);
 		return false;
 	}
 
@@ -310,7 +309,7 @@ bool PESiPanel::beginAcquire(unsigned short d_quantity)
 		
 		if (iRet != HIS_ALL_OK)
 		{
-			LOG_ERROR(makeMessage("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetFrameSync", iRet));
+			LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_SetFrameSync", iRet);
 			return false;
 		}
 	}

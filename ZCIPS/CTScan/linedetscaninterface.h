@@ -16,7 +16,7 @@ class LineDetScanInterface : public QObject
 {
 	Q_OBJECT
 protected:
-	QTimer d_timer;
+	QTimer* d_timer;
 	QString d_fileName;
 	QString d_orgPath;
 	QString d_filePath;
@@ -50,6 +50,7 @@ protected:
 	virtual void sendCmdToControl() = 0;
 	void CalculateView_ValidDetector(float in_diameter);
 	virtual bool canScan() = 0;
+	virtual int loadTempFile();
 signals:
 	void signalGraduationCount(int in_count);
 	LOGSIGNAL

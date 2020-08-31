@@ -158,3 +158,9 @@ bool LineDetScanInterface::canScan()
 
 	return true;
 }
+
+//加载零时文件读取已经采集的分度束
+int LineDetScanInterface::loadTempFile()
+{
+	return 0;
+}

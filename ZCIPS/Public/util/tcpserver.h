@@ -9,7 +9,7 @@ class TcpServer
 {
 public:
 	TcpServer(int in_packetHeadSize, int in_packetSizeLenth, int in_packetSizePos
-		, std::function<void()> in_sendDataCallBack, std::function<void(char*, int in_size)> in_recvDataCallBack
+		, std::function<bool(SOCKET)> in_sendDataCallBack, std::function<void(char*, int in_size)> in_recvDataCallBack
 		, in_addr in_hosetAddress, unsigned short in_serverPort);
 	virtual ~TcpServer();
 	bool sendAsyn(const char* in_buffer, int in_size);
@@ -29,7 +29,7 @@ private:
 	int d_packetSizePos;
 	int d_packetSizeLenth;
 	std::function<void(char*, int in_size)> d_dataHandlerCallBack;
-	std::function<void()> d_sendInitiliseCallBack;
+	std::function<bool(SOCKET)> d_sendInitiliseCallBack;
 	SOCKET	d_server;
 	SOCKET	d_client;
 	unsigned short d_serverPort;

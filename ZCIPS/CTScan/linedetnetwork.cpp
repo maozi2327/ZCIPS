@@ -11,12 +11,14 @@ LineDetNetWork::LineDetNetWork(unsigned short in_port, unsigned short in_fifoMas
 	: d_server
 	(
 		new TcpServer(4, 4, 0
-		, [this] { setParameterAfterConnect(); }
+		, [this](SOCKET in_sock){ return setParameterAfterConnect(in_sock); }
 		, [this](char* in_char, int in_size) { DecodePackages(in_char, in_size); }
 		, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), 4000)
 	)
 {
-
+	d_timer = new QTimer(this);
+	d_timer->start(1000);
+	connect(d_timer, &QTimer::timeout, this, &LineDetNetWork::updateNetStatusTimerSlot);
 }
 
 LineDetNetWork::~LineDetNetWork()
@@ -34,17 +36,32 @@ bool LineDetNetWork::getConnected()
 	return d_server->getConnected();
 }
 
-bool LineDetNetWork::setParameterAfterConnect()
+bool LineDetNetWork::setParameterAfterConnect(SOCKET in_sock)
 {
-	ARMTest();
-	ChannelSelect();
-	ChannelDepthSet();
-	StartCI();
-	DetectorTest();
-	SetDelayTime(0);
-	SetIntTime(0);
-	SetAmpSize(0);
+	if(
+		(setsockopt(in_sock, IPPROTO_TCP, TCP_NODELAY, nullptr, sizeof(int)) != SOCKET_ERROR) &&
+		(setsockopt(in_sock, SOL_SOCKET, SO_RCVBUF, nullptr, sizeof(int)) != SOCKET_ERROR) &&
+		(setsockopt(in_sock, SOL_SOCKET, SO_SNDBUF, nullptr, sizeof(int)) != SOCKET_ERROR) &&
+		ARMTest() &&
+		ChannelSelect() && 
+		ChannelDepthSet() && 
+		StartCI() && 
+		DetectorTest() && 
+		SetDelayTime(d_delayTime) && 
+		SetIntTime(d_intTime) && 
+		SetAmpSize(d_ampSize)
+	)
+		return true;
+	
 	return false;
+}
+
+void LineDetNetWork::updateNetStatusTimerSlot()
+{
+	if (++d_netWorkCounter > 3)
+		d_connected = false;
+	else
+		d_connected = true;
 }
 
 bool LineDetNetWork::recvServer_DATA()
@@ -262,6 +279,7 @@ bool LineDetNetWork::startExtTrigAcquire()
 
 void LineDetNetWork::DecodePackages(char * in_buff, int in_size)
 {
+	d_netWorkCounter = 0;
 	CMD_STRUCT cmdFeedback;
 	switch (d_recvType)
 	{

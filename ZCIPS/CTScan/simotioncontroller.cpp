@@ -10,18 +10,19 @@
 const unsigned short SimotionController::d_port = 8000;
 const int SimotionController::d_packetSize = 256;
 
-SimotionController::SimotionController() : d_bytesReceived(0) , d_netWorkBuffer(new char[1000])
-{
-	
-	d_threadRun = true;
-	std::function<void(char*, int)> decodeFun = std::bind(&SimotionController::pocessData,
-		this, std::placeholders::_1, std::placeholders::_2);
-	std::function<void()> sendFun = std::bind(&SimotionController::initialSend, this);
 
-	in_addr hostAddr;
-	hostAddr.S_un.S_addr = INADDR_ANY;
-//	d_server.reset(new TcpServer(sizeof(tagCOMM_PACKET1), 2, 4, sendFun, decodeFun,
-//		hostAddr, d_port));
+static in_addr hostAddr;
+
+SimotionController::SimotionController() : d_bytesReceived(0) , d_netWorkBuffer(new char[1000])
+	, d_threadRun(true)
+	, d_server
+	(
+		//new TcpServer(sizeof(tagCOMM_PACKET1), 2, 4
+		//	, [this](SOCKET in_sock) { return initialSend(in_sock); }
+		//	, [this](char* in_data, int in_lenth) { pocessData(in_data, in_lenth); }
+		//	, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), d_port)
+	)
+{
 	auto intervel = std::chrono::milliseconds(100);
 
 	std::thread([this, intervel] 
@@ -133,7 +134,7 @@ std::map<Axis, float> SimotionController::readAxisSpeed()
 	return std::map<Axis, float>();
 }
 
-bool SimotionController::initialSend()
+bool SimotionController::initialSend(SOCKET in_sock)
 {
 	getSystemStatus();
 	getAxisPosition();
@@ -269,7 +270,7 @@ void SimotionController::pocessData(char* in_package, int in_size)
 			char tag3;
 		};
 
-		static tag temp{ 0x55, 0xAA, 0x5A };
+		static tag temp{ char(0x55), char(0xAA), char(0x5A) };
 		char* packetHead = d_netWorkBuffer + posecessedDataLenth;
 
 		for (; packetHead != d_netWorkBuffer + d_bytesReceived - sizeof(tag); ++packetHead)

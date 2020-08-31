@@ -13,3 +13,8 @@ QString makeMessage(const char* pszFmt, ...)
 	va_end(ap);
 	return msg;
 }
+
+QString makeMessage(const QString & pszFmt)
+{
+	return pszFmt;
+}
