@@ -8,22 +8,30 @@ static in_addr hostAddr;
 
 LineDetNetWork::LineDetNetWork(unsigned short in_port, unsigned short in_fifoMask, unsigned short in_channelDepth, unsigned short in_delayTime,
 	unsigned short in_intTime, unsigned short in_ampSize)
-	: d_server
-	(
+	: d_server(
 		new TcpServer(4, 4, 0
 		, [this](SOCKET in_sock){ return setParameterAfterConnect(in_sock); }
-		, [this](char* in_char, int in_size) { DecodePackages(in_char, in_size); }
-		, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), 4000)
-	)
+		, [this](char* in_char, int in_size) { pocessData(in_char, in_size); }
+		, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), 4000))
+	, d_fifoMask(in_fifoMask), d_channelDepth(in_channelDepth)
+	, d_delayTime(in_delayTime), d_intTime(in_intTime), d_ampSize(in_ampSize)
+	, d_netWorkBuffer(new char[2u << 12]), d_bytesReceived(0), d_smallBoardNum(0)
 {
 	d_timer = new QTimer(this);
 	d_timer->start(1000);
 	connect(d_timer, &QTimer::timeout, this, &LineDetNetWork::updateNetStatusTimerSlot);
+
+	while (d_fifoMask)
+	{
+		d_fifoMask &= (d_fifoMask - 1);
+		++d_smallBoardNum;
+	}
+	d_dataSizePerPulse = sizeof(int) * (d_smallBoardNum * (d_channelDepth + 3) + 1);
 }
 
 LineDetNetWork::~LineDetNetWork()
 {
-
+	delete[] d_netWorkBuffer;
 }
 
 void LineDetNetWork::netWorkStatusSlot(bool sts)
@@ -38,22 +46,80 @@ bool LineDetNetWork::getConnected()
 
 bool LineDetNetWork::setParameterAfterConnect(SOCKET in_sock)
 {
-	if(
-		(setsockopt(in_sock, IPPROTO_TCP, TCP_NODELAY, nullptr, sizeof(int)) != SOCKET_ERROR) &&
-		(setsockopt(in_sock, SOL_SOCKET, SO_RCVBUF, nullptr, sizeof(int)) != SOCKET_ERROR) &&
-		(setsockopt(in_sock, SOL_SOCKET, SO_SNDBUF, nullptr, sizeof(int)) != SOCKET_ERROR) &&
-		ARMTest() &&
-		ChannelSelect() && 
-		ChannelDepthSet() && 
-		StartCI() && 
-		DetectorTest() && 
-		SetDelayTime(d_delayTime) && 
-		SetIntTime(d_intTime) && 
-		SetAmpSize(d_ampSize)
-	)
-		return true;
+	int val = 0;
 	
-	return false;
+	if(setsockopt(in_sock, IPPROTO_TCP, TCP_NODELAY, (char*)(&val), sizeof(int)) == SOCKET_ERROR)
+		return false;
+
+	if(setsockopt(in_sock, SOL_SOCKET, SO_RCVBUF, (char*)(&val), sizeof(int)) == SOCKET_ERROR)
+		return false;
+
+	if(setsockopt(in_sock, SOL_SOCKET, SO_SNDBUF, (char*)(&val), sizeof(int)) == SOCKET_ERROR)
+		return false;
+
+	std::thread([this]()
+	{
+		if (!ARMTest()) return false;
+		if (!ChannelSelect()) return false;
+		if (!ChannelDepthSet()) return false;
+		if (!StartCI()) return false;
+		//if (!DetectorTest()) return false;
+		if (!SetDelayTime(d_delayTime)) return false;
+		if (!SetIntTime(d_intTime)) return false;
+		if (!SetAmpSize(d_ampSize)) return false;
+		//if (ARMTest() && ChannelSelect() && ChannelDepthSet() && StartCI() && DetectorTest() &&
+		//	SetDelayTime(d_delayTime) && SetIntTime(d_intTime) && SetAmpSize(d_ampSize))
+		//	d_detInitSucceed = true;
+		//
+		//d_detInitSucceed = false;
+	}).detach();
+
+	return true;
+	//if(
+	//	(setsockopt(in_sock, IPPROTO_TCP, TCP_NODELAY, nullptr, sizeof(int)) != SOCKET_ERROR) &&
+	//	(setsockopt(in_sock, SOL_SOCKET, SO_RCVBUF, nullptr, sizeof(int)) != SOCKET_ERROR) &&
+	//	(setsockopt(in_sock, SOL_SOCKET, SO_SNDBUF, nullptr, sizeof(int)) != SOCKET_ERROR) &&
+	//	ARMTest() &&
+	//	ChannelSelect() && 
+	//	ChannelDepthSet() && 
+	//	StartCI() && 
+	//	DetectorTest() && 
+	//	SetDelayTime(d_delayTime) && 
+	//	SetIntTime(d_intTime) && 
+	//	SetAmpSize(d_ampSize)
+	//)
+	//	return true;
+	
+	return true;
+}
+
+void LineDetNetWork::pocessData(char * in_package, int in_size)
+{
+	int posecessedDataLenth = 0;
+	memcpy(d_netWorkBuffer + d_bytesReceived, in_package, in_size);
+	d_bytesReceived += in_size;
+
+	while (true)
+	{
+		if ((d_bytesReceived - posecessedDataLenth) < sizeof(int))
+			break;
+
+		int packetSize = *(unsigned int*)(d_netWorkBuffer + posecessedDataLenth);
+
+		if (d_bytesReceived - posecessedDataLenth < packetSize)
+			break;
+		else
+		{
+			DecodePackages(d_netWorkBuffer + posecessedDataLenth, packetSize);
+			posecessedDataLenth = packetSize;
+		}
+	}
+
+	if (posecessedDataLenth > 0)
+	{
+		memmove(d_netWorkBuffer, d_netWorkBuffer + posecessedDataLenth, d_bytesReceived - posecessedDataLenth);
+		d_bytesReceived -= posecessedDataLenth;
+	}
 }
 
 void LineDetNetWork::updateNetStatusTimerSlot()
@@ -82,10 +148,9 @@ bool LineDetNetWork::NetSetup()
 template<typename T1, typename T2>
 inline bool GetResult(T1& t1, T2 t2, std::condition_variable& in_con, std::mutex& in_mutex)
 {
-	t1 = 0;
 	std::unique_lock<std::mutex> lk(in_mutex);
 
-	if (in_con.wait_for(lk, std::chrono::milliseconds(1000), [&] { return t1 == t2; }))
+	if (in_con.wait_for(lk, std::chrono::milliseconds(1000), [&t1, &t2] { return t1 == t2; }))
 		return true;
 	else
 		return false;
@@ -112,7 +177,7 @@ bool LineDetNetWork::ChannelSelect()
 	CMD_STRUCT cmdInfo;
 	cmdInfo.cmd = CMD_CHANNEL_SELECT;
 	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = d_smallBoardNum;
+	cmdInfo.cmd_param = d_fifoMask;
 	cmdInfo.respond_type = 0;
 	
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
@@ -129,7 +194,7 @@ bool LineDetNetWork::ChannelDepthSet()
 
 	//实际FIFO的深度，也是单采样脉冲下ARM读FIFO的次数(16位总线位宽、67个整型数据，将进行134次读操作)
 	//此处channel_depth+3是数据中包含分度号、脉冲序号和校验和3个数据
-	cmdInfo.cmd_param = (d_smallBoardChannel + 3) * 2;
+	cmdInfo.cmd_param = (d_channelDepth + 3) * 2;
 	cmdInfo.respond_type = 0;
 	
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
@@ -162,11 +227,13 @@ bool LineDetNetWork::DetectorTest()
 	CMD_STRUCT cmdInfo;
 	cmdInfo.cmd = CMD_DETECTOR_TEST;
 	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = d_smallBoardChannel;
+	cmdInfo.cmd_param = d_channelDepth;
 	cmdInfo.respond_type = 1;
+	d_recvType = PARAMETER;
+	d_dataList.clear();
 	
 	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
-		return GetResult(d_return64, 64, d_con, d_mutex);
+		return GetResult(d_returnSize, sizeof(int) * (d_smallBoardNum * (d_channelDepth + 3) + 1), d_con, d_mutex);
 
 	return false;
 }
@@ -179,6 +246,7 @@ bool LineDetNetWork::SetAmpSize(int in_ampSize)
 	cmdInfo.cmd_param = in_ampSize;
 	cmdInfo.respond_type = 1;
 	d_recvType = PARAMETER;
+	d_dataList.clear();
 
 	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
@@ -194,6 +262,7 @@ bool LineDetNetWork::SetIntTime(int in_intTime)
 	cmdInfo.cmd_param = in_intTime;
 	cmdInfo.respond_type = 1;
 	d_recvType = PARAMETER;
+	d_dataList.clear();
 
 	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
@@ -209,7 +278,7 @@ bool LineDetNetWork::SetDelayTime(int in_delayTime)
 	cmdInfo.cmd_param = in_delayTime;
 	cmdInfo.respond_type = 1;
 	d_recvType = PARAMETER;
-
+	d_dataList.clear();
 	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
@@ -224,6 +293,7 @@ bool LineDetNetWork::ReadAmpSize()
 	cmdInfo.cmd_param = 0x0;
 	cmdInfo.respond_type = 1;
 	d_recvType = PARAMETER;
+	d_dataList.clear();
 
 	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
@@ -239,7 +309,8 @@ bool LineDetNetWork::ReadIntTime()
 	cmdInfo.cmd_param = 0x0;
 	cmdInfo.respond_type = 1;
 	d_recvType = PARAMETER;
-	
+	d_dataList.clear();
+
 	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
@@ -254,7 +325,8 @@ bool LineDetNetWork::ReadDelayTime()
 	cmdInfo.cmd_param = 0x0;
 	cmdInfo.respond_type = 1;
 	d_recvType = PARAMETER;
-	
+	d_dataList.clear();
+
 	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
@@ -281,6 +353,7 @@ void LineDetNetWork::DecodePackages(char * in_buff, int in_size)
 {
 	d_netWorkCounter = 0;
 	CMD_STRUCT cmdFeedback;
+
 	switch (d_recvType)
 	{
 	case CMD:
@@ -292,7 +365,11 @@ void LineDetNetWork::DecodePackages(char * in_buff, int in_size)
 		}
 		break;
 	case PARAMETER:
+	{
+		std::lock_guard<std::mutex> lk(d_mutex);
 		d_returnSize = CollectUsefulData(in_buff, in_size);
+		d_con.notify_one();
+	}
 		break;
 	case DATA:
 		CollectUsefulData(in_buff, in_size);
@@ -318,7 +395,7 @@ int LineDetNetWork::getGraduationCount()
 int LineDetNetWork::CollectUsefulData(char * in_buff, int in_size)
 {
 	int pulseNum = in_size / d_dataSizePerPulse;
-	int smallBS = d_smallBoardChannel * sizeof(unsigned int);
+	int smallBS = d_channelDepth * sizeof(unsigned int);
 
 	for (int pulseIndex = 0; pulseIndex != pulseNum; ++pulseIndex)
 	{

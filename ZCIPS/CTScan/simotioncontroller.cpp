@@ -63,7 +63,7 @@ SimotionController::SimotionController() : d_bytesReceived(0) , d_netWorkBuffer(
 SimotionController::~SimotionController()
 {
 	d_threadRun = false;
-	delete d_netWorkBuffer;
+	delete[] d_netWorkBuffer;
 }
 
 bool SimotionController::getConnected()

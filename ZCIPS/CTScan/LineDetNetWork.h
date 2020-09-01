@@ -153,25 +153,30 @@ private:
 		DATA
 	};
 	bool d_connected;
+	bool d_detInitSucceed;
 	std::condition_variable d_con;
 	std::mutex d_mutex;
 	DataType d_recvType;
 	unsigned int d_cmdType;
-	unsigned int d_return64;
 	unsigned int d_returnSize;           //返回数据大小
 
 	unsigned int d_smallBoardNum;        //小板子数量
-	unsigned int d_smallBoardChannel;    //小板子通道数，64
-	unsigned int d_ampSize;
-	unsigned int d_intTime;
-	unsigned int d_delayTime;
-	
+	unsigned short d_channelDepth;    //小板子通道数，64
+	unsigned short d_ampSize;
+	unsigned short d_intTime;
+	unsigned short d_delayTime;
+	unsigned short d_fifoMask;
+
 	int d_dataSizePerPulse;
 	int d_channelNum;
 	RowList d_dataList;
 	bool setParameterAfterConnect(SOCKET in_sock);
+	void pocessData(char* in_package, int in_size);
 
 	int d_netWorkCounter;
+
+	char* d_netWorkBuffer;
+	int d_bytesReceived;
 
 	//线阵探测器每次发送数据格式
 	//									数据长度|

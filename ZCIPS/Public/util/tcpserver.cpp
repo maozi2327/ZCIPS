@@ -66,7 +66,7 @@ bool TcpServer::receive(char* in_buffer, int in_size)
 void TcpServer::recvThreadPacketHead(std::promise<bool>& in_promise)
 {
 	in_promise.set_value_at_thread_exit(true);
-	char buffer[1000];
+	char* buffer = new char[2u<<12];
 
 	while (d_isRecvRunning)
 	{
@@ -74,7 +74,7 @@ void TcpServer::recvThreadPacketHead(std::promise<bool>& in_promise)
 
 		while (d_connected)
 		{
-			auto ret = recv(d_client, buffer, 1000, NULL);
+			auto ret = recv(d_client, buffer, 2u << 12, NULL);
 
 			if (ret == SOCKET_ERROR)
 			{
@@ -83,11 +83,14 @@ void TcpServer::recvThreadPacketHead(std::promise<bool>& in_promise)
 				break;
 			}
 
-			d_dataHandlerCallBack(buffer, ret);
+			if(ret > 0)
+				d_dataHandlerCallBack(buffer, ret);
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds{ 100 });
 	}
+
+	delete[] buffer;
 }
 bool TcpServer::getConnected()
 {
