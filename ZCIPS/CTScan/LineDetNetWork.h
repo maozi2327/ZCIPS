@@ -73,7 +73,7 @@ private:
 public:
 	RowList()
 	{
-		d_ptr = d_listHead = 0;
+		d_ptr = d_listHead = new LineDetList{nullptr, nullptr, nullptr};
 		d_size = 0;
 		d_graduationNum = 0;
 	}
@@ -81,31 +81,20 @@ public:
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
 		clear();
+		delete d_listHead;
 	}
 	void push_back(unsigned long* in_mem)
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
 
-		if (d_size == 0)
-		{
-			d_ptr = new LineDetList;
-			d_listHead = d_ptr;
-			d_ptr->d_item = in_mem;
-			d_ptr->d_prev = 0;
-			d_ptr->d_next = 0;
-			++d_graduationNum;
-		}
-		else
-		{
-			d_ptr->d_next = new LineDetList;
-			d_ptr->d_next->d_prev = d_ptr;
-			d_ptr = d_ptr->d_next;
-			d_ptr->d_item = in_mem;
-			d_ptr->d_next = 0;
+		d_ptr->d_next = new LineDetList;
+		d_ptr->d_next->d_prev = d_ptr;
+		d_ptr = d_ptr->d_next;
+		d_ptr->d_item = in_mem;
+		d_ptr->d_next = nullptr;
 
-			if (d_ptr->d_item[0] != d_ptr->d_prev->d_item[0])
-				++d_graduationNum;
-		}
+		if (d_ptr->d_prev->d_item!= nullptr && d_ptr->d_item[0] != d_ptr->d_prev->d_item[0])
+			++d_graduationNum;
 
 		++d_size;
 	}
@@ -113,13 +102,13 @@ public:
 	void clear()
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
-		d_ptr = d_listHead;
 
-		while(d_ptr != 0)
+		while(d_ptr != d_listHead)
 		{ 
+			auto temp = d_ptr;
 			delete[] d_ptr->d_item;
-			d_ptr = d_ptr->d_next;
-			delete d_ptr->d_prev;
+			d_ptr = d_ptr->d_prev;
+			delete temp;
 		}
 
 		d_size = 0;
@@ -129,7 +118,7 @@ public:
 	LineDetList* getList()
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
-		return d_listHead;
+		return d_listHead->d_next;
 	}
 
 	int getListSize()
@@ -184,7 +173,7 @@ private:
 	//		  (----------------------第一个脉冲数据------------------------------------)
 	//        ------------------------其他脉冲数据-----------------------------------
 	//        -----------------------最后一个脉冲数据-----------------------------------
-	std::vector<unsigned int> d_nonBlockModuleMap;
+	std::vector<unsigned int> d_blockModuleMap;
 
 public slots:
 	void netWorkStatusSlot(bool sts);
@@ -219,7 +208,7 @@ public:
 
 	bool getConnected();
 	LineDetNetWork(unsigned short in_port, unsigned short in_fifoMask, unsigned short in_channelDepth, unsigned short in_delayTime,
-		unsigned short in_intTime, unsigned short in_ampSize);
+		unsigned short in_intTime, unsigned short in_ampSize, std::vector<unsigned int> in_blockModuleVec);
 	~LineDetNetWork();
 };
 

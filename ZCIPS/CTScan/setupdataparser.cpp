@@ -81,9 +81,13 @@ bool SetupDataParser::parseLineDetData(tinyxml2::XMLElement * in_element, int i)
 				localLineDetData.nBlockMapTable[index] = stoi(it->str());
 		}
 		else if (strcmp(element->Value(), "nAcquireClientPort") == 0)
-			localLineDetData.nAcquireClientPort = static_cast<unsigned short>(atoi(element->GetText()));
+			localLineDetData.nAcquireClientPort = unsigned short(atoi(element->GetText()));
 		else if (strcmp(element->Value(), "SourceDetectorDistance") == 0)
 			localLineDetData.SourceDetectorDistance = atof(element->GetText());
+		else if (strcmp(element->Value(), "StandartInterpolationFlag") == 0)
+			localLineDetData.StandartInterpolationFlag = atoi(element->GetText());
+		else if (strcmp(element->Value(), "PhysicsInterpolationFlag") == 0)
+			localLineDetData.PhysicsInterpolationFlag = atoi(element->GetText());
 	}
 
 	d_setupData->lineDetData.push_back(localLineDetData);

@@ -17,10 +17,10 @@ SimotionController::SimotionController() : d_bytesReceived(0) , d_netWorkBuffer(
 	, d_threadRun(true)
 	, d_server
 	(
-		//new TcpServer(sizeof(tagCOMM_PACKET1), 2, 4
-		//	, [this](SOCKET in_sock) { return initialSend(in_sock); }
-		//	, [this](char* in_data, int in_lenth) { pocessData(in_data, in_lenth); }
-		//	, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), d_port)
+		new TcpServer(sizeof(tagCOMM_PACKET1), 2, 4
+			, [this](SOCKET in_sock) { return initialSend(in_sock); }
+			, [this](char* in_data, int in_lenth) { pocessData(in_data, in_lenth); }
+			, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), d_port)
 	)
 {
 	auto intervel = std::chrono::milliseconds(100);
@@ -73,7 +73,7 @@ bool SimotionController::getConnected()
 
 bool SimotionController::checkReadyToScan()
 {
-	return d_ready && !d_run;
+	return d_ready && d_idle;
 }
 
 template<typename T1, typename T2>
@@ -121,9 +121,9 @@ bool SimotionController::readWaitNextScanStatus()
 	return d_waitNextScan = d_sysStatus.s.waitNextScan;
 }
 
-bool SimotionController::readRunStatus()
+bool SimotionController::readIdleStatus()
 {
-	return d_run = !d_sysStatus.s.idle;
+	return d_idle = d_sysStatus.s.idle;
 }
 
 std::map<Axis, float> SimotionController::readAxisSpeed()

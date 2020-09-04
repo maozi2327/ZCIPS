@@ -6,6 +6,18 @@
 #include "../Public/util/functions.h"
 #include "controllerinterface.h"
 
+LineDetAirTune::LineDetAirTune(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWork,
+	const SetupData* in_setupData, int in_lineDetIndex)
+	: LineDetScanInterface(in_controller, in_lineDetNetWork, in_setupData, in_lineDetIndex)
+{
+
+}
+
+LineDetAirTune::~LineDetAirTune()
+{
+
+}
+
 bool LineDetAirTune::setGenerialFileHeader()
 {
 	LineDetScanInterface::setGenerialFileHeader();
@@ -66,24 +78,13 @@ void LineDetAirTune::scanThread()
 	}
 }
 
-
-
 void LineDetAirTune::saveFile()
 {
 	saveOrgFile(d_lineDetNetWork->getRowList());
 	d_lineDetImageProcess->createBkgDat(d_fileName, d_installDirectory);
 }
 
-LineDetAirTune::LineDetAirTune(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWor) : LineDetScanInterface(in_controller, in_lineDetNetWor)
-{
 
-}
-
-
-LineDetAirTune::~LineDetAirTune()
-{
-
-}
 
 bool LineDetAirTune::checkScanAble()
 {

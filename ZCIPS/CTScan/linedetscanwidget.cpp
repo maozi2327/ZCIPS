@@ -68,6 +68,23 @@ void LineDetScanWidget::contextMenuEvent(QContextMenuEvent * event)
 	menu.exec(event->globalPos());
 }
 
+//void LineDetScanWidget::keyPressEvent(QKeyEvent * in_event)
+//{
+//	switch (in_event->key())
+//	{
+//	case Qt::Key_Return:
+//		QString valueText = ui.ct3LayerPosLineEdit->text();
+//		bool succeed = false;
+//		auto value = valueText.toDouble(&succeed);
+//
+//		if (!succeed)
+//			return;
+//		
+//		d_controller->sliceMove(value);
+//		break;
+//	}
+//}
+
 void LineDetScanWidget::disableAllControls()
 {
 
@@ -159,7 +176,7 @@ void LineDetScanWidget::on_Ct3StartButton_clicked()
 	int view = ui.ct3ViewComboBox->currentText().toInt();
 	int sampleTime = ui.ct3SampleTimeComboBox->currentText().toInt();
 	float angle = ui.ct3AngleLineEdit->text().toFloat();
-	d_scan.reset(new CT3Scan(d_controller, d_lineDetNetWork, d_setupData->ct3Data[d_rayNum, d_detNum]));
+	d_scan.reset(new CT3Scan(d_controller, d_lineDetNetWork, d_setupData, d_detNum));
 	
 	if (!dynamic_cast<CT3Scan*>(d_scan.get())
 		->setScanParameter(layer, matrix, view, sampleTime, angle))
@@ -205,8 +222,23 @@ void LineDetScanWidget::on_ct3MultiLayerComboBox_currentIndexChanged(const QStri
 
 void LineDetScanWidget::on_ct3LayerPosLineEdit_returnd()
 {
-	QString value;
-	ui.ct3LayerPosListWidget->addItem(QString::number(ui.ct3LayerPosLineEdit->text().toFloat(), 10, 1));
+
+	QString valueText = ui.ct3LayerPosLineEdit->text();
+	bool succeed = false;
+	auto value = valueText.toDouble(&succeed);
+
+	if (!succeed)
+		return;
+
+	d_controller->sliceMove(value);
+
+	//QString value;
+	//ui.ct3LayerPosListWidget->addItem(QString::number(ui.ct3LayerPosLineEdit->text().toFloat(), 10, 1));
+}
+
+void LineDetScanWidget::on_stopButton_clicked()
+{
+	d_controller->stopAll();
 }
 
 void LineDetScanWidget::showMotorTable()

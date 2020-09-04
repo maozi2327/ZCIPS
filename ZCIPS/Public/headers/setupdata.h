@@ -291,7 +291,8 @@ struct LineDetData
 	char	szAcquireClientIP[32];							//采集客户端IP地址
 	unsigned short nAcquireClientPort;						//采集客户端端口地址
 	float	SourceDetectorDistance;							//射线源探测器距离
-															
+	unsigned char StandartInterpolationFlag;				//标准插值+1插值标志
+	unsigned char PhysicsInterpolationFlag;					//物理插值模拟插值标志
 };
 struct PanDetData
 {
@@ -321,7 +322,7 @@ struct CT3Data
 	std::vector<unsigned short> View;
 	std::vector<unsigned short> Matrix;
 	std::vector<unsigned short> SampleTime;
-	unsigned char ct3InterpolationFlag;
+	unsigned char ct3InterpolationFlag;			 //0，标准插值；1，插值次数加1
 };
 struct DrScanData
 {

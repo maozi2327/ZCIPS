@@ -16,10 +16,10 @@
 			<IntegralTime>20</IntegralTime>
 			<DelayTime>10</DelayTime>
 			<nFIFOdepth>64</nFIFOdepth>
-			<nChnnelMask>1111 1111 11</nChnnelMask>
+			<nChnnelMask>1111 1</nChnnelMask>
 			<HorizontalSectorAngle>36.48</HorizontalSectorAngle>
 			<HorizontalDetectorAngle>0.06</HorizontalDetectorAngle>
-			<nBlockMapTable>76,77,78,79</nBlockMapTable>
+			<nBlockMapTable>0,1</nBlockMapTable>
 			<IpAddress>192.168.2.120</IpAddress>
 			<nAcquireClientPort>4000</nAcquireClientPort>
 			<SourceDetectorDistance>1454</SourceDetectorDistance>

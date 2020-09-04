@@ -31,10 +31,13 @@ protected:
 	float d_SDD;
 	float d_colimateSize;
 	float d_layerThickness;
-	float d_sampleTime;
 	float d_viewDiameter;
-	bool d_standardInterpolation;
+	float d_layer;
+	float d_angle;
 	int d_matrix;
+	float d_view;
+	int d_sampleTime;
+	int d_channelNum;
 
 	std::chrono::steady_clock::time_point d_start_time;
 	LineDetNetWork* d_lineDetNetWork;
@@ -42,7 +45,7 @@ protected:
 	ControllerInterface* d_controller;
 	std::unique_ptr<Thread> d_scanThread;
 	RayType d_rayType;
-	SetupData* d_setupData;
+	const SetupData* d_setupData;
 	static ICT_HEADER23 d_ictHeader;
 	virtual void scanThread() = 0;
 	void saveOrgFile(LineDetList* in_list);
@@ -55,7 +58,8 @@ signals:
 	void signalGraduationCount(int in_count);
 	LOGSIGNAL
 public:
-	LineDetScanInterface(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWork);
+	LineDetScanInterface(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWork, 
+		const SetupData* in_setupData, int in_lineDetIndex);
 	virtual ~LineDetScanInterface();
 	void setFileName(QString& in_fileName, QString& in_orgPth, QString& in_filePth) { d_fileName = in_fileName; };
 	virtual bool beginScan() = 0;

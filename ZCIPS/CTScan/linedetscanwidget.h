@@ -26,6 +26,8 @@ public:
 protected:
 #ifndef QT_NO_CONTEXTMENU
 	void contextMenuEvent(QContextMenuEvent *event) override;
+
+	//void keyPressEvent(QKeyEvent * in_event);
 #endif // QT_NO_CONTEXTMENU
 private:
 	Ui::LineDetScanWidget ui;
@@ -49,4 +51,5 @@ private slots:
 	void on_saveDirButton_clicked();
 	void on_ct3MultiLayerComboBox_currentIndexChanged(const QString& in_text);
 	void on_ct3LayerPosLineEdit_returnd();
+	void on_stopButton_clicked();
 };

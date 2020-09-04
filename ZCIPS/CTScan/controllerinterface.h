@@ -36,7 +36,7 @@ public:
 	virtual bool readReadyStatus() = 0;
 	virtual bool readSaveStatus() = 0;
 	virtual bool readWaitNextScanStatus() = 0;
-	virtual bool readRunStatus() = 0;
+	virtual bool readIdleStatus() = 0;
 	virtual std::map<Axis, float> readAxisSpeed() = 0;
 	virtual float readAxisPostion(Axis in_axis) = 0;
 	virtual std::map<Axis, float> readAxisPostion() = 0;

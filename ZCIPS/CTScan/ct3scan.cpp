@@ -14,11 +14,11 @@
 
 std::chrono::minutes CT3Scan::d_intervalForSaveTempFile = std::chrono::minutes(3);
 
-CT3Scan::CT3Scan(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWork, 
-	CT3Data& in_data) : LineDetScanInterface(in_controller, in_lineDetNetWork)
-	, d_ct3Data(in_data)
+CT3Scan::CT3Scan(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWork,
+	const SetupData* in_setupData, int in_lineDetIndex)
+	: LineDetScanInterface(in_controller, in_lineDetNetWork, in_setupData, in_lineDetIndex)
 {
-	;
+	
 }
 
 CT3Scan::~CT3Scan()
@@ -94,14 +94,16 @@ void CT3Scan::sendCmdToControl()
 	char buf[RTBUF_LEN];
 	CT23ScanCmdData	cmdData, *pCmdData;
 	cmdData.stsBit.s.changeLayerSpace = 0;
-	cmdData.stsBit.s.czAmountInc1 = d_ictHeader.ScanParameter.InterpolationFlag;
+	cmdData.stsBit.s.czAmountInc1 = d_ictHeader.ScanParameter.InterpolationFlag 
+		= d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
 	cmdData.stsBit.s.currentLayer = 0;
-	cmdData.stsBit.s1.physiInterpolation = d_setupData->interpolationModeDefine;
+	cmdData.stsBit.s1.physiInterpolation = d_setupData->lineDetData[d_lineDetIndex].PhysicsInterpolationFlag;
 	cmdData.stsBit.s.thirdGeneration = 1;
 	cmdData.interpolationAmount = (BYTE)d_ictHeader.ScanParameter.NumberOfInterpolation;
-	cmdData.projectionAmount = d_ictHeader.ScanParameter.Pixels;
-	cmdData.sampleTime = (WORD)(1000 * d_ictHeader.ScanParameter.SampleTime);
-	cmdData.viewDiameter = d_ictHeader.ScanParameter.ViewDiameter;
+	cmdData.projectionAmount = d_ictHeader.ScanParameter.Pixels = d_matrix;
+	d_ictHeader.ScanParameter.SampleTime = float(d_sampleTime / 1000);
+	cmdData.sampleTime = d_sampleTime;
+	cmdData.viewDiameter = d_ictHeader.ScanParameter.ViewDiameter = d_view;
 	cmdData.orientInc = (short)d_ictHeader.ScanParameter.Azimuth;
 	cmdData.ct2Mode = 0;
 	cmdData.sliceAmount = d_ictHeader.ScanParameter.TotalLayers;
@@ -159,11 +161,6 @@ bool CT3Scan::beginScan()
 		return false;
 }
 
-CT3Data CT3Scan::getData()
-{
-	return d_ct3Data;
-}
-
 bool CT3Scan::setGenerialFileHeader()
 {
 	LineDetScanInterface::setGenerialFileHeader();
@@ -172,8 +169,7 @@ bool CT3Scan::setGenerialFileHeader()
 	d_ictHeader.ScanParameter.ScanMode = static_cast<char>(ScanMode::CT3_SCAN);
 	d_ictHeader.ScanParameter.NumberOfGraduation = d_matrix;
 	d_ictHeader.ScanParameter.Azimuth = d_angle;
-	d_ictHeader.ScanParameter.NumberofValidVerticalDetector =
-		d_setupData->lineDetData[d_lineDetIndex].NumberOfSystemHorizontalDetector;
+	d_ictHeader.ScanParameter.NumberofValidVerticalDetector = d_channelNum;
 	//对无关参数设置默认值
 	d_ictHeader.ScanParameter.RadialDistanceInLocal = 0;
 	d_ictHeader.ScanParameter.AngleInLocal = 0;
@@ -193,8 +189,9 @@ bool CT3Scan::setGenerialFileHeader()
 	d_ictHeader.ScanParameter.GraduationDirection = P_DIR;
 	d_ictHeader.ScanParameter.DelaminationMode = 0;
 	CalculateView_ValidDetector(d_view);
-	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->ct3InterpolationFlag;
-	d_ictHeader.ScanParameter.NumberOfInterpolation = (float)d_matrix / d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector + 1;
+	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
+	d_ictHeader.ScanParameter.NumberOfInterpolation = 
+		(float)d_matrix / d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector + 1;
 	int N = d_ictHeader.ScanParameter.NumberOfSystemHorizontalDetector;
 	float d = PI * d_ictHeader.ScanParameter.HorizontalSectorAngle / (180 * (N - 1));
 	d *= d_ictHeader.ScanParameter.SourceDetectorDistance;
@@ -202,7 +199,7 @@ bool CT3Scan::setGenerialFileHeader()
 
 	if ((d / N < d_setupData->minInterpolationSpace) || (N > 80)) 
 	{
-		//LOG_WARNING("插值次数太多！视场直径%.0f, 图像矩阵%d", d_view, d_matrix);
+		LOG_ERROR("插值次数太多！视场直径%.0f, 图像矩阵%d", d_view, d_matrix);
 		return false;
 	}
 

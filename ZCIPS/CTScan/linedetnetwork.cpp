@@ -3,11 +3,12 @@
 #include "../Public/util/tcpserver.h"
 #include <chrono>
 #include <algorithm>
+#include <vector>
 
 static in_addr hostAddr;
 
 LineDetNetWork::LineDetNetWork(unsigned short in_port, unsigned short in_fifoMask, unsigned short in_channelDepth, unsigned short in_delayTime,
-	unsigned short in_intTime, unsigned short in_ampSize)
+	unsigned short in_intTime, unsigned short in_ampSize, std::vector<unsigned int> in_blockModuleVec)
 	: d_server(
 		new TcpServer(4, 4, 0
 		, [this](SOCKET in_sock){ return setParameterAfterConnect(in_sock); }
@@ -15,17 +16,21 @@ LineDetNetWork::LineDetNetWork(unsigned short in_port, unsigned short in_fifoMas
 		, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), 4000))
 	, d_fifoMask(in_fifoMask), d_channelDepth(in_channelDepth)
 	, d_delayTime(in_delayTime), d_intTime(in_intTime), d_ampSize(in_ampSize)
-	, d_netWorkBuffer(new char[2u << 12]), d_bytesReceived(0), d_smallBoardNum(0)
+	, d_netWorkBuffer(new char[2u << 12]), d_bytesReceived(0), d_blockModuleMap(in_blockModuleVec)
 {
 	d_timer = new QTimer(this);
 	d_timer->start(1000);
 	connect(d_timer, &QTimer::timeout, this, &LineDetNetWork::updateNetStatusTimerSlot);
+	auto tempMask = d_fifoMask;
+	d_smallBoardNum = 0;
 
-	while (d_fifoMask)
+	while (tempMask)
 	{
-		d_fifoMask &= (d_fifoMask - 1);
+		tempMask &= (tempMask - 1);
 		++d_smallBoardNum;
 	}
+
+	d_channelNum = (d_smallBoardNum * 8 - d_blockModuleMap.size()) * 8;
 	d_dataSizePerPulse = sizeof(int) * (d_smallBoardNum * (d_channelDepth + 3) + 1);
 }
 
@@ -63,33 +68,14 @@ bool LineDetNetWork::setParameterAfterConnect(SOCKET in_sock)
 		if (!ChannelSelect()) return false;
 		if (!ChannelDepthSet()) return false;
 		if (!StartCI()) return false;
-		//if (!DetectorTest()) return false;
+		if (!DetectorTest()) return false;
 		if (!SetDelayTime(d_delayTime)) return false;
 		if (!SetIntTime(d_intTime)) return false;
 		if (!SetAmpSize(d_ampSize)) return false;
-		//if (ARMTest() && ChannelSelect() && ChannelDepthSet() && StartCI() && DetectorTest() &&
-		//	SetDelayTime(d_delayTime) && SetIntTime(d_intTime) && SetAmpSize(d_ampSize))
-		//	d_detInitSucceed = true;
-		//
-		//d_detInitSucceed = false;
+
+		return true;
 	}).detach();
 
-	return true;
-	//if(
-	//	(setsockopt(in_sock, IPPROTO_TCP, TCP_NODELAY, nullptr, sizeof(int)) != SOCKET_ERROR) &&
-	//	(setsockopt(in_sock, SOL_SOCKET, SO_RCVBUF, nullptr, sizeof(int)) != SOCKET_ERROR) &&
-	//	(setsockopt(in_sock, SOL_SOCKET, SO_SNDBUF, nullptr, sizeof(int)) != SOCKET_ERROR) &&
-	//	ARMTest() &&
-	//	ChannelSelect() && 
-	//	ChannelDepthSet() && 
-	//	StartCI() && 
-	//	DetectorTest() && 
-	//	SetDelayTime(d_delayTime) && 
-	//	SetIntTime(d_intTime) && 
-	//	SetAmpSize(d_ampSize)
-	//)
-	//	return true;
-	
 	return true;
 }
 
@@ -165,7 +151,7 @@ bool LineDetNetWork::ARMTest()
 	cmdInfo.respond_type = 1;
 	d_recvType = CMD;
 
-	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)) > 0)
 		return GetResult(d_cmdType, CMD_ARM_TEST, d_con, d_mutex);
 
 	return false;
@@ -232,7 +218,7 @@ bool LineDetNetWork::DetectorTest()
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 	
-	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, sizeof(int) * (d_smallBoardNum * (d_channelDepth + 3) + 1), d_con, d_mutex);
 
 	return false;
@@ -248,7 +234,7 @@ bool LineDetNetWork::SetAmpSize(int in_ampSize)
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
-	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
@@ -264,7 +250,7 @@ bool LineDetNetWork::SetIntTime(int in_intTime)
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
-	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
@@ -279,7 +265,7 @@ bool LineDetNetWork::SetDelayTime(int in_delayTime)
 	cmdInfo.respond_type = 1;
 	d_recvType = PARAMETER;
 	d_dataList.clear();
-	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
@@ -295,7 +281,7 @@ bool LineDetNetWork::ReadAmpSize()
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
-	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
@@ -311,7 +297,7 @@ bool LineDetNetWork::ReadIntTime()
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
-	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
@@ -327,7 +313,7 @@ bool LineDetNetWork::ReadDelayTime()
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
-	if(d_server->sendAsyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
@@ -410,20 +396,25 @@ int LineDetNetWork::CollectUsefulData(char * in_buff, int in_size)
 				, smallBS);
 		}
 
-		unsigned long* dataHead = item + 2;
 		int nonBlockDataIndex = 0;
 		memcpy(item, in_buff, 2 * sizeof(unsigned int));
+		unsigned long* dataHead = item + 2;
+		auto moduleDataSize = 8 * sizeof(unsigned int);
+		auto virtualModuleNum = d_smallBoardNum * 8;
+		int before = -1, end = virtualModuleNum, dataCopied = 0;
 
-		for(auto& moduleIndex : d_nonBlockModuleMap )
+		for (auto& blockIndex : d_blockModuleMap)
 		{
-			memcpy(dataHead + nonBlockDataIndex * smallBS, in_buff + moduleIndex * smallBS, smallBS);
-			++nonBlockDataIndex;
+			auto copyModuleNum = blockIndex - before - 1;
+			memcpy((char*)(dataHead) + dataCopied, in_buff + (before + 1) * moduleDataSize, copyModuleNum * moduleDataSize);
+			dataCopied += copyModuleNum * moduleDataSize;
+			before = blockIndex;
 		}
-
+		
+		memcpy((char*)(dataHead)+dataCopied, in_buff + (before + 1) * moduleDataSize, (end - before -1) * moduleDataSize);
 		d_dataList.push_back(item);
 	}
 
-	delete[] in_buff;
 	return in_size;
 }
 

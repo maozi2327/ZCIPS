@@ -39,16 +39,20 @@ CTScan::CTScan(QWidget *parent)
 		, this, &CTScan::controllerNetWorkStsSlot, Qt::QueuedConnection);
 	d_tray = new QSystemTrayIcon(this);
 	d_tray->setIcon(QIcon(":/images/ico.png"));
-
 	connect(d_tray,&QSystemTrayIcon::activated, this, &CTScan::on_activatedSysTrayIcon);
 
 	for (int i = 0; i != d_setupData->lineDetNum; ++i)
 	{
+		int blockModuleIndex = 0;
+		std::vector<unsigned int> blockModuleVec;
+
+		while (d_setupData.get()->lineDetData[i].nBlockMapTable[blockModuleIndex] != -1)
+			blockModuleVec.push_back(d_setupData.get()->lineDetData[i].nBlockMapTable[blockModuleIndex++]);
+
 		std::unique_ptr<LineDetNetWork> ptr(new LineDetNetWork(d_setupData->lineDetData[i].nAcquireClientPort,
 			d_setupData.get()->lineDetData[i].nChnnelMask, d_setupData.get()->lineDetData[i].nFIFOdepth, 
 			d_setupData.get()->lineDetData[i].DelayTime, d_setupData.get()->lineDetData[i].IntegralTime, 
-			d_setupData.get()->lineDetData[i].AmplifyMultiple));
-
+			d_setupData.get()->lineDetData[i].AmplifyMultiple, blockModuleVec));
 		d_lineDetNetWorkMap.insert({ d_setupData->lineDetData[i].ID,  std::move(ptr) });
 	}
 
@@ -95,7 +99,7 @@ CTScan::CTScan(QWidget *parent)
 	ui.scanTable->setLayout(layout);
 	//添加layout使位于中间
 	QGridLayout* layout1 = new QGridLayout;
-	d_motorWidget.reset(new MotorWidget(nullptr));
+	d_motorWidget.reset(new MotorWidget(d_controller.get(), nullptr));
 	layout1->addWidget(d_motorWidget.get(), 0, 0);
 	//auto size = d_motorWidget->sizeHint();
 	//auto width = d_motorWidget->width();

@@ -8,8 +8,10 @@
 #include <algorithm>
 
 ICT_HEADER23 LineDetScanInterface::d_ictHeader;
-LineDetScanInterface::LineDetScanInterface(ControllerInterface * in_controller, LineDetNetWork* in_lineDetNetWork)
-	: d_controller(in_controller), d_lineDetNetWork(in_lineDetNetWork)
+LineDetScanInterface::LineDetScanInterface(ControllerInterface * in_controller, LineDetNetWork* in_lineDetNetWork,
+	const SetupData* in_setupData, int in_lineDetIndex)
+	: d_controller(in_controller), d_lineDetNetWork(in_lineDetNetWork), d_setupData(in_setupData)
+	, d_lineDetIndex(in_lineDetIndex)
 {
 
 }
@@ -107,7 +109,7 @@ void LineDetScanInterface::CalculateView_ValidDetector(float in_diameter)
 	int leftMiddle = d_ictHeader.ScanParameter.SerialNo1OfMiddleHorizontalDetector;
 	int rightMiddle = d_ictHeader.ScanParameter.SerialNo2OfMiddleHorizontalDetector;
 
-	if (d_standardInterpolation)		//确定3代扫描有效探测器数Nv
+	if (d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag)		//确定3代扫描有效探测器数Nv
 	{
 		int	Nv;
 
@@ -153,7 +155,7 @@ bool LineDetScanInterface::canScan()
 	if (!d_controller->readReadyStatus())
 		return false;
 
-	if (!d_controller->readRunStatus())
+	if (!d_controller->readIdleStatus())
 		return false;
 
 	return true;

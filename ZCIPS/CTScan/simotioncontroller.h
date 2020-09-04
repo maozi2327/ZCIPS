@@ -101,7 +101,7 @@ private:
 	bool d_save;
 	bool d_ready;
 	bool d_waitNextScan;
-	bool d_run;
+	bool d_idle;
 	bool d_threadRun;
 
 	char* d_netWorkBuffer;
@@ -130,7 +130,7 @@ public:
 	virtual bool readReadyStatus();
 	virtual bool readSaveStatus();
 	virtual bool readWaitNextScanStatus();
-	virtual bool readRunStatus();
+	virtual bool readIdleStatus();
 	virtual std::map<Axis, float> readAxisSpeed();
 	virtual float readAxisPostion(Axis in_axis);
 	virtual std::map<Axis, float> readAxisPostion();

@@ -50,10 +50,31 @@ bool TcpServer::sendAsyn(const char* in_buffer, int in_size)
 	d_sendQueue.push(cmd);
 	return true;
 }
+
+//TODO_DJ
+//修改数据发送
+//TODO_DJ
 int TcpServer::sendSyn(const char* in_buffer, int in_size)
 {
-	if(d_connected)
-		return send(d_client, in_buffer, in_size, NULL);
+	int bytesSend = 0;
+
+	if (d_connected)
+	{
+		while (bytesSend != in_size)
+		{
+			int count = 0;
+
+			if ((count = send(d_client, in_buffer + bytesSend, in_size - bytesSend, NULL)) == SOCKET_ERROR)
+			{
+				d_connected = false;
+				break;
+			}
+
+			bytesSend += count;
+		}
+
+		return bytesSend;
+	}
 
 	return -1;
 }
@@ -124,11 +145,7 @@ void TcpServer::sendThread(std::promise<bool>& in_promise)
 				continue;
 
 			d_connected = true;
-
-			if (!d_sendInitiliseCallBack(d_client))
-			{
-				continue;
-			}
+			d_sendInitiliseCallBack(d_client);
 
 			while (d_connected)
 			{

@@ -10,7 +10,8 @@ protected:
 	virtual void sendCmdToControl();
 	virtual bool checkScanAble();
 public:
-	LineDetAirTune(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWor);
+	LineDetAirTune(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWor,
+		const SetupData* in_setupData, int in_lineDetIndex);
 	~LineDetAirTune();
 	virtual bool startScan();
 	virtual void stopScan();
