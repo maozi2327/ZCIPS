@@ -3,7 +3,7 @@
 
 
 ControllerInterface::ControllerInterface() 
-	: d_timeout(std::chrono::milliseconds(0)), d_connected(true)
+	: d_timeoutCount(0), d_connected(true)
 {
 
 }

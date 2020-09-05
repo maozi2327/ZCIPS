@@ -21,7 +21,7 @@ protected:
 	QString d_orgPath;
 	QString d_filePath;
 	QString d_installDirectory;
-	bool d_threadRun;
+	std::atomic<bool> d_deadThreadRun;
 
 	int	d_AccIndex;
 	int d_accFrecIndex;

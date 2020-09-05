@@ -246,9 +246,9 @@ bool ConeScanInterface::beginScan()
 		return false;
 
 	sendCmdToController();
-	d_scanThread.reset(new Thread(std::bind(&ConeScanInterface::scanThread, this), std::ref(d_scanThreadRun)));
+	d_scanThread.reset(new Thread(std::bind(&ConeScanInterface::scanThread, this), std::ref(d_deadThreadRun)));
 	d_scanThread->detach();
-	d_imageProcessThread.reset(new Thread(std::bind(&ConeScanInterface::imageProcessThread, this), std::ref(d_imageProcessThreadRun)));
+	d_imageProcessThread.reset(new Thread(std::bind(&ConeScanInterface::imageProcessThread, this), std::ref(d_deadThreadRun)));
 	d_scanThread->detach();
 	std::function<void(unsigned short *)> frameCallback = std::bind(&ConeScanInterface::frameProcessCallback, this, std::placeholders::_1);
 	d_panel->setFrameCallback(frameCallback);

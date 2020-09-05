@@ -36,6 +36,7 @@ private:
 	SetupData* d_setupData;
 	LineDetNetWork* d_lineDetNetWork;
 	ControllerInterface* d_controller;
+	QTimer* d_timer;
 	unsigned short d_rayNum;
 	unsigned short d_detNum;
 	void disableAllControls();
@@ -52,4 +53,5 @@ private slots:
 	void on_ct3MultiLayerComboBox_currentIndexChanged(const QString& in_text);
 	void on_ct3LayerPosLineEdit_returnd();
 	void on_stopButton_clicked();
+	void updateControlsSlot();
 };

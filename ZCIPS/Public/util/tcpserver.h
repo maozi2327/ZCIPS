@@ -16,7 +16,7 @@ public:
 	int sendSyn(const char* in_buffer, int in_size);
 	bool receive(char* in_buffer, int in_size);
 	bool getConnected();
-
+	void reAccept();
 private:
 	struct command
 	{
@@ -45,5 +45,6 @@ private:
 	void sendThread(std::promise<bool>& in_promise);
 	std::unique_ptr<std::promise<bool>> d_sendThreadPromisePtr;
 	bool d_isSendRunning;
+	bool d_readyToAccept;
 };
 

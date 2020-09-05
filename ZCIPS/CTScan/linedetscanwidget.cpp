@@ -7,9 +7,9 @@
 #include "ct3scan.h"
 
 LineDetScanWidget::LineDetScanWidget(MotorControlWidget* in_motorControl, int in_rayId, int in_lineDetId, 
-	const	std::vector<ScanMode>& in_scanMode, SetupData* in_setupData, 
+	const std::vector<ScanMode>& in_scanMode, SetupData* in_setupData, 
 	LineDetNetWork* in_lineDetNetWork, ControllerInterface* in_controller, QWidget *parent)
-: QWidget(parent), d_motorControlDialog(in_motorControl)
+	: QWidget(parent), d_motorControlDialog(in_motorControl)
 	, d_rayNum(in_rayId), d_detNum(in_lineDetId)
 	, d_setupData(in_setupData), d_lineDetNetWork(in_lineDetNetWork), d_controller(in_controller)
 {
@@ -45,6 +45,9 @@ LineDetScanWidget::LineDetScanWidget(MotorControlWidget* in_motorControl, int in
 	}
 
 	connect(ui.ct3LayerPosLineEdit, &QLineEdit::returnPressed, this, &LineDetScanWidget::on_ct3LayerPosLineEdit_returnd);
+	d_timer = new QTimer();
+	d_timer->start(1000);
+	connect(d_timer, &QTimer::timeout, this, &LineDetScanWidget::updateControlsSlot);
 }
 
 LineDetScanWidget::~LineDetScanWidget()
@@ -222,7 +225,6 @@ void LineDetScanWidget::on_ct3MultiLayerComboBox_currentIndexChanged(const QStri
 
 void LineDetScanWidget::on_ct3LayerPosLineEdit_returnd()
 {
-
 	QString valueText = ui.ct3LayerPosLineEdit->text();
 	bool succeed = false;
 	auto value = valueText.toDouble(&succeed);
@@ -231,14 +233,18 @@ void LineDetScanWidget::on_ct3LayerPosLineEdit_returnd()
 		return;
 
 	d_controller->sliceMove(value);
-
-	//QString value;
-	//ui.ct3LayerPosListWidget->addItem(QString::number(ui.ct3LayerPosLineEdit->text().toFloat(), 10, 1));
 }
 
 void LineDetScanWidget::on_stopButton_clicked()
 {
 	d_controller->stopAll();
+}
+
+void LineDetScanWidget::updateControlsSlot()
+{
+	bool readToScan = d_controller->readIdleStatus() && d_controller->readReadyStatus()
+		&& d_lineDetNetWork->getConnected();
+	ui.Ct3StartButton->setEnabled(readToScan);
 }
 
 void LineDetScanWidget::showMotorTable()

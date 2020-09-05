@@ -14,7 +14,8 @@ protected:
 	std::map<Axis, float> d_axisPosition;
 	std::map<Axis, float> d_axisWorkZero;
 	bool d_connected;
-	std::chrono::milliseconds d_timeout;
+	int d_timeoutCount;
+	QTimer* d_timer;
 	virtual void setConnectdSts() = 0;
 	virtual bool sendCmd() = 0;
 public:

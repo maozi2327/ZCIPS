@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "LineDetNetWork.h"
 #include "../Public/util/tcpserver.h"
+#include "../Public/util/thread.h"
 #include <chrono>
 #include <algorithm>
 #include <vector>
@@ -17,10 +18,8 @@ LineDetNetWork::LineDetNetWork(unsigned short in_port, unsigned short in_fifoMas
 	, d_fifoMask(in_fifoMask), d_channelDepth(in_channelDepth)
 	, d_delayTime(in_delayTime), d_intTime(in_intTime), d_ampSize(in_ampSize)
 	, d_netWorkBuffer(new char[2u << 12]), d_bytesReceived(0), d_blockModuleMap(in_blockModuleVec)
+	, d_isScanning(false)
 {
-	d_timer = new QTimer(this);
-	d_timer->start(1000);
-	connect(d_timer, &QTimer::timeout, this, &LineDetNetWork::updateNetStatusTimerSlot);
 	auto tempMask = d_fifoMask;
 	d_smallBoardNum = 0;
 
@@ -32,10 +31,32 @@ LineDetNetWork::LineDetNetWork(unsigned short in_port, unsigned short in_fifoMas
 
 	d_channelNum = (d_smallBoardNum * 8 - d_blockModuleMap.size()) * 8;
 	d_dataSizePerPulse = sizeof(int) * (d_smallBoardNum * (d_channelDepth + 3) + 1);
+	d_netWorkCheckThread.reset
+	(
+		new Thread
+		(
+			[=]()
+			{
+				while (d_deadThreadRunFlag)
+				{
+					if (d_server->getConnected() && !d_isScanning && !StartCI())
+					{
+						d_connected = false;
+						d_server->reAccept();
+					}
+
+					std::this_thread::sleep_for(std::chrono::seconds(3));
+				}
+			}
+			, d_deadThreadRunFlag
+		)
+	);	
+	d_netWorkCheckThread->detach();
 }
 
 LineDetNetWork::~LineDetNetWork()
 {
+	d_deadThreadRunFlag;
 	delete[] d_netWorkBuffer;
 }
 
@@ -46,7 +67,7 @@ void LineDetNetWork::netWorkStatusSlot(bool sts)
 
 bool LineDetNetWork::getConnected()
 {
-	return d_server->getConnected();
+	return d_connected = true;
 }
 
 bool LineDetNetWork::setParameterAfterConnect(SOCKET in_sock)
@@ -62,20 +83,16 @@ bool LineDetNetWork::setParameterAfterConnect(SOCKET in_sock)
 	if(setsockopt(in_sock, SOL_SOCKET, SO_SNDBUF, (char*)(&val), sizeof(int)) == SOCKET_ERROR)
 		return false;
 
-	std::thread([this]()
-	{
-		if (!ARMTest()) return false;
-		if (!ChannelSelect()) return false;
-		if (!ChannelDepthSet()) return false;
-		if (!StartCI()) return false;
-		if (!DetectorTest()) return false;
-		if (!SetDelayTime(d_delayTime)) return false;
-		if (!SetIntTime(d_intTime)) return false;
-		if (!SetAmpSize(d_ampSize)) return false;
+	if (!ARMTest()) return false;
+	if (!ChannelSelect()) return false;
+	if (!ChannelDepthSet()) return false;
+	if (!StartCI()) return false;
+	if (!DetectorTest()) return false;
+	if (!SetDelayTime(d_delayTime)) return false;
+	if (!SetIntTime(d_intTime)) return false;
+	if (!SetAmpSize(d_ampSize)) return false;
 
-		return true;
-	}).detach();
-
+	d_connected = true;
 	return true;
 }
 
@@ -106,14 +123,6 @@ void LineDetNetWork::pocessData(char * in_package, int in_size)
 		memmove(d_netWorkBuffer, d_netWorkBuffer + posecessedDataLenth, d_bytesReceived - posecessedDataLenth);
 		d_bytesReceived -= posecessedDataLenth;
 	}
-}
-
-void LineDetNetWork::updateNetStatusTimerSlot()
-{
-	if (++d_netWorkCounter > 3)
-		d_connected = false;
-	else
-		d_connected = true;
 }
 
 bool LineDetNetWork::recvServer_DATA()
@@ -335,9 +344,13 @@ bool LineDetNetWork::startExtTrigAcquire()
 	return false;
 }
 
+void LineDetNetWork::setCIFinished(bool in_finished)
+{
+	d_isScanning = in_finished;
+}
+
 void LineDetNetWork::DecodePackages(char * in_buff, int in_size)
 {
-	d_netWorkCounter = 0;
 	CMD_STRUCT cmdFeedback;
 
 	switch (d_recvType)

@@ -95,7 +95,7 @@ void TcpServer::recvThreadPacketHead(std::promise<bool>& in_promise)
 
 		while (d_connected)
 		{
-			auto ret = recv(d_client, buffer, 2u << 12, NULL);
+			int ret = recv(d_client, buffer, 2u << 12, NULL);
 
 			if (ret == SOCKET_ERROR)
 			{
@@ -116,6 +116,10 @@ void TcpServer::recvThreadPacketHead(std::promise<bool>& in_promise)
 bool TcpServer::getConnected()
 {
 	return d_connected;
+}
+void TcpServer::reAccept()
+{
+	d_connected = false;
 }
 void TcpServer::sendThread(std::promise<bool>& in_promise)
 {

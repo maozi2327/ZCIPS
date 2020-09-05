@@ -46,7 +46,7 @@ protected:
 	virtual void frameProcessCallback(unsigned short* in_image);
 	std::unique_ptr<Thread> d_scanThread;
 	virtual void scanThread() = 0;
-	bool d_scanThreadRun;
+	std::atomic<bool> d_deadThreadRun;
 	std::unique_ptr<Thread> d_imageProcessThread;
 	virtual void imageProcessThread();
 	bool d_imageProcessThreadRun;

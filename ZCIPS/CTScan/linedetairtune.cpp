@@ -63,7 +63,7 @@ void LineDetAirTune::sendCmdToControl()
 
 void LineDetAirTune::scanThread()
 {
-	while (d_threadRun)
+	while (d_deadThreadRun)
 	{
 		emit(signalGraduationCount(d_lineDetNetWork->getGraduationCount()));
 
@@ -71,7 +71,7 @@ void LineDetAirTune::scanThread()
 		{
 			saveFile();
 			stopScan();
-			d_threadRun = false;
+			break;
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -98,7 +98,7 @@ bool LineDetAirTune::startScan()
 
 	setGenerialFileHeader();
 	sendCmdToControl();
-	d_scanThread.reset(new Thread(std::bind(&LineDetAirTune::scanThread, this), std::ref(d_threadRun)));
+	d_scanThread.reset(new Thread(std::bind(&LineDetAirTune::scanThread, this), std::ref(d_deadThreadRun)));
 	d_scanThread->detach();
 	return true;
 }

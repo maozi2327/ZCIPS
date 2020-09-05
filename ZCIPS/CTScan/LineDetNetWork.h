@@ -5,6 +5,9 @@
 #include <mutex>
 #include <vector>
 #include <QTimer>
+#include "../Public/util/macro.h"
+
+class Thread;
 class TcpServer;
 #define	CTOSRTBUF_NUM	20						//定义接收/发送缓冲区个数
 #define	CTOSRTBUF_LEN	256						//定义接收/发送缓冲区长度
@@ -73,28 +76,40 @@ private:
 public:
 	RowList()
 	{
-		d_ptr = d_listHead = new LineDetList{nullptr, nullptr, nullptr};
+		d_ptr = d_listHead = 0;
 		d_size = 0;
 		d_graduationNum = 0;
 	}
+	RowList(const RowList&) = delete;
 	~RowList()
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
 		clear();
-		delete d_listHead;
 	}
 	void push_back(unsigned long* in_mem)
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
 
-		d_ptr->d_next = new LineDetList;
-		d_ptr->d_next->d_prev = d_ptr;
-		d_ptr = d_ptr->d_next;
-		d_ptr->d_item = in_mem;
-		d_ptr->d_next = nullptr;
-
-		if (d_ptr->d_prev->d_item!= nullptr && d_ptr->d_item[0] != d_ptr->d_prev->d_item[0])
+		if (d_size == 0)
+		{
+			d_ptr = new LineDetList;
+			d_listHead = d_ptr;
+			d_ptr->d_item = in_mem;
+			d_ptr->d_prev = 0;
+			d_ptr->d_next = 0;
 			++d_graduationNum;
+		}
+		else
+		{
+			d_ptr->d_next = new LineDetList;
+			d_ptr->d_next->d_prev = d_ptr;
+			d_ptr = d_ptr->d_next;
+			d_ptr->d_item = in_mem;
+			d_ptr->d_next = 0;
+
+			if (d_ptr->d_item[0] != d_ptr->d_prev->d_item[0])
+				++d_graduationNum;
+		}
 
 		++d_size;
 	}
@@ -103,12 +118,16 @@ public:
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
 
-		while(d_ptr != d_listHead)
-		{ 
-			auto temp = d_ptr;
-			delete[] d_ptr->d_item;
-			d_ptr = d_ptr->d_prev;
-			delete temp;
+		if (d_size == 0)
+			return;
+
+		auto ptr = d_listHead;
+
+		while (ptr != nullptr)
+		{
+			delete[] ptr->d_item;
+			ptr = ptr->d_next;
+			delete ptr->d_prev;
 		}
 
 		d_size = 0;
@@ -118,7 +137,7 @@ public:
 	LineDetList* getList()
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
-		return d_listHead->d_next;
+		return d_listHead;
 	}
 
 	int getListSize()
@@ -162,11 +181,12 @@ private:
 	bool setParameterAfterConnect(SOCKET in_sock);
 	void pocessData(char* in_package, int in_size);
 
-	int d_netWorkCounter;
+	bool d_isScanning;
+	std::atomic<bool> d_deadThreadRunFlag;
 
 	char* d_netWorkBuffer;
 	int d_bytesReceived;
-
+	std::unique_ptr<Thread> d_netWorkCheckThread;
 	//线阵探测器每次发送数据格式
 	//									数据长度|
 	//第一个大板子(分度号|脉冲号|64个通道|校验和)|第二个大板子|......|最后一个大板子|
@@ -177,7 +197,6 @@ private:
 
 public slots:
 	void netWorkStatusSlot(bool sts);
-	void updateNetStatusTimerSlot();
 signals:
 	void netWorkStatusSignal(bool sts);
 public:
@@ -197,6 +216,7 @@ public:
 	bool ReadIntTime();
 	bool ReadDelayTime();
 	bool startExtTrigAcquire();
+	void setCIFinished(bool in_finished);
 	void DecodePackages(char* in_buff, int in_size);
 
 	int getListItemSize();

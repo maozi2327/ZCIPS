@@ -61,7 +61,7 @@ void CT3Scan::scanThread()
 		static std::chrono::steady_clock::time_point last_time;
 		sendCmdToControl();
 
-		while (d_threadRun)
+		while (d_deadThreadRun)
 		{
 			auto now = std::chrono::steady_clock::now();
 
@@ -154,11 +154,12 @@ bool CT3Scan::beginScan()
 	if (canScan())
 	{
 		d_scanThread.reset(new Thread(std::bind(&CT3Scan::scanThread, this), 
-			std::ref(d_threadRun)));
-		return d_scanThread->detach();
+			std::ref(d_deadThreadRun)));
+		d_scanThread->detach();
+		return true;
 	}	
-	else
-		return false;
+		
+	return false;
 }
 
 bool CT3Scan::setGenerialFileHeader()
@@ -242,5 +243,6 @@ void CT3Scan::saveTempFile(LineDetList* in_listHead)
 
 void CT3Scan::stopScan()
 {
-	d_threadRun = false;
+	d_lineDetNetWork->setCIFinished(true);
+	d_scanThread->stopThread();
 }

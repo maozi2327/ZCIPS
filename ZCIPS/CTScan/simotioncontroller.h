@@ -83,8 +83,7 @@ struct tagCOMM_PACKET1
 	unsigned short tagLen;							//包长(=参数字节数+3, 实际命令数据包长度=包长+4)
 };
 
-class SimotionController :
-	public ControllerInterface, std::enable_shared_from_this<SimotionController>
+class SimotionController : public ControllerInterface
 {
 private:
 	std::unique_ptr<TcpServer> d_server;
@@ -112,6 +111,9 @@ protected:
 	virtual bool sendCmd();
 	virtual void setConnectdSts(); 
 	void pocessData(char* in_package, int in_size);
+	void reconnect();
+private slots:
+	void netCheckSlot();
 public:
 	SimotionController();
 	~SimotionController();

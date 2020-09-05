@@ -45,7 +45,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="bkgTuneButton">
        <property name="minimumSize">
         <size>
          <width>75</width>
@@ -64,7 +64,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="airTuneButton">
        <property name="minimumSize">
         <size>
          <width>75</width>
@@ -105,7 +105,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="ct3Tab">
       <attribute name="title">

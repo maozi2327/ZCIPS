@@ -1,10 +1,10 @@
 #pragma once
 
-#include <QStyle>
-#include <QSlider>
-#include <QStylePainter>
-#include <QStyleOptionSlider>
-#include <QAbstractSlider>
+//#include <QStyle>
+//#include <QSlider>
+//#include <QStylePainter>
+//#include <QStyleOptionSlider>
+//#include <QAbstractSlider>
 
 /******************************** √∂æŸ¿‡–Õ ***************************************/
 // ª¨øÈ
