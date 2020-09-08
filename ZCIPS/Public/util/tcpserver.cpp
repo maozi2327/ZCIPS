@@ -21,20 +21,23 @@ TcpServer::TcpServer(int in_packetHeadSize, int in_packetSizeLenth, int in_packe
 
 TcpServer::~TcpServer()
 {
-	d_isRecvRunning = false;
-	d_isSendRunning = false;
-	if (d_recvThreadPromisePtr)
-		d_recvThreadPromisePtr->get_future().get();
+	closesocket(d_server);
+	d_recvDeadThreadRun = false;
+	d_sendDeadThreadRun = false;
 
 	if (d_sendThreadPromisePtr)
 		d_sendThreadPromisePtr->get_future().get();
+
+	if (d_recvThreadPromisePtr)
+		d_recvThreadPromisePtr->get_future().get();
 }
 bool TcpServer::initialNetWorkForVariablePacketSize()
 {
-	d_isRecvRunning = true;
+	d_sendDeadThreadRun = true;
 	d_sendThreadPromisePtr.reset(new std::promise<bool>);
 	std::function<void()> sendThreadFun = std::bind(&TcpServer::sendThread, this, std::ref(*d_sendThreadPromisePtr));
 	std::thread(sendThreadFun).detach();
+	d_recvDeadThreadRun = true;
 	d_recvThreadPromisePtr.reset(new std::promise<bool>);
 	std::function<void()> recvThreadFun = std::bind(&TcpServer::recvThreadPacketHead, this, std::ref(*d_recvThreadPromisePtr));
 	std::thread(recvThreadFun).detach();
@@ -89,7 +92,7 @@ void TcpServer::recvThreadPacketHead(std::promise<bool>& in_promise)
 	in_promise.set_value_at_thread_exit(true);
 	char* buffer = new char[2u<<12];
 
-	while (d_isRecvRunning)
+	while (d_recvDeadThreadRun)
 	{
 		int byteRead = 0;
 
@@ -124,7 +127,8 @@ void TcpServer::reAccept()
 void TcpServer::sendThread(std::promise<bool>& in_promise)
 {
 	in_promise.set_value_at_thread_exit(true);
-	while (d_isSendRunning)
+
+	while (d_sendDeadThreadRun)
 	{
 		if((d_server = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == SOCKET_ERROR)
 			continue;
@@ -141,7 +145,7 @@ void TcpServer::sendThread(std::promise<bool>& in_promise)
 			continue;
 		}
 
-		while (d_isSendRunning)
+		while (d_sendDeadThreadRun)
 		{
 			sockaddr_in clientAddr;
 

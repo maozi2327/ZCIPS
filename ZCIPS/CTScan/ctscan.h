@@ -36,6 +36,7 @@ private slots:
 	void copy();
 	void paste();
 	void controllerNetWorkStsSlot(bool sts);
+	void lineDetNetWorkStsSlot(int in_det, bool sts);
 	void errorMsgSlot(QString msg);
 	void infoMsgSlot(QString msg);
 	void bugMsgSlot(QString msg);

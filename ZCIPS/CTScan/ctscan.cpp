@@ -45,15 +45,18 @@ CTScan::CTScan(QWidget *parent)
 	{
 		int blockModuleIndex = 0;
 		std::vector<unsigned int> blockModuleVec;
-
-		while (d_setupData.get()->lineDetData[i].nBlockMapTable[blockModuleIndex] != -1)
-			blockModuleVec.push_back(d_setupData.get()->lineDetData[i].nBlockMapTable[blockModuleIndex++]);
+		auto pSetupData = d_setupData.get();
+		
+		while (pSetupData->lineDetData[i].nBlockMapTable[blockModuleIndex] != -1)
+			blockModuleVec.push_back(pSetupData->lineDetData[i].nBlockMapTable[blockModuleIndex++]);
 
 		std::unique_ptr<LineDetNetWork> ptr(new LineDetNetWork(d_setupData->lineDetData[i].nAcquireClientPort,
-			d_setupData.get()->lineDetData[i].nChnnelMask, d_setupData.get()->lineDetData[i].nFIFOdepth, 
-			d_setupData.get()->lineDetData[i].DelayTime, d_setupData.get()->lineDetData[i].IntegralTime, 
-			d_setupData.get()->lineDetData[i].AmplifyMultiple, blockModuleVec));
+			pSetupData->lineDetData[i].nChnnelMask, pSetupData->lineDetData[i].nFIFOdepth, 
+			pSetupData->lineDetData[i].DelayTime, pSetupData->lineDetData[i].IntegralTime, 
+			pSetupData->lineDetData[i].AmplifyMultiple, blockModuleVec, pSetupData->lineDetData[i].ID));
 		d_lineDetNetWorkMap.insert({ d_setupData->lineDetData[i].ID,  std::move(ptr) });
+		connect(d_lineDetNetWorkMap[d_setupData->lineDetData[i].ID].get(), &LineDetNetWork::netWorkStatusSignal,
+			this, &CTScan::lineDetNetWorkStsSlot);
 	}
 
 	//查找同一种扫描方式有几种射线源和探测器组合，有几种就初始化几个线阵扫描和面阵扫描的widget
@@ -178,6 +181,11 @@ void CTScan::on_showMotorWidgetButton_clicked()
 void CTScan::controllerNetWorkStsSlot(bool sts)
 {
 
+}
+
+void CTScan::lineDetNetWorkStsSlot(int in_det, bool sts)
+{
+	d_controller->restartLineDet(in_det);
 }
 
 void CTScan::errorMsgSlot(QString msg)

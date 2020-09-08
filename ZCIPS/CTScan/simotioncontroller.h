@@ -7,6 +7,8 @@
 #include <mutex>
 #include "../Public/headers/ctrldata.h"
 #include "../Public/headers/list.h"
+#include <atomic>
+
 struct CommandType
 {
 	int d_cmd;
@@ -83,6 +85,7 @@ struct tagCOMM_PACKET1
 	unsigned short tagLen;							//包长(=参数字节数+3, 实际命令数据包长度=包长+4)
 };
 
+class Thread;
 class SimotionController : public ControllerInterface
 {
 private:
@@ -101,8 +104,8 @@ private:
 	bool d_ready;
 	bool d_waitNextScan;
 	bool d_idle;
-	bool d_threadRun;
-
+	std::atomic<bool> d_deadThreadRun;
+	std::unique_ptr<Thread> d_sendThread;
 	char* d_netWorkBuffer;
 	int d_bytesReceived;
 	void getAixsValueAndNotify(std::map<Axis, float>& in_value, char* in_data, int in_axisNum, int in_typeCode);
@@ -150,5 +153,6 @@ public:
 	
 	virtual void sendToControl(char* in_package, int in_size, bool in_consist = false);
 	virtual void decodePackages(char* in_package, int in_size);
+	virtual void restartLineDet(int in_detNum);
 };
 

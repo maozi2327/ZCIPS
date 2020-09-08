@@ -1,18 +1,19 @@
 #include "stdafx.h"
 #include "simotioncontroller.h"
 #include "../Public/headers/CtrlData.h"
+#include "../Public/util/thread.h"
 #include <memory>
 #include <thread>
 #include <algorithm>
 #include <functional>
 #include <chrono>
+#include <QTimer>
 
 const unsigned short SimotionController::d_port = 8000;
 const int SimotionController::d_packetSize = 256;
 static in_addr hostAddr;
 
 SimotionController::SimotionController() : d_bytesReceived(0) , d_netWorkBuffer(new char[1000])
-	, d_threadRun(true)
 	, d_server
 	(
 		new TcpServer(sizeof(tagCOMM_PACKET1), 2, 4
@@ -29,7 +30,9 @@ SimotionController::SimotionController() : d_bytesReceived(0) , d_netWorkBuffer(
 
 SimotionController::~SimotionController()
 {
-	d_threadRun = false;
+	if(d_sendThread)
+		d_sendThread->stopThread();
+
 	delete[] d_netWorkBuffer;
 }
 
@@ -105,12 +108,8 @@ bool SimotionController::initialSend(SOCKET in_sock)
 {
 	getSystemStatus();
 	getAxisPosition();
-	std::thread	( 
-		[this]()
-		{
-			sendCmd();
-		}
-	).detach();
+	d_sendThread.reset(new Thread([this](){ sendCmd(); }, d_deadThreadRun));
+	d_sendThread->detach();
 	return true;
 }
 
@@ -195,7 +194,7 @@ void SimotionController::fillInCmdStructAndFillCmdList(int in_cmd, char * in_dat
 
 bool SimotionController::sendCmd()
 {
-	while (d_threadRun)
+	while (d_deadThreadRun)
 	{
 		CommandType cmd(0);
 
@@ -339,6 +338,12 @@ void SimotionController::decodePackages(char* in_package, int in_size)
 	default:
 		break;
 	}
+}
+
+void SimotionController::restartLineDet(int in_detNum)
+{
+	char data = char(in_detNum);
+	fillInCmdStructAndFillCmdList(CMD_RESTART_DET, (char*)(&data), 1, true);
 }
 
 void SimotionController::getSystemStatus()

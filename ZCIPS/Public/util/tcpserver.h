@@ -40,11 +40,11 @@ private:
 	bool initialNetWorkForVariablePacketSize();
 	void recvThreadPacketHead(std::promise<bool>& in_promise);
 	std::unique_ptr<std::promise<bool>> d_recvThreadPromisePtr;
-	bool d_isRecvRunning;
+	std::atomic<bool> d_recvDeadThreadRun;
+	std::atomic<bool> d_sendDeadThreadRun;
 	bool d_connected;
 	void sendThread(std::promise<bool>& in_promise);
 	std::unique_ptr<std::promise<bool>> d_sendThreadPromisePtr;
-	bool d_isSendRunning;
 	bool d_readyToAccept;
 };
 

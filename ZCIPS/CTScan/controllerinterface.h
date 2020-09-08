@@ -4,6 +4,7 @@
 #include <chrono>
 #include <vector>
 #include <map>
+class QTimer;
 class ControllerInterface : public QObject
 {
 	Q_OBJECT
@@ -54,5 +55,6 @@ public:
 	virtual void setAxisWorkZero(std::map<Axis, float>& in_workZero) = 0;
 	virtual void sendToControl(char* in_package, int in_size, bool in_consist = false) = 0;
 	virtual void decodePackages(char* in_package, int in_size) = 0;
+	virtual void restartLineDet(int in_detNum) = 0;
 };
 

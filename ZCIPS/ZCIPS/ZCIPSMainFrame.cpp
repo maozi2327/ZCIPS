@@ -1191,9 +1191,7 @@ void ZCIPSMainFrame::InitialUI()
 	//数据库界面
 	DataBaseUIInit();
 
-
-	auto controlWidget = CtScanExport::loadCtScanWidget(ui.DeviceControlTab);
-
+	CtScanExport::loadCtScanWidget(ui.DeviceControlTab);
 }
 
 /**************************************************************

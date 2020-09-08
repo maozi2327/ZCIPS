@@ -83,7 +83,6 @@ public:
 	RowList(const RowList&) = delete;
 	~RowList()
 	{
-		std::lock_guard<std::mutex> lock(d_mutex);
 		clear();
 	}
 	void push_back(unsigned long* in_mem)
@@ -194,11 +193,9 @@ private:
 	//        ------------------------其他脉冲数据-----------------------------------
 	//        -----------------------最后一个脉冲数据-----------------------------------
 	std::vector<unsigned int> d_blockModuleMap;
-
-public slots:
-	void netWorkStatusSlot(bool sts);
+	int d_detNum;
 signals:
-	void netWorkStatusSignal(bool sts);
+	void netWorkStatusSignal(int detId, bool sts);
 public:
 	bool recvServer_DATA();
 	bool NetCheck();
@@ -228,7 +225,7 @@ public:
 
 	bool getConnected();
 	LineDetNetWork(unsigned short in_port, unsigned short in_fifoMask, unsigned short in_channelDepth, unsigned short in_delayTime,
-		unsigned short in_intTime, unsigned short in_ampSize, std::vector<unsigned int> in_blockModuleVec);
+		unsigned short in_intTime, unsigned short in_ampSize, std::vector<unsigned int> in_blockModuleVec, int in_detNum);
 	~LineDetNetWork();
 };
 

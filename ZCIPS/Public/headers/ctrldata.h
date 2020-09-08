@@ -266,6 +266,7 @@ enum{
 
     CMD_POWER_CTRL							= 0x00,			//电源控制									0x00
 	CMD_OFF_BEAM,											//停止射线源出束							0x01
+	CMD_RESTART_DET,										//new ctscan新增
 
 	CMD_POLL_STATUS							= 0x10,			//查询底层控制器状态						0x10
 	CMD_UPLOAD_CONTROL_SYSTEM_STATUS,              			//上传控制系统状态							0x11

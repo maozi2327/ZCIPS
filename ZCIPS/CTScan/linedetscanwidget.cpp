@@ -242,9 +242,39 @@ void LineDetScanWidget::on_stopButton_clicked()
 
 void LineDetScanWidget::updateControlsSlot()
 {
-	bool readToScan = d_controller->readIdleStatus() && d_controller->readReadyStatus()
-		&& d_lineDetNetWork->getConnected();
-	ui.Ct3StartButton->setEnabled(readToScan);
+	bool controlConnected = d_controller->getConnected();
+	bool idle = d_controller->readIdleStatus();
+	bool ready = d_controller->readReadyStatus();
+	bool detConnected = d_lineDetNetWork->getConnected();
+	bool readyToScan = controlConnected && idle && ready && detConnected;
+	ui.Ct3StartButton->setEnabled(readyToScan);
+	QString tip;
+
+	if(!controlConnected)
+		tip += QString::fromLocal8Bit("控制系统未连接！\n");
+	else
+	{
+		if (!ready)
+			tip += QString::fromLocal8Bit("控制系统未初始化！\n");
+		if (!idle)
+			tip += QString::fromLocal8Bit("系统忙！\n");
+	}
+
+	if (!detConnected)
+		tip += QString::fromLocal8Bit("探测器未连接！\n");
+
+	if (!readyToScan)
+	{
+		ui.Ct3StartButton->setToolTip(tip);
+		QString style
+		(
+			"background-color: rgb(255, 170, 127);"
+			"border-radius:3px; "
+		);
+		ui.Ct3StartButton->setStyleSheet(style);
+	}
+	else
+		ui.Ct3StartButton->setStyleSheet("");
 }
 
 void LineDetScanWidget::showMotorTable()

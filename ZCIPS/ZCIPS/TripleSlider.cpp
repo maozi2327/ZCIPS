@@ -1,4 +1,3 @@
-
 #include <QMouseEvent>
 #include "TripleSlider.h"
 #include "ERRInfo.h"

@@ -9,16 +9,18 @@
 static in_addr hostAddr;
 
 LineDetNetWork::LineDetNetWork(unsigned short in_port, unsigned short in_fifoMask, unsigned short in_channelDepth, unsigned short in_delayTime,
-	unsigned short in_intTime, unsigned short in_ampSize, std::vector<unsigned int> in_blockModuleVec)
+	unsigned short in_intTime, unsigned short in_ampSize, std::vector<unsigned int> in_blockModuleVec, int in_detNum)
 	: d_server(
 		new TcpServer(4, 4, 0
 		, [this](SOCKET in_sock){ return setParameterAfterConnect(in_sock); }
 		, [this](char* in_char, int in_size) { pocessData(in_char, in_size); }
-		, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), 4000))
+		, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), 4000)
+	)
 	, d_fifoMask(in_fifoMask), d_channelDepth(in_channelDepth)
 	, d_delayTime(in_delayTime), d_intTime(in_intTime), d_ampSize(in_ampSize)
 	, d_netWorkBuffer(new char[2u << 12]), d_bytesReceived(0), d_blockModuleMap(in_blockModuleVec)
-	, d_isScanning(false)
+	, d_isScanning(false), d_connected(false)
+	, d_detNum(in_detNum)
 {
 	auto tempMask = d_fifoMask;
 	d_smallBoardNum = 0;
@@ -39,10 +41,15 @@ LineDetNetWork::LineDetNetWork(unsigned short in_port, unsigned short in_fifoMas
 			{
 				while (d_deadThreadRunFlag)
 				{
-					if (d_server->getConnected() && !d_isScanning && !StartCI())
+					if (!d_isScanning && !StartCI())
 					{
 						d_connected = false;
 						d_server->reAccept();
+						emit netWorkStatusSignal(d_detNum, d_connected);
+						int counter = 0;
+
+						while (d_deadThreadRunFlag && counter++ != 10)
+							std::this_thread::sleep_for(std::chrono::seconds(1));
 					}
 
 					std::this_thread::sleep_for(std::chrono::seconds(3));
@@ -60,14 +67,9 @@ LineDetNetWork::~LineDetNetWork()
 	delete[] d_netWorkBuffer;
 }
 
-void LineDetNetWork::netWorkStatusSlot(bool sts)
-{
-	emit netWorkStatusSignal(sts);
-}
-
 bool LineDetNetWork::getConnected()
 {
-	return d_connected = true;
+	return d_connected;
 }
 
 bool LineDetNetWork::setParameterAfterConnect(SOCKET in_sock)
