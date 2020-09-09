@@ -81,9 +81,6 @@
     <ClCompile Include="imageprocess.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="ctscan.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="ct3scan.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -145,6 +142,12 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="motorwidget.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ctscanapp.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ctscanwidget.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -265,9 +268,6 @@
     <QtMoc Include="imagewidget.h">
       <Filter>Source</Filter>
     </QtMoc>
-    <QtMoc Include="ctscan.h">
-      <Filter>Source</Filter>
-    </QtMoc>
     <QtMoc Include="controllerinterface.h">
       <Filter>Source</Filter>
     </QtMoc>
@@ -292,11 +292,14 @@
     <QtMoc Include="motorwidget.h">
       <Filter>Source</Filter>
     </QtMoc>
+    <QtMoc Include="ctscanapp.h">
+      <Filter>Source</Filter>
+    </QtMoc>
+    <QtMoc Include="ctscanwidget.h">
+      <Filter>Source</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="ctscan.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="raypanelmotion.ui">
       <Filter>Form Files</Filter>
     </QtUic>
@@ -316,6 +319,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="motorwidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="ctscanwidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

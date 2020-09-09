@@ -51,8 +51,10 @@ LineDetNetWork::LineDetNetWork(unsigned short in_port, unsigned short in_fifoMas
 						while (d_deadThreadRunFlag && counter++ != 10)
 							std::this_thread::sleep_for(std::chrono::seconds(1));
 					}
+					int counter = 0;
 
-					std::this_thread::sleep_for(std::chrono::seconds(3));
+					while(d_deadThreadRunFlag && counter++ != 3)
+						std::this_thread::sleep_for(std::chrono::seconds(1));
 				}
 			}
 			, d_deadThreadRunFlag

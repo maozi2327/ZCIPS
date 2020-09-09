@@ -9,6 +9,6 @@ public:
 	CtScanExport(QWidget* in_parent);
 	~CtScanExport();
 
-	static void loadCtScanWidget(QWidget* in_parent);
+	static QObject* loadCtScanWidget(QWidget* in_parent);
 };
 
