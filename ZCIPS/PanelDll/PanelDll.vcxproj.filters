@@ -35,7 +35,7 @@
     <ClCompile Include="panel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Public\util\macro.cpp">
+    <ClCompile Include="..\Public\util\logmacro.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

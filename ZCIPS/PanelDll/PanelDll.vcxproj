@@ -176,7 +176,7 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Public\util\macro.cpp" />
+    <ClCompile Include="..\Public\util\logmacro.cpp" />
     <ClCompile Include="panel.cpp" />
     <ClCompile Include="PanelInterface.cpp" />
     <ClCompile Include="PESiPanel.cpp" />

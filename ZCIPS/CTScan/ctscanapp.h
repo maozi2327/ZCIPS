@@ -4,6 +4,9 @@
 #include "imagewidgetmanager.h"
 #include <memory>
 #include "../Public/headers/setupdata.h"
+#include "../Public/util/logmacro.h"
+#include "ctscanexport.h"
+
 class SetupDataParser;
 class RayPanelMotion;
 class MotorControlWidget;
@@ -16,14 +19,15 @@ class ConeScanWidget;
 class MotorWidget;
 class CTScanWidget;
 
-class CTScanApp : public QObject
+class CTScanApp : public CTScanInterface
 {
 	Q_OBJECT
-
 public:
 	CTScanApp(QWidget* d_upper, QObject *parent = nullptr);
 	~CTScanApp();
 
+signals:
+	LOGSIGNAL
 private slots:
 	void controllerNetWorkStsSlot(bool sts);
 	void lineDetNetWorkStsSlot(int in_det, bool sts);

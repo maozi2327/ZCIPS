@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <mutex>
-#include "../Public/util/macro.h"
+#include "../Public/util/logmacro.h"
 #include "../PanelDll/panel.h"
 #include "../Public/headers/panelimageprocess.h"
 #include "../Public/headers/commandqueue.h"

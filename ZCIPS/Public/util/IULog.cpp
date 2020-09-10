@@ -36,23 +36,6 @@ void CIULog::SetLevel(LOG_LEVEL nLevel)
     d_logLevel = nLevel;
 }
 
-//bool CIULog::Log(LOG_LEVEL nLevel, QString& pszFmt)
-//{
-//    if (nLevel < d_logLevel)
-//        return false;
-//    
-//    char szTime[64] = { 0 };
-//    QString strDebugInfo(QDateTime::currentDateTime().toString("hh:mm:ss.zzz"));
-//	QString strLevel("[INFO]");
-//	strDebugInfo.append(strLevel);
-//	strDebugInfo.append(pszFmt);
-//	strDebugInfo += "\r\n";	
-//	d_logFile.seek(d_logFile.size());
-//	d_logFile.write(strDebugInfo.toLocal8Bit());
-//	d_logFile.flush();
-//    return true;
-//}
-
 bool CIULog::Log(LOG_LEVEL nLevel, QString& pszFmt)
 {
 	if (nLevel < d_logLevel)

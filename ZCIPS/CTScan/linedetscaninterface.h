@@ -3,7 +3,7 @@
 #include "ictheader.h"
 #include "setupdata.h"
 #include "ctrldata.h"
-#include "../Public/util/macro.h"
+#include "../Public/util/logmacro.h"
 #include <memory>
 #include <chrono>
 

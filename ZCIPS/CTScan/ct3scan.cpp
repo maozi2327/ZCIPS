@@ -9,7 +9,7 @@
 #include "../Public/util/functions.h"
 #include "motorcontrolwidget.h"
 #include "../Public/headers/setupdata.h"
-#include "../Public/util/macro.h"
+#include "../Public/util/logmacro.h"
 #include "simotioncontroller.h"
 
 std::chrono::minutes CT3Scan::d_intervalForSaveTempFile = std::chrono::minutes(3);
@@ -238,6 +238,7 @@ void CT3Scan::saveTempFile(LineDetList* in_listHead)
 	file.write(fileMemory, listItemNum * listItemSize);
 	file.flush();
 	file.close();
+	delete[] fileMemory;
 	d_tempFileVec.push_back(tempFileName);
 }
 

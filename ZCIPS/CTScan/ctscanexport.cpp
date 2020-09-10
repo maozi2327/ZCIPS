@@ -1,12 +1,11 @@
 #include "stdafx.h"
 #include "ctscanexport.h"
 #include "ctscanapp.h"
+#include <memory>
 
-CtScanExport::CtScanExport(QWidget* in_parent)
+void CTScanInterface::slot1(int i)
 {
-
 }
-
 
 CtScanExport::~CtScanExport()
 {
@@ -14,6 +13,6 @@ CtScanExport::~CtScanExport()
 
 QObject* CtScanExport::loadCtScanWidget(QWidget* in_parent)
 {
-	static std::unique_ptr<CTScanApp> handle(new CTScanApp(in_parent));
+	static std::unique_ptr<CTScanInterface> handle(new CTScanApp(in_parent));
 	return handle.get();
 }

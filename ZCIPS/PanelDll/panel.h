@@ -4,7 +4,7 @@
 #include "paneldll_global.h"
 #include "panelHeaders.h"
 #include <memory>
-#include "../Public/util/macro.h"
+#include "../Public/util/logmacro.h"
 #include <functional>
 class PANELDLL_EXPORT Panel	: public QObject
 {

@@ -15,7 +15,7 @@ MsgListBox::~MsgListBox()
 }
 QString extractMsg(QString& in_msg)
 {
-	in_msg.insert(1, QDateTime::currentDateTime().toString("hh:mm:ss.zzz"));
+	in_msg.insert(1, QDateTime::currentDateTime().toString("hh:mm:ss.zzz") + " ");
 	std::string text = in_msg.toLocal8Bit();
 	std::string pattern("\\[([^\\]]+)\\]");    //只能达到匹配成[xxxx]的程度
 	//std::string pattern("(?=\\[)[^\\]]*");   //只能达到匹配成[xxxx的程度

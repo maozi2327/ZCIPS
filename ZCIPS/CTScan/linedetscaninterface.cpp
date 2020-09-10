@@ -142,10 +142,10 @@ void LineDetScanInterface::CalculateView_ValidDetector(float in_diameter)
 }
 
 bool LineDetScanInterface::canScan()
-{	//初始化，探测器，执行命令
+{	
 	if (!d_lineDetNetWork->getConnected())
 	{
-		LOG_ERROR(QString::fromLocal8Bit("探测器未连接！"));
+		LOG_ERROR("探测器未连接！");
 		return false;
 	}
 

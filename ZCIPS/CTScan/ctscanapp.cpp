@@ -32,8 +32,11 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 			time[index] = '-';
 
 	QString logFileFullName = d_workDir + "/log/" +
-		QDateTime::currentDateTime().date().toString(Qt::ISODate) + '/' + time;
+		QDateTime::currentDateTime().date().toString(Qt::ISODate) + '/' + time + ".txt";
 	d_msg.reset(new MsgListBox(logFileFullName));
+	connect(this, &CTScanApp::infoMsgSignal, this, &CTScanApp::infoMsgSlot, Qt::QueuedConnection);
+	connect(this, &CTScanApp::errorMsgSignal, this, &CTScanApp::errorMsgSlot, Qt::QueuedConnection);
+	connect(this, &CTScanApp::bugMsgSignal, this, &CTScanApp::bugMsgSlot, Qt::QueuedConnection);
 	connect(d_controller.get(), &ControllerInterface::netWorkStsSginal
 		, this, &CTScanApp::controllerNetWorkStsSlot, Qt::QueuedConnection);
 
@@ -97,6 +100,7 @@ CTScanApp::~CTScanApp()
 void CTScanApp::lineDetNetWorkStsSlot(int in_det, bool sts)
 {
 	d_controller->restartLineDet(in_det);
+	LOG_INFO("ÖØÆôÏßÕóÌ½²âÆ÷");
 }
 
 void CTScanApp::controllerNetWorkStsSlot(bool sts)
@@ -110,10 +114,12 @@ void CTScanApp::errorMsgSlot(QString msg)
 
 void CTScanApp::infoMsgSlot(QString msg)
 {
+	d_msg->logInfo(msg);
 }
 
 void CTScanApp::bugMsgSlot(QString msg)
 {
+	d_msg->logBug(msg);
 }
 
 void CTScanApp::setMiddleWidget(QWidget * in_widget)

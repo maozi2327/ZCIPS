@@ -139,38 +139,34 @@ void LineDetScanWidget::initiliseCt3Controls(CT3Data& in_data)
 {
 	addItemToMatixVieSample(in_data, ui.ct3MatrixComboBox, ui.ct3ViewComboBox,
 		ui.ct3SampleTimeComboBox, d_rayNum, d_detNum);
-	QString str;
-	ui.ct3MultiLayerComboBox->addItem(str.fromLocal8Bit("单层"));
-	ui.ct3MultiLayerComboBox->addItem(str.fromLocal8Bit("多层等间距"));
-	ui.ct3MultiLayerComboBox->addItem(str.fromLocal8Bit("多层不等间距"));
-	ui.ct3MultiLayerComboBox->setCurrentText(str.fromLocal8Bit("单层"));
+	ui.ct3MultiLayerComboBox->addItem(QString::fromLocal8Bit("单层"));
+	ui.ct3MultiLayerComboBox->addItem(QString::fromLocal8Bit("多层等间距"));
+	ui.ct3MultiLayerComboBox->addItem(QString::fromLocal8Bit("多层不等间距"));
+	ui.ct3MultiLayerComboBox->setCurrentText(QString::fromLocal8Bit("单层"));
 }
 
 void LineDetScanWidget::initiliseCt2Controls(CT2Data& in_data)
 {
 	addItemToMatixVieSample(in_data, ui.ct2MatrixComboBox, ui.ct2ViewComboBox,
 		ui.ct2SampleTimeComboBox, d_rayNum, d_detNum);
-	QString str;
-	ui.ct2ScanModeComboBox->addItem(str.fromLocal8Bit("360度"));
-	ui.ct2ScanModeComboBox->addItem(str.fromLocal8Bit("360度间隔"));
-	ui.ct2ScanModeComboBox->addItem(str.fromLocal8Bit("180度"));
+	ui.ct2ScanModeComboBox->addItem(QString::fromLocal8Bit("360度"));
+	ui.ct2ScanModeComboBox->addItem(QString::fromLocal8Bit("360度间隔"));
+	ui.ct2ScanModeComboBox->addItem(QString::fromLocal8Bit("180度"));
 }
 
 void LineDetScanWidget::initiliseDrControls(DrScanData& in_data)
 {
 	addItemToMatixVieSample(in_data, ui.drMatrixComboBox, ui.drViewComboBox,
 		ui.drSampleTimeComboBox, d_rayNum, d_detNum);
-	QString str;
-	ui.drRatioComboBox->addItem(str.fromLocal8Bit("等比例"));
-	ui.drRatioComboBox->addItem(str.fromLocal8Bit("不等比例"));
+	ui.drRatioComboBox->addItem(QString::fromLocal8Bit("等比例"));
+	ui.drRatioComboBox->addItem(QString::fromLocal8Bit("不等比例"));
 }
 
 void LineDetScanWidget::on_Ct3StartButton_clicked()
 {
-	QString str;
 	float layer;
 
-	if (ui.ct3MultiLayerComboBox->currentText() == str.fromLocal8Bit("单层"))
+	if (ui.ct3MultiLayerComboBox->currentText() == QString::fromLocal8Bit("单层"))
 		layer = ui.ct3LayerPosLineEdit->text().toFloat();
 	else
 		layer = ui.ct3LayerPosListWidget->item(0)->text().toFloat();
@@ -195,9 +191,7 @@ void LineDetScanWidget::on_saveDirButton_clicked()
 
 void LineDetScanWidget::on_ct3MultiLayerComboBox_currentIndexChanged(const QString& in_text)
 {
-	QString str;
-	
-	if (in_text == str.fromLocal8Bit("单层"))
+	if (in_text == QString::fromLocal8Bit("单层"))
 	{
 		ui.ct3LayerPosLineEdit->show();
 		ui.ct3LayerSpaceLineEdit->hide();
@@ -205,7 +199,7 @@ void LineDetScanWidget::on_ct3MultiLayerComboBox_currentIndexChanged(const QStri
 		ui.ct3SpaceNumLabel->hide();
 		ui.ct3LayerSpaceLabel->hide();
 	}
-	else if (in_text == str.fromLocal8Bit("多层等间距"))
+	else if (in_text == QString::fromLocal8Bit("多层等间距"))
 	{
 		ui.ct3LayerPosLineEdit->show();
 		ui.ct3LayerSpaceLineEdit->show();
@@ -213,7 +207,7 @@ void LineDetScanWidget::on_ct3MultiLayerComboBox_currentIndexChanged(const QStri
 		ui.ct3SpaceNumLabel->show();
 		ui.ct3LayerSpaceLabel->show();
 	}
-	else if (in_text == str.fromLocal8Bit("多层不等间距"))
+	else if (in_text == QString::fromLocal8Bit("多层不等间距"))
 	{
 		ui.ct3LayerPosLineEdit->show();
 		ui.ct3LayerSpaceLineEdit->hide();

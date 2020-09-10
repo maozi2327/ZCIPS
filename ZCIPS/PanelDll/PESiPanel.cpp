@@ -47,6 +47,7 @@ bool PESiPanel::initialise()
 		if ((iRet = Acquisition_GetNextSensor(&Pos, &hAcqDesc)) != HIS_ALL_OK)
 		{
 			LOG_ERROR("%s ß∞‹£°¥ÌŒÛ¬Î%d", "Acquisition_GetNextSensor", iRet);
+			return false;
 		}
 			
 	} 

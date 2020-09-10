@@ -5,7 +5,7 @@
 #include <mutex>
 #include <vector>
 #include <QTimer>
-#include "../Public/util/macro.h"
+#include "../Public/util/logmacro.h"
 
 class Thread;
 class TcpServer;

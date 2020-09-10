@@ -129,9 +129,6 @@
     <ClCompile Include="msglistbox.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\Public\util\macro.cpp">
-      <Filter>public\utility</Filter>
-    </ClCompile>
     <ClCompile Include="drscan.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -149,6 +146,9 @@
     </ClCompile>
     <ClCompile Include="ctscanwidget.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\util\logmacro.cpp">
+      <Filter>public\utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,12 +221,6 @@
     <ClInclude Include="..\Public\headers\setupdata.h">
       <Filter>public\publicHeaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\headers\macro.h">
-      <Filter>public\publicHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\util\macro.h">
-      <Filter>public\utility</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\headers\panelimageprocess.h">
       <Filter>public\publicHeaders</Filter>
     </ClInclude>
@@ -247,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="ct2scan.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\util\logmacro.h">
+      <Filter>public\utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

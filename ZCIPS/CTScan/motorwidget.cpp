@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "motorwidget.h"
 #include "controllerinterface.h"
-
+#
 MotorWidget::MotorWidget(ControllerInterface* in_controller, QWidget *parent)
 	: QWidget(parent)
 	, d_controller(in_controller)

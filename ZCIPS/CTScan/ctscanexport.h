@@ -1,12 +1,20 @@
 #pragma once
 #include "ctscan_global.h"
 #include <QObject>
-#include <memory>
+
+class CTScanInterface : public QObject
+{
+public slots:
+	void slot1(int i);
+
+signals:
+	void signal1(int i);
+};
 
 class CTSCANDLL_EXPORT CtScanExport
 {
 public:
-	CtScanExport(QWidget* in_parent);
+	CtScanExport() = delete;
 	~CtScanExport();
 
 	static QObject* loadCtScanWidget(QWidget* in_parent);
