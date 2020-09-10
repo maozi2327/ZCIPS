@@ -9,11 +9,11 @@ class MsgListBox : public QWidget
 	Q_OBJECT
 
 public:
-	MsgListBox(QString& in_logFileName, QWidget *parent = Q_NULLPTR);
+	MsgListBox(QString& _logFileName, QWidget *parent = Q_NULLPTR);
 	~MsgListBox();
-	void logError(QString& in_msg);
-	void logInfo(QString& in_msg);
-	void logBug(QString& in_msg);
+	void logError(QString& _msg);
+	void logInfo(QString& _msg);
+	void logBug(QString& _msg);
 private:
 	Ui::MsgListBox ui;
 

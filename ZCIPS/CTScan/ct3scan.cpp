@@ -14,9 +14,9 @@
 
 std::chrono::minutes CT3Scan::d_intervalForSaveTempFile = std::chrono::minutes(3);
 
-CT3Scan::CT3Scan(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWork,
-	const SetupData* in_setupData, int in_lineDetIndex)
-	: LineDetScanInterface(in_controller, in_lineDetNetWork, in_setupData, in_lineDetIndex)
+CT3Scan::CT3Scan(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork,
+	const SetupData* _setupData, int _lineDetIndex)
+	: LineDetScanInterface(_controller, _lineDetNetWork, _setupData, _lineDetIndex)
 {
 	
 }
@@ -27,14 +27,14 @@ CT3Scan::~CT3Scan()
 		d_scanThread->stopThread();
 }
 
-bool CT3Scan::setScanParameter(float in_layer, int in_matrix, float in_view, 
-	int in_sampleTime, float in_angle)
+bool CT3Scan::setScanParameter(float _layer, int _matrix, float _view, 
+	int _sampleTime, float _angle)
 {
-	d_layer = in_layer;
-	d_matrix = in_matrix;
-	d_view = in_view;
-	d_sampleTime = in_sampleTime;
-	d_angle = in_angle;
+	d_layer = _layer;
+	d_matrix = _matrix;
+	d_view = _view;
+	d_sampleTime = _sampleTime;
+	d_angle = _angle;
 	return true;
 }
 
@@ -217,9 +217,9 @@ bool CT3Scan::canScan()
 	return true;
 }
 
-void CT3Scan::saveTempFile(LineDetList* in_listHead)
+void CT3Scan::saveTempFile(LineDetList* _listHead)
 {
-	auto listItem = in_listHead;
+	auto listItem = _listHead;
 	auto listItemNum = d_lineDetNetWork->getListItemNum();
 	auto listItemSize = d_lineDetNetWork->getListItemSize();
 	char* fileMemory = new char(listItemNum * listItemSize);

@@ -28,21 +28,21 @@ public:
 
 	size_t getQueueSize() { return d_queue.size(); }
 
-    bool push(T& in_cmd, millseconds in_timeOut = millseconds(10))
+    bool push(T& _cmd, millseconds _timeOut = millseconds(10))
     {
         std::lock_guard<std::mutex> lk(d_hmtxQ);
-        d_queue.push(in_cmd);
+        d_queue.push(_cmd);
         d_con.notify_all();
         return true;
     }
 
-    bool pop(T& in_cmd, millseconds in_timeOut = millseconds(10))
+    bool pop(T& _cmd, millseconds _timeOut = millseconds(10))
     {
         std::unique_lock<std::mutex> lk(d_hmtxQ);
 
-		if (d_con.wait_for(lk, in_timeOut, [=] { return getQueueSize() != 0; }))
+		if (d_con.wait_for(lk, _timeOut, [=] { return getQueueSize() != 0; }))
 		{
-			in_cmd = d_queue.front();
+			_cmd = d_queue.front();
 			d_queue.pop();
 			return true;
 		}

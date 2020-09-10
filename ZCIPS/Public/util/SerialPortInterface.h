@@ -7,12 +7,12 @@
 class SerialPortInterface
 {
 public:
-	virtual bool browseSerialPort(std::vector<std::pair<QString, bool>>& in_portName) = 0;
-	virtual bool openSerialPort(const QString& in_portName, QSerialPort::BaudRate, QSerialPort::DataBits, QSerialPort::StopBits
+	virtual bool browseSerialPort(std::vector<std::pair<QString, bool>>& _portName) = 0;
+	virtual bool openSerialPort(const QString& _portName, QSerialPort::BaudRate, QSerialPort::DataBits, QSerialPort::StopBits
 		, QSerialPort::FlowControl, QSerialPort::Parity) = 0;
-	virtual bool closeSerialPort(const QString& in_portName) = 0;
-	virtual bool send(const char* in_buffer, int in_size, const QString& in_portName) = 0;
-	virtual bool receive(char* in_buffer, int in_size, const QString& in_portName) = 0;
+	virtual bool closeSerialPort(const QString& _portName) = 0;
+	virtual bool send(const char* _buffer, int _size, const QString& _portName) = 0;
+	virtual bool receive(char* _buffer, int _size, const QString& _portName) = 0;
 };
 class PanelFactory
 {

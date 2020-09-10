@@ -6,8 +6,8 @@ class LineDetBkgTune :
 	public LineDetScanInterface
 {
 public:
-	LineDetBkgTune(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWork,
-		const SetupData* in_setupData, int in_lineDetIndex);
+	LineDetBkgTune(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork,
+		const SetupData* _setupData, int _lineDetIndex);
 	~LineDetBkgTune();
 };
 

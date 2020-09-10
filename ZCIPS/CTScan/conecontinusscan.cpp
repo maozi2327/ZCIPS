@@ -3,8 +3,8 @@
 #include "../Public/headers/panelimageprocess.h"
 #include "controllerinterface.h"
 
-ConeContinusScan::ConeContinusScan(Panel* in_panel, ControllerInterface* in_controller, PanelImageProcess* in_ctDispose):
-	ConeScanInterface(in_panel, in_controller, in_ctDispose)
+ConeContinusScan::ConeContinusScan(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _ctDispose):
+	ConeScanInterface(_panel, _controller, _ctDispose)
 {
 }
 
@@ -14,9 +14,9 @@ ConeContinusScan::~ConeContinusScan()
 }
 
 //获取d_panel采集的图像，并校正保存
-void ConeContinusScan::scanThread(std::promise<bool>& in_promise)
+void ConeContinusScan::scanThread(std::promise<bool>& _promise)
 {
-	in_promise.set_value_at_thread_exit(true);
+	_promise.set_value_at_thread_exit(true);
 
 	while (true)
 	{

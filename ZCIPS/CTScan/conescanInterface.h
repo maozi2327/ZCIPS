@@ -43,7 +43,7 @@ protected:
 	Panel* d_panel;
 	ControllerInterface* d_controller;
 	PanelImageProcess* d_imageProcess;
-	virtual void frameProcessCallback(unsigned short* in_image);
+	virtual void frameProcessCallback(unsigned short* _image);
 	std::unique_ptr<Thread> d_scanThread;
 	virtual void scanThread() = 0;
 	std::atomic<bool> d_deadThreadRun;
@@ -57,19 +57,19 @@ protected:
 	virtual bool writeParameterFile();
 	virtual bool makeParameterText();
 	virtual bool loadDefectData();
-	virtual bool saveFile(unsigned short* in_image);
+	virtual bool saveFile(unsigned short* _image);
 	bool checkMemory();
 public:
-	ConeScanInterface(Panel* in_panel, ControllerInterface* in_controller, PanelImageProcess* in_ctDispose);
+	ConeScanInterface(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _ctDispose);
 	virtual ~ConeScanInterface();
 
-	virtual void setFileName(QString& in_fileFolder, QString& in_name);
-	virtual void setDisposeFlag(bool in_bkgFlag, bool in_airFlag, bool in_defectFlag, bool in_averageFlag);
-	virtual void setGraduation(int in_graduation) { d_graduation = in_graduation; };
+	virtual void setFileName(QString& _fileFolder, QString& _name);
+	virtual void setDisposeFlag(bool _bkgFlag, bool _airFlag, bool _defectFlag, bool _averageFlag);
+	virtual void setGraduation(int _graduation) { d_graduation = _graduation; };
 	virtual bool stopScan() = 0;
 	virtual bool intialise() = 0;
 	virtual bool beginScan();
-	virtual void getScanProgress(int& in_out_thisRound, int& in_out_allProgress, QString& imagesCollectedAndSpaceOccupied);
+	virtual void getScanProgress(int& _thisRound, int& _allProgress, QString& imagesCollectedAndSpaceOccupied);
 signals:
 	LOGSIGNAL
 };

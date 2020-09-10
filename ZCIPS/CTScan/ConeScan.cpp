@@ -5,8 +5,8 @@
 #include "controllerinterface.h"
 
 
-ConeScan::ConeScan(Panel* in_panel, ControllerInterface* in_controller, PanelImageProcess* in_ctDispose) :
-	ConeScanInterface(in_panel, in_controller, in_ctDispose)
+ConeScan::ConeScan(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _ctDispose) :
+	ConeScanInterface(_panel, _controller, _ctDispose)
 {
 
 }
@@ -15,9 +15,9 @@ ConeScan::~ConeScan()
 
 }
 
-void ConeScan::frameProcessCallback(unsigned short * in_image)
+void ConeScan::frameProcessCallback(unsigned short * _image)
 {
-	ConeScanInterface::frameProcessCallback(in_image);
+	ConeScanInterface::frameProcessCallback(_image);
 }
 
 

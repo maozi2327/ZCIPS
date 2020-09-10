@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "functions.h"
 #define MB 1024*1024
-QByteArray getByteArray(QString & in_fileName)
+QByteArray getByteArray(QString & _fileName)
 {
-	QByteArray byteArray = in_fileName.toLocal8Bit();
+	QByteArray byteArray = _fileName.toLocal8Bit();
 	return byteArray;
 }
-quint64 getDiskFreeSpace(QString & in_folder)
+quint64 getDiskFreeSpace(QString & _folder)
 {
-	LPCWSTR driver = (LPCWSTR)in_folder.left(0).utf16();
+	LPCWSTR driver = (LPCWSTR)_folder.left(0).utf16();
 	ULARGE_INTEGER freeDiskSpaceAvailable;
 	GetDiskFreeSpaceEx(driver, &freeDiskSpaceAvailable, nullptr, nullptr);
 	return (quint64)freeDiskSpaceAvailable.QuadPart / MB;

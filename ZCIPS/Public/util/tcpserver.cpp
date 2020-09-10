@@ -2,17 +2,17 @@
 #include "tcpserver.h"
 #include <thread>
 
-TcpServer::TcpServer(int in_packetHeadSize, int in_packetSizeLenth, int in_packetSizePos
-	, std::function<bool(SOCKET) > in_sendDataCallBack
-	, std::function<void(char*, int in_size)> in_dataHandlerCallBack
-	, in_addr in_hosetAddress, unsigned short in_serverPort)
-	: d_packetHeadSize(in_packetHeadSize), d_packetSizeLenth(in_packetSizeLenth), d_packetSizePos(in_packetSizePos)
-	, d_address(in_hosetAddress), d_serverPort(in_serverPort)
-	, d_dataHandlerCallBack(in_dataHandlerCallBack), d_sendInitiliseCallBack(in_sendDataCallBack)
+TcpServer::TcpServer(int _packetHeadSize, int _packetSizeLenth, int _packetSizePos
+	, std::function<bool(SOCKET) > _sendDataCallBack
+	, std::function<void(char*, int _size)> _dataHandlerCallBack
+	, in_addr _hosetAddress, unsigned short _serverPort)
+	: d_packetHeadSize(_packetHeadSize), d_packetSizeLenth(_packetSizeLenth), d_packetSizePos(_packetSizePos)
+	, d_address(_hosetAddress), d_serverPort(_serverPort)
+	, d_dataHandlerCallBack(_dataHandlerCallBack), d_sendInitiliseCallBack(_sendDataCallBack)
 	, d_connected(false)
 {
 	d_sockaddr.sin_addr = d_address;
-	d_sockaddr.sin_family = AF_INET;
+	d_sockaddr.sin_port = AF_INET;
 	d_sockaddr.sin_port = htons(d_serverPort);
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -44,12 +44,12 @@ bool TcpServer::initialNetWorkForVariablePacketSize()
 
 	return true;
 }
-bool TcpServer::sendAsyn(const char* in_buffer, int in_size)
+bool TcpServer::sendAsyn(const char* _buffer, int _size)
 {
 	if (!d_connected)
 		return false;
 
-	TcpServer::command cmd{ in_buffer, in_size };
+	TcpServer::command cmd{ _buffer, _size };
 	d_sendQueue.push(cmd);
 	return true;
 }
@@ -57,17 +57,17 @@ bool TcpServer::sendAsyn(const char* in_buffer, int in_size)
 //TODO_DJ
 //修改数据发送
 //TODO_DJ
-int TcpServer::sendSyn(const char* in_buffer, int in_size)
+int TcpServer::sendSyn(const char* _buffer, int _size)
 {
 	int bytesSend = 0;
 
 	if (d_connected)
 	{
-		while (bytesSend != in_size)
+		while (bytesSend != _size)
 		{
 			int count = 0;
 
-			if ((count = send(d_client, in_buffer + bytesSend, in_size - bytesSend, NULL)) == SOCKET_ERROR)
+			if ((count = send(d_client, _buffer + bytesSend, _size - bytesSend, NULL)) == SOCKET_ERROR)
 			{
 				d_connected = false;
 				break;
@@ -81,15 +81,15 @@ int TcpServer::sendSyn(const char* in_buffer, int in_size)
 
 	return -1;
 }
-bool TcpServer::receive(char* in_buffer, int in_size)
+bool TcpServer::receive(char* _buffer, int _size)
 {
 	
 	return true;
 }
 
-void TcpServer::recvThreadPacketHead(std::promise<bool>& in_promise)
+void TcpServer::recvThreadPacketHead(std::promise<bool>& _promise)
 {
-	in_promise.set_value_at_thread_exit(true);
+	_promise.set_value_at_thread_exit(true);
 	char* buffer = new char[2u<<12];
 
 	while (d_recvDeadThreadRun)
@@ -124,9 +124,9 @@ void TcpServer::reAccept()
 {
 	d_connected = false;
 }
-void TcpServer::sendThread(std::promise<bool>& in_promise)
+void TcpServer::sendThread(std::promise<bool>& _promise)
 {
-	in_promise.set_value_at_thread_exit(true);
+	_promise.set_value_at_thread_exit(true);
 
 	while (d_sendDeadThreadRun)
 	{
@@ -166,7 +166,7 @@ void TcpServer::sendThread(std::promise<bool>& in_promise)
 
 				while (true)
 				{
-					int nRet = send(d_client, cmd.in_buffer + bytesSend, cmd.in_size - bytesSend, NULL);
+					int nRet = send(d_client, cmd._buffer + bytesSend, cmd._size - bytesSend, NULL);
 
 					if (nRet == -1)
 					{
@@ -177,7 +177,7 @@ void TcpServer::sendThread(std::promise<bool>& in_promise)
 
 					bytesSend += nRet;
 
-					if (bytesSend == cmd.in_size)
+					if (bytesSend == cmd._size)
 						break;
 				}
 

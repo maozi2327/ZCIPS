@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "tcpclient.h"
 
-TcpClient::TcpClient(QString& in_hostAddress, quint16 in_port, QObject *parent)
+TcpClient::TcpClient(QString& _hostAddress, quint16 _port, QObject *parent)
 	: QObject(parent)
 	, d_tcpSocket(new QTcpSocket)
 {
-	d_tcpSocket->connectToHost(in_hostAddress, in_port);
+	d_tcpSocket->connectToHost(_hostAddress, _port);
 }
 
 TcpClient::~TcpClient()
@@ -19,9 +19,9 @@ TcpClient::~TcpClient()
 		d_sendThreadPromisePtr->get_future().get();
 }
 
-bool TcpClient::sendAsyn(const char* in_buffer, int in_size)
+bool TcpClient::sendAsyn(const char* _buffer, int _size)
 {
-	TcpClient::command cmd{ in_buffer, in_size };
+	TcpClient::command cmd{ _buffer, _size };
 	d_sendQueue.push(cmd);
 	return true;
 }
@@ -36,21 +36,21 @@ bool TcpClient::initialNetWork()
 	std::thread(recvThreadFun).detach();
 
 	return true;
-	//return d_tcpServer->listen(in_address, in_serverPort);
+	//return d_tcpServer->listen(_address, _serverPort);
 }
 
-int TcpClient::sendSyn(const char* in_buffer, int in_size)
+int TcpClient::sendSyn(const char* _buffer, int _size)
 {
 	return 0;
 }
 
-bool TcpClient::receive(char* in_buffer, int in_size)
+bool TcpClient::receive(char* _buffer, int _size)
 {
 	return 0;
 }
-void TcpClient::sendThread(std::promise<bool>& in_promise)
+void TcpClient::sendThread(std::promise<bool>& _promise)
 {
-	in_promise.set_value_at_thread_exit(true);
+	_promise.set_value_at_thread_exit(true);
 
 	while (d_isSendRunning)
 	{
@@ -62,7 +62,7 @@ void TcpClient::sendThread(std::promise<bool>& in_promise)
 
 		while (d_connected)
 		{
-			int nRet = d_tcpSocket->write(cmd.in_buffer + byteSend, cmd.in_size - byteSend);
+			int nRet = d_tcpSocket->write(cmd._buffer + byteSend, cmd._size - byteSend);
 
 			if (nRet == -1)
 			{
@@ -72,12 +72,12 @@ void TcpClient::sendThread(std::promise<bool>& in_promise)
 
 			byteSend += nRet;
 
-			if (byteSend == cmd.in_size)
+			if (byteSend == cmd._size)
 				break;
 		}
 	}
 }
-void TcpClient::recvThread(std::promise<bool>& in_promise)
+void TcpClient::recvThread(std::promise<bool>& _promise)
 {
 
 }

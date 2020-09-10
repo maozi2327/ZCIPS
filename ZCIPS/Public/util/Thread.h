@@ -17,7 +17,7 @@ private:
 	bool d_threadFinished;
 	void realThread();
 public:
-	Thread(std::function<void()> in_function, std::atomic<bool>& in_threadRun);
+	Thread(std::function<void()> _function, std::atomic<bool>& _threadRun);
 	~Thread();
 	void stopThread();
 	void detach();

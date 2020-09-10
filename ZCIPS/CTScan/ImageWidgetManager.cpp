@@ -12,28 +12,28 @@ ImageWidgetManager::ImageWidgetManager()
 ImageWidgetManager::~ImageWidgetManager()
 {
 }
-bool ImageWidgetManager::showImageInNewWindow(unsigned char* in_imageMemory, int in_width, int in_height)
+bool ImageWidgetManager::showImageInNewWindow(unsigned char* _imageMemory, int _width, int _height)
 {
-	d_imageWidgetVec.push_back(new ImageWidget(this, 0, 0, in_imageMemory, in_width, in_height));
+	d_imageWidgetVec.push_back(new ImageWidget(this, 0, 0, _imageMemory, _width, _height));
 	auto imageWidget = d_imageWidgetVec.back();
 	imageWidget->show();
 	return true;
 }
-bool ImageWidgetManager::showImageInFrontWindow(unsigned char* in_imageMemory, int in_width, int in_height)
+bool ImageWidgetManager::showImageInFrontWindow(unsigned char* _imageMemory, int _width, int _height)
 {
-	d_imageWidgetVec.push_back(new ImageWidget(this, 0, 0, in_imageMemory, in_width, in_height));
-	d_imageWidgetVec[d_frontWidgetIndex]->loadImage(in_imageMemory, in_width, in_height);
+	d_imageWidgetVec.push_back(new ImageWidget(this, 0, 0, _imageMemory, _width, _height));
+	d_imageWidgetVec[d_frontWidgetIndex]->loadImage(_imageMemory, _width, _height);
 	return true;
 }
-bool ImageWidgetManager::showImageInNewWindow(QString& in_fileName)
+bool ImageWidgetManager::showImageInNewWindow(QString& _fileName)
 {
-	d_imageWidgetVec.push_back(new ImageWidget(this, 0, 0, in_fileName));
+	d_imageWidgetVec.push_back(new ImageWidget(this, 0, 0, _fileName));
 	auto imageWidget = d_imageWidgetVec.back();
 	imageWidget->show();
 	return true;
 }
-bool ImageWidgetManager::showImageInFrontWindow(QString& in_fileName)
+bool ImageWidgetManager::showImageInFrontWindow(QString& _fileName)
 {
-	d_imageWidgetVec[d_frontWidgetIndex]->loadImage(in_fileName);
+	d_imageWidgetVec[d_frontWidgetIndex]->loadImage(_fileName);
 	return true;
 }

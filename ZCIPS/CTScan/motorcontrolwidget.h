@@ -12,7 +12,7 @@ private:
 	ControllerInterface* d_controller;
 
 public:
-	MotorControlWidget(ControllerInterface* in_controller, QWidget *parent = Q_NULLPTR);
+	MotorControlWidget(ControllerInterface* _controller, QWidget *parent = Q_NULLPTR);
 	~MotorControlWidget();
 
 

@@ -97,9 +97,9 @@ CTScanApp::~CTScanApp()
 {
 }
 
-void CTScanApp::lineDetNetWorkStsSlot(int in_det, bool sts)
+void CTScanApp::lineDetNetWorkStsSlot(int _det, bool sts)
 {
-	d_controller->restartLineDet(in_det);
+	d_controller->restartLineDet(_det);
 	LOG_INFO("ÖØÆôÏßÕóÌ½²âÆ÷");
 }
 
@@ -122,10 +122,10 @@ void CTScanApp::bugMsgSlot(QString msg)
 	d_msg->logBug(msg);
 }
 
-void CTScanApp::setMiddleWidget(QWidget * in_widget)
+void CTScanApp::setMiddleWidget(QWidget * _widget)
 {
 }
 	
-void CTScanApp::setDownWidget(QWidget * in_widget)
+void CTScanApp::setDownWidget(QWidget * _widget)
 {
 }

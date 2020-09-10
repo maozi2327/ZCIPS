@@ -11,8 +11,8 @@ CtScanExport::~CtScanExport()
 {
 }
 
-QObject* CtScanExport::loadCtScanWidget(QWidget* in_parent)
+QObject* CtScanExport::loadCtScanWidget(QWidget* _parent)
 {
-	static std::unique_ptr<CTScanInterface> handle(new CTScanApp(in_parent));
+	static std::unique_ptr<CTScanInterface> handle(new CTScanApp(_parent));
 	return handle.get();
 }

@@ -2,5 +2,5 @@
 
 #include <QObject>
 #include <windows.h>
-QByteArray getByteArray(QString& in_fileName);
-quint64 getDiskFreeSpace(QString & in_folder);
+QByteArray getByteArray(QString& _fileName);
+quint64 getDiskFreeSpace(QString & _folder);

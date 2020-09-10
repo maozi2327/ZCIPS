@@ -14,47 +14,47 @@ struct CommandType
 	int d_cmd;
 	char* d_data;
 	int d_size;
-	CommandType(int in_size)
+	CommandType(int _size)
 	{
-		d_data = new char[in_size];
-		d_size = in_size;
+		d_data = new char[_size];
+		d_size = _size;
 	}
 
-	void operator=(const CommandType& in_command)
+	void operator=(const CommandType& _command)
 	{
 		char* temp = nullptr;
 		
-		if (in_command.d_size != 0)
+		if (_command.d_size != 0)
 		{
-			temp = new char[in_command.d_size];
-			memcpy(temp, in_command.d_data, in_command.d_size);
+			temp = new char[_command.d_size];
+			memcpy(temp, _command.d_data, _command.d_size);
 		}
 
 		if (d_data != nullptr)
 			delete[] d_data;
 
 		d_data = temp;
-		d_size = in_command.d_size;
-		d_cmd = in_command.d_cmd;
+		d_size = _command.d_size;
+		d_cmd = _command.d_cmd;
 	}
 
-	CommandType(const char* in_data, int in_size)
+	CommandType(const char* _data, int _size)
 	{
-		d_data = new char[in_size];
-		d_size = in_size;
-		memcpy(d_data, in_data, in_size);
+		d_data = new char[_size];
+		d_size = _size;
+		memcpy(d_data, _data, _size);
 	}
-	CommandType(const CommandType& in_commandType)
+	CommandType(const CommandType& _commandType)
 	{
-		d_data = new char[in_commandType.d_size];
-		d_size = in_commandType.d_size;
-		memcpy(d_data, in_commandType.d_data, d_size);
+		d_data = new char[_commandType.d_size];
+		d_size = _commandType.d_size;
+		memcpy(d_data, _commandType.d_data, d_size);
 	}
 
-	CommandType(CommandType&& in_commandType)
+	CommandType(CommandType&& _commandType)
 	{
-		d_data = in_commandType.d_data;
-		d_size = in_commandType.d_size;
+		d_data = _commandType.d_data;
+		d_size = _commandType.d_size;
 	}
 	~CommandType()
 	{
@@ -65,9 +65,9 @@ struct CommandType
 			d_data = nullptr;
 		}
 	}
-	friend bool operator==(const CommandType& in_commandLeft, const CommandType& in_commandRight)
+	friend bool operator==(const CommandType& _commandLeft, const CommandType& _commandRight)
 	{
-		return in_commandLeft.d_cmd == in_commandRight.d_cmd;
+		return _commandLeft.d_cmd == _commandRight.d_cmd;
 	}
 };
 
@@ -108,12 +108,12 @@ private:
 	std::unique_ptr<Thread> d_sendThread;
 	char* d_netWorkBuffer;
 	int d_bytesReceived;
-	void getAixsValueAndNotify(std::map<Axis, float>& in_value, char* in_data, int in_axisNum, int in_typeCode);
-	void fillInCmdStructAndFillCmdList(int in_cmd, char* in_data, int in_size, bool in_consist);
+	void getAixsValueAndNotify(std::map<Axis, float>& _value, char* _data, int _axisNum, int _typeCode);
+	void fillInCmdStructAndFillCmdList(int _cmd, char* _data, int _size, bool _consist);
 protected:
 	virtual bool sendCmd();
 	virtual void setConnectdSts(); 
-	void pocessData(char* in_package, int in_size);
+	void pocessData(char* _package, int _size);
 	void reconnect();
 private slots:
 	void netCheckSlot();
@@ -124,20 +124,20 @@ public:
 	virtual bool getConnected();
 	virtual bool checkReadyToScan();
 
-	virtual bool initialSend(SOCKET in_sock);
+	virtual bool initialSend(SOCKET _sock);
 	virtual bool stopAll();
 	virtual bool initialiseController();
-	virtual bool axisSeekZero(Axis in_axis);
-	virtual bool axisAbsMove(Axis in_axis, float in_pos);
-	virtual bool axisRelMove(Axis in_axis, float in_pos);
-	virtual bool sliceMove(float in_pos);
+	virtual bool axisSeekZero(Axis _axis);
+	virtual bool axisAbsMove(Axis _axis, float _pos);
+	virtual bool axisRelMove(Axis _axis, float _pos);
+	virtual bool sliceMove(float _pos);
 
 	virtual bool readReadyStatus();
 	virtual bool readSaveStatus();
 	virtual bool readWaitNextScanStatus();
 	virtual bool readIdleStatus();
 	virtual std::map<Axis, float> readAxisSpeed();
-	virtual float readAxisPostion(Axis in_axis);
+	virtual float readAxisPostion(Axis _axis);
 	virtual std::map<Axis, float> readAxisPostion();
 	virtual std::map<Axis, float> readAxisWorkZero();
 
@@ -148,11 +148,11 @@ public:
 
 	virtual void stopGettingAxisPostion();
 
-	virtual void setAxisSpeed(std::map<Axis, float>& in_speed);
-	virtual void setAxisWorkZero(std::map<Axis, float>& in_workZero);
+	virtual void setAxisSpeed(std::map<Axis, float>& _speed);
+	virtual void setAxisWorkZero(std::map<Axis, float>& _workZero);
 	
-	virtual void sendToControl(char* in_package, int in_size, bool in_consist = false);
-	virtual void decodePackages(char* in_package, int in_size);
-	virtual void restartLineDet(int in_detNum);
+	virtual void sendToControl(char* _package, int _size, bool _consist = false);
+	virtual void decodePackages(char* _package, int _size);
+	virtual void restartLineDet(int _detNum);
 };
 

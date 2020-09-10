@@ -8,27 +8,27 @@
 class TcpServer
 {
 public:
-	TcpServer(int in_packetHeadSize, int in_packetSizeLenth, int in_packetSizePos
-		, std::function<bool(SOCKET)> in_sendDataCallBack, std::function<void(char*, int in_size)> in_recvDataCallBack
-		, in_addr in_hosetAddress, unsigned short in_serverPort);
+	TcpServer(int _packetHeadSize, int _packetSizeLenth, int _packetSizePos
+		, std::function<bool(SOCKET)> _sendDataCallBack, std::function<void(char*, int _size)> _recvDataCallBack
+		, in_addr _hosetAddress, unsigned short _serverPort);
 	virtual ~TcpServer();
-	bool sendAsyn(const char* in_buffer, int in_size);
-	int sendSyn(const char* in_buffer, int in_size);
-	bool receive(char* in_buffer, int in_size);
+	bool sendAsyn(const char* _buffer, int _size);
+	int sendSyn(const char* _buffer, int _size);
+	bool receive(char* _buffer, int _size);
 	bool getConnected();
 	void reAccept();
 private:
 	struct command
 	{
-		const char* in_buffer;
-		int in_size;
+		const char* _buffer;
+		int _size;
 	};
 	int d_packetSize;
 
 	int d_packetHeadSize;
 	int d_packetSizePos;
 	int d_packetSizeLenth;
-	std::function<void(char*, int in_size)> d_dataHandlerCallBack;
+	std::function<void(char*, int _size)> d_dataHandlerCallBack;
 	std::function<bool(SOCKET)> d_sendInitiliseCallBack;
 	SOCKET	d_server;
 	SOCKET	d_client;
@@ -38,12 +38,12 @@ private:
 	TheQueue<command> d_sendQueue;
 	TheQueue<command> d_receiveQueue;
 	bool initialNetWorkForVariablePacketSize();
-	void recvThreadPacketHead(std::promise<bool>& in_promise);
+	void recvThreadPacketHead(std::promise<bool>& _promise);
 	std::unique_ptr<std::promise<bool>> d_recvThreadPromisePtr;
 	std::atomic<bool> d_recvDeadThreadRun;
 	std::atomic<bool> d_sendDeadThreadRun;
 	bool d_connected;
-	void sendThread(std::promise<bool>& in_promise);
+	void sendThread(std::promise<bool>& _promise);
 	std::unique_ptr<std::promise<bool>> d_sendThreadPromisePtr;
 	bool d_readyToAccept;
 };

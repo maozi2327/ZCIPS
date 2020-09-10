@@ -30,7 +30,7 @@ signals:
 	LOGSIGNAL
 private slots:
 	void controllerNetWorkStsSlot(bool sts);
-	void lineDetNetWorkStsSlot(int in_det, bool sts);
+	void lineDetNetWorkStsSlot(int _det, bool sts);
 	void errorMsgSlot(QString msg);
 	void infoMsgSlot(QString msg);
 	void bugMsgSlot(QString msg);
@@ -58,6 +58,6 @@ private:
 	QString	d_workDir;
 	QWidget* d_upperWidget;
 public:
-	void setMiddleWidget(QWidget* in_widget);
-	void setDownWidget(QWidget* in_widget);
+	void setMiddleWidget(QWidget* _widget);
+	void setDownWidget(QWidget* _widget);
 };

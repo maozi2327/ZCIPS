@@ -8,10 +8,10 @@
 #include <algorithm>
 
 ICT_HEADER23 LineDetScanInterface::d_ictHeader;
-LineDetScanInterface::LineDetScanInterface(ControllerInterface * in_controller, LineDetNetWork* in_lineDetNetWork,
-	const SetupData* in_setupData, int in_lineDetIndex)
-	: d_controller(in_controller), d_lineDetNetWork(in_lineDetNetWork), d_setupData(in_setupData)
-	, d_lineDetIndex(in_lineDetIndex)
+LineDetScanInterface::LineDetScanInterface(ControllerInterface * _controller, LineDetNetWork* _lineDetNetWork,
+	const SetupData* _setupData, int _lineDetIndex)
+	: d_controller(_controller), d_lineDetNetWork(_lineDetNetWork), d_setupData(_setupData)
+	, d_lineDetIndex(_lineDetIndex)
 {
 
 }
@@ -27,10 +27,10 @@ void LineDetScanInterface::stopScan()
 	d_lineDetNetWork->clearRowList();
 }
 
-void LineDetScanInterface::saveOrgFile(LineDetList* in_List)
+void LineDetScanInterface::saveOrgFile(LineDetList* _List)
 {
 	QString fileFullName(d_orgPath + d_fileName);
-	d_lineDetImageProcess->saveOrgFile(fileFullName, &d_ictHeader, in_List, 1);
+	d_lineDetImageProcess->saveOrgFile(fileFullName, &d_ictHeader, _List, 1);
 }
 
 bool LineDetScanInterface::setGenerialFileHeader()
@@ -99,7 +99,7 @@ bool LineDetScanInterface::setGenerialFileHeader()
 	return true;
 }
 
-void LineDetScanInterface::CalculateView_ValidDetector(float in_diameter)
+void LineDetScanInterface::CalculateView_ValidDetector(float _diameter)
 {
 	int systemDetector = d_setupData->lineDetData[d_lineDetIndex].NumberOfSystemHorizontalDetector;
 	int calibrateDetector = d_setupData->lineDetData[d_lineDetIndex].NumberOfCalibrateHorizontalDetector;
@@ -119,11 +119,11 @@ void LineDetScanInterface::CalculateView_ValidDetector(float in_diameter)
 			Nv = 2 * std::min<int>(rightMiddle, systemDetector - rightMiddle);
 		
 		d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector = Nv;
-		in_diameter = 2 * d_SOD * (float)sin(delta*(Nv - 1) / 2);
+		_diameter = 2 * d_SOD * (float)sin(delta*(Nv - 1) / 2);
 	}
 	else 
 	{
-		float beta = (float)(2 * asin(in_diameter / 2 / d_SOD));        //计算视场D占用的扇角beta
+		float beta = (float)(2 * asin(_diameter / 2 / d_SOD));        //计算视场D占用的扇角beta
 		int	Nv;
 
 		if (leftMiddle == rightMiddle)
@@ -135,10 +135,10 @@ void LineDetScanInterface::CalculateView_ValidDetector(float in_diameter)
 			Nv = realSysDetectorNum;
 
 		d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector = Nv;
-		in_diameter = 2 * in_diameter * (float)sin(delta*(Nv - 1) / 2);
+		_diameter = 2 * _diameter * (float)sin(delta*(Nv - 1) / 2);
 	}
 
-	d_ictHeader.ScanParameter.ViewDiameter = (float)((int)(100.0 * in_diameter)) / 100;
+	d_ictHeader.ScanParameter.ViewDiameter = (float)((int)(100.0 * _diameter)) / 100;
 }
 
 bool LineDetScanInterface::canScan()

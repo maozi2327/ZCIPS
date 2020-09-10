@@ -6,7 +6,7 @@ class ConeScan :
 	public ConeScanInterface
 {
 public:
-	ConeScan(Panel* in_panel, ControllerInterface* in_controller, PanelImageProcess* in_ctDispose);
+	ConeScan(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _ctDispose);
 	~ConeScan();
 	virtual void frameProcessCallback(unsigned short*);
 	virtual bool stopScan();

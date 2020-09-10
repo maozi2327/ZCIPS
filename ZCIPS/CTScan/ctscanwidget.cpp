@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "ctscanwidget.h"
 
-CTScanWidget::CTScanWidget(QWidget* in_middleWidget, QWidget* in_downWidget, QWidget *parent)
+CTScanWidget::CTScanWidget(QWidget* _middleWidget, QWidget* _downWidget, QWidget *parent)
     : QWidget(parent)
-	, d_scanWidget(nullptr), d_middleWidget(in_middleWidget), d_downWidget(in_downWidget)
+	, d_scanWidget(nullptr), d_middleWidget(_middleWidget), d_downWidget(_downWidget)
 {
 	ui.setupUi(this);
 	QVBoxLayout* layout = new QVBoxLayout;

@@ -24,39 +24,39 @@ SerialPortUtil::~SerialPortUtil()
 	
 }
 
-bool SerialPortUtil::browseSerialPort(std::vector<std::pair<QString, bool>>& in_portName)
+bool SerialPortUtil::browseSerialPort(std::vector<std::pair<QString, bool>>& _portName)
 {
 	const auto infos = QSerialPortInfo::availablePorts();
-	in_portName.clear();
+	_portName.clear();
 
 	QSerialPort* originPort = new QSerialPort();
 	
 	for (const QSerialPortInfo &info : infos)
 	{
 		originPort->setPortName(info.portName());
-		in_portName.push_back({ info.portName(), originPort->isOpen()});
+		_portName.push_back({ info.portName(), originPort->isOpen()});
 	}
 
 	return true;
 }
 
-bool SerialPortUtil::openSerialPort(const QString& in_portName, QSerialPort::BaudRate in_baudRate
-	, QSerialPort::DataBits in_dataBits, QSerialPort::StopBits in_stopBits
-	, QSerialPort::FlowControl in_flowControl, QSerialPort::Parity in_parity)
+bool SerialPortUtil::openSerialPort(const QString& _portName, QSerialPort::BaudRate _baudRate
+	, QSerialPort::DataBits _dataBits, QSerialPort::StopBits _stopBits
+	, QSerialPort::FlowControl _flowControl, QSerialPort::Parity _parity)
 {
-	if (d_serialPortMap.find(in_portName) != d_serialPortMap.end())
+	if (d_serialPortMap.find(_portName) != d_serialPortMap.end())
 	{
 		QSerialPort* originPort = new QSerialPort();
-		originPort->setPortName(in_portName);
-		originPort->setBaudRate(in_baudRate);
-		originPort->setStopBits(in_stopBits);
-		originPort->setFlowControl(in_flowControl);
-		originPort->setParity(in_parity);
+		originPort->setPortName(_portName);
+		originPort->setBaudRate(_baudRate);
+		originPort->setStopBits(_stopBits);
+		originPort->setFlowControl(_flowControl);
+		originPort->setParity(_parity);
 
 		if (originPort->open(QIODevice::WriteOnly))
 		{
-			SerialPort* port = new SerialPort(this, originPort, in_portName);
-			d_serialPortMap.insert({ in_portName, port });
+			SerialPort* port = new SerialPort(this, originPort, _portName);
+			d_serialPortMap.insert({ _portName, port });
 			return true;
 		}
 	}
@@ -64,43 +64,43 @@ bool SerialPortUtil::openSerialPort(const QString& in_portName, QSerialPort::Bau
 	return false;
 }
 
-bool SerialPortUtil::closeSerialPort(const QString & in_portName)
+bool SerialPortUtil::closeSerialPort(const QString & _portName)
 {
-	if (d_serialPortMap.find(in_portName) != d_serialPortMap.end())
+	if (d_serialPortMap.find(_portName) != d_serialPortMap.end())
 	{
-		d_serialPortMap[in_portName]->closeSerialPort();
-		d_serialPortMap.erase(in_portName);
+		d_serialPortMap[_portName]->closeSerialPort();
+		d_serialPortMap.erase(_portName);
 	}
 
 	return true;
 }
 
-bool SerialPortUtil::send(const char * in_buffer, int in_size, const QString & in_portName)
+bool SerialPortUtil::send(const char * _buffer, int _size, const QString & _portName)
 {
-	if (d_serialPortMap.find(in_portName) != d_serialPortMap.end())
-		if (d_serialPortMap[in_portName]->sendAsyn(in_buffer, in_size))
+	if (d_serialPortMap.find(_portName) != d_serialPortMap.end())
+		if (d_serialPortMap[_portName]->sendAsyn(_buffer, _size))
 			return true;
 
 	return false;
 }
 
 
-bool SerialPortUtil::receive(char * in_buffer, int in_size, const QString & in_portName)
+bool SerialPortUtil::receive(char * _buffer, int _size, const QString & _portName)
 {
-	if (d_serialPortMap.find(in_portName) != d_serialPortMap.end())
-		d_serialPortMap[in_portName]->receive(in_buffer, in_size);
+	if (d_serialPortMap.find(_portName) != d_serialPortMap.end())
+		d_serialPortMap[_portName]->receive(_buffer, _size);
 
 	return true;
 }
 
-bool SerialPortUtil::onSerialError(QString& out_serialName)
+bool SerialPortUtil::onSerialError(QString& _serialName)
 {
-	closeSerialPort(out_serialName);
+	closeSerialPort(_serialName);
 	return true;
 }
 //-----------------SerialPortUtil::SerialPort----------------------------
-SerialPort::SerialPort(SerialPortUtil* in_serialPortUtil, QSerialPort* in_port, QString in_serialPortName)
-	: d_serialPortUtil(in_serialPortUtil)
+SerialPort::SerialPort(SerialPortUtil* _serialPortUtil, QSerialPort* _port, QString _serialPortName)
+	: d_serialPortUtil(_serialPortUtil)
 {
 	d_isOpen = true;
 	d_isSendRunning = true;
@@ -134,11 +134,11 @@ bool SerialPort::closeSerialPort()
 	return true;
 }
 
-bool SerialPort::sendAsyn(const char * in_buffer, int in_size)
+bool SerialPort::sendAsyn(const char * _buffer, int _size)
 {
 	if (d_isOpen)
 	{
-		SendCommand cmd = { in_buffer, in_size };
+		SendCommand cmd = { _buffer, _size };
 		d_sendQueue.push(cmd);
 		return true;
 	}
@@ -146,21 +146,21 @@ bool SerialPort::sendAsyn(const char * in_buffer, int in_size)
 		return false;
 }
 
-bool SerialPort::receive(char * in_buffer, int in_size)
+bool SerialPort::receive(char * _buffer, int _size)
 {
 	RecvCommand cmd;
 
 	if(!d_receiveQueue.pop(cmd))
 		return false;
 	
-	in_buffer = cmd.in_buffer;
-	in_size = cmd.in_size;
+	_buffer = cmd._buffer;
+	_size = cmd._size;
 	return true;
 }
 
-void SerialPort::sendThread(std::promise<bool>& in_promise)
+void SerialPort::sendThread(std::promise<bool>& _promise)
 {
-	in_promise.set_value_at_thread_exit(true);
+	_promise.set_value_at_thread_exit(true);
 
 	while (d_isSendRunning)
 	{
@@ -172,9 +172,9 @@ void SerialPort::sendThread(std::promise<bool>& in_promise)
 
 		while (d_isOpen)
 		{
-			byteSend = d_serialPort->write(cmd.in_buffer);
+			byteSend = d_serialPort->write(cmd._buffer);
 
-			if (byteSend != cmd.in_size)
+			if (byteSend != cmd._size)
 			{
 				d_isOpen = false;
 				emit serialError(d_serialPortName);
@@ -184,9 +184,9 @@ void SerialPort::sendThread(std::promise<bool>& in_promise)
 	}
 }
 
-void SerialPort::recvThread(std::promise<bool>& in_promise)
+void SerialPort::recvThread(std::promise<bool>& _promise)
 {
-	in_promise.set_value_at_thread_exit(true);
+	_promise.set_value_at_thread_exit(true);
 
 	while (d_isSendRunning)
 	{

@@ -214,7 +214,6 @@ struct AxisStatus{
 };
 
 
-
 #ifndef USE_IN_CONTROL
 //运动方向名义值定义
 //在控制系统中使用本文件时因在PCL839.H中已定义, 需要屏蔽该定义
@@ -329,7 +328,7 @@ enum{
 	CMD_HELIX_SCAN,											//螺旋CT扫描								0x64
 	CMD_LOCAL_SCAN,											//局部扫描									0x65
 	CMD_CONE_SCAN,											//锥束扫描									0x66
-	CMD_BACK_BEGIN_POS,										//运动返回扫描前位置(扫描前需记录各坐标位置)0x67
+	CMD_BACK_BEG_POS,										//运动返回扫描前位置(扫描前需记录各坐标位置)0x67
 	CMD_RAY_TUNE,											//射线(空气)校正(固定采集512个数据)			0x68
 	CMD_BKG_TUNE,											//背景校正(固定采集512个数据)				0x69
 	CMD_CAL_LAYER_ZERO,                                     //分层零点标定								0x6a
@@ -608,7 +607,7 @@ union SysStatus{
 		BYTE	laserPowerOpen					:1;			//激光器电源					0-关闭	1-打开
 		BYTE	detPowerOpen					:1;			//探测电源						0-关闭	1-打开
 		BYTE	drvPowerOpen					:1;			//动力电源						0-关闭	1-打开
-		BYTE	main_emg_up						:1;			//主控台急停按钮				0-按下	1-释放
+		BYTE	ma_emg_up						:1;			//主控台急停按钮				0-按下	1-释放
 		BYTE	testingRoom_emg_up				:1;			//检测室急停按钮				0-按下	1-释放
 		//2017.05.30增加
 		BYTE	panDetPowerOpen					:1;			//面阵电源						0-关闭	1-打开

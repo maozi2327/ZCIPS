@@ -17,6 +17,6 @@ public:
 	CtScanExport() = delete;
 	~CtScanExport();
 
-	static QObject* loadCtScanWidget(QWidget* in_parent);
+	static QObject* loadCtScanWidget(QWidget* _parent);
 };
 

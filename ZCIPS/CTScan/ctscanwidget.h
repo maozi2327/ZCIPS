@@ -8,7 +8,7 @@ class CTScanWidget : public QWidget
     Q_OBJECT
 
 public:
-    CTScanWidget(QWidget* in_middleWidget, QWidget* in_downWidget, QWidget *parent = Q_NULLPTR);
+    CTScanWidget(QWidget* _middleWidget, QWidget* _downWidget, QWidget *parent = Q_NULLPTR);
 	~CTScanWidget();
 
 	QWidget* getWidget();

@@ -48,20 +48,20 @@ protected:
 	const SetupData* d_setupData;
 	static ICT_HEADER23 d_ictHeader;
 	virtual void scanThread() = 0;
-	void saveOrgFile(LineDetList* in_list);
+	void saveOrgFile(LineDetList* _list);
 	virtual bool setGenerialFileHeader();
 	virtual void sendCmdToControl() = 0;
-	void CalculateView_ValidDetector(float in_diameter);
+	void CalculateView_ValidDetector(float _diameter);
 	virtual bool canScan() = 0;
 	virtual int loadTempFile();
 signals:
-	void signalGraduationCount(int in_count);
+	void signalGraduationCount(int _count);
 	LOGSIGNAL
 public:
-	LineDetScanInterface(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWork, 
-		const SetupData* in_setupData, int in_lineDetIndex);
+	LineDetScanInterface(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork, 
+		const SetupData* _setupData, int _lineDetIndex);
 	virtual ~LineDetScanInterface();
-	void setFileName(QString& in_fileName, QString& in_orgPth, QString& in_filePth) { d_fileName = in_fileName; };
+	void setFileName(QString& _fileName, QString& _orgPth, QString& _filePth) { d_fileName = _fileName; };
 	virtual bool beginScan() = 0;
 	virtual void stopScan() = 0;
 };

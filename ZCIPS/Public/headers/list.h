@@ -41,15 +41,15 @@ public:
 		return d_consistCmd.size();
 	}
 
-	bool pushBack(T& in_cmd, bool in_consist, int in_timeOut = 0)
+	bool pushBack(T& _cmd, bool _consist, int _timeOut = 0)
 	{
-		if (in_consist)
+		if (_consist)
 		{
 			std::lock_guard<std::mutex> lk(d_consistMutex);
 
-			if (std::find(d_consistCmd.begin(), d_consistCmd.end(), in_cmd) == d_consistCmd.end())
+			if (std::find(d_consistCmd.begin(), d_consistCmd.end(), _cmd) == d_consistCmd.end())
 			{
-				d_consistCmd.push_back(in_cmd);
+				d_consistCmd.push_back(_cmd);
 				d_conConsist.notify_all();
 				d_consistIndex = d_consistCmd.begin();
 			}
@@ -58,20 +58,20 @@ public:
 		{
 			std::lock_guard<std::mutex> lk(d_oneTimeMutex);
 			
-			if (std::find(d_oneTimeCmd.begin(), d_oneTimeCmd.end(), in_cmd) == d_oneTimeCmd.end())
+			if (std::find(d_oneTimeCmd.begin(), d_oneTimeCmd.end(), _cmd) == d_oneTimeCmd.end())
 			{
-				d_oneTimeCmd.push_back(in_cmd);
+				d_oneTimeCmd.push_back(_cmd);
 				d_conOneTime.notify_all();
 			}
 		}
 		return true;
 	}
 
-	bool deleteNode(T& in_cmd, int in_timeOut = 0)
+	bool deleteNode(T& _cmd, int _timeOut = 0)
 	{
 		std::lock_guard<std::mutex> lk(d_consistMutex);
 		
-		if (auto itr = std::find(d_consistCmd.begin(), d_consistCmd.end(), in_cmd) != d_consistCmd.end())
+		if (auto itr = std::find(d_consistCmd.begin(), d_consistCmd.end(), _cmd) != d_consistCmd.end())
 		{
 			d_consistCmd.erase(itr);
 			d_index = d_consistCmd.begin();
@@ -88,7 +88,7 @@ public:
 		d_index = d_consistCmd.end();
 	}
 
-	bool getNext(T& in_cmd, int in_timeOut = 0)
+	bool getNext(T& _cmd, int _timeOut = 0)
 	{
 		cmdSelect = !cmdSelect;
 
@@ -98,7 +98,7 @@ public:
 			
 			if (d_conConsist.wait_for(lk, std::chrono::milliseconds{10}, [=]() {	return d_consistCmd.size() != 0; }))
 			{
-				in_cmd = *d_consistIndex;
+				_cmd = *d_consistIndex;
 
 				if (++d_consistIndex == d_consistCmd.end())
 					d_consistIndex = d_consistCmd.begin();
@@ -112,7 +112,7 @@ public:
 
 			if (d_conOneTime.wait_for(lk, std::chrono::milliseconds{ 10 }, [=]() {	return d_oneTimeCmd.size() != 0; }))
 			{
-				in_cmd = d_oneTimeCmd.front();
+				_cmd = d_oneTimeCmd.front();
 				d_oneTimeCmd.pop_front();
 				return true;
 			}

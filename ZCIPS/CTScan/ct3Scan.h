@@ -19,13 +19,13 @@ protected:
 	virtual void saveFile();
 	virtual bool setGenerialFileHeader();
 	virtual bool canScan();
-	void saveTempFile(LineDetList* in_listHead);
+	void saveTempFile(LineDetList* _listHead);
 public:
-	CT3Scan(ControllerInterface* in_controller, LineDetNetWork* in_lineDetNetWork, 
-		const SetupData* in_setupData, int in_lineDetIndex);
+	CT3Scan(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork, 
+		const SetupData* _setupData, int _lineDetIndex);
 	~CT3Scan();
-	bool setScanParameter(float in_layers, int in_matrix, float in_view,
-		int in_sampleTime, float in_angle);
+	bool setScanParameter(float _layers, int _matrix, float _view,
+		int _sampleTime, float _angle);
 	virtual void stopScan();
 	virtual bool beginScan();
 };

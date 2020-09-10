@@ -12,7 +12,7 @@ class MotorWidget : public QWidget
 	Q_OBJECT
 
 public:
-	MotorWidget(ControllerInterface* in_controller, QWidget *parent = Q_NULLPTR);
+	MotorWidget(ControllerInterface* _controller, QWidget *parent = Q_NULLPTR);
 	~MotorWidget();
 
 private:

@@ -7,9 +7,9 @@ public:
 	LineDetImageProcess();
 	~LineDetImageProcess();
 
-	int saveOrgFile(QString& in_destFile, void *pHeader, void *pListItem, int iPw);
-	int createAirDat(QString& in_sourceFile, QString& in_installDirectory);
-	int createBkgDat(QString& in_sourceFile, QString& in_installDirectory);
-	int dispose(QString& in_installFolder, QString& in_sourceFile, QString& in_destFile);
+	int saveOrgFile(QString& _destFile, void *pHeader, void *pListItem, int iPw);
+	int createAirDat(QString& _sourceFile, QString& _installDirectory);
+	int createBkgDat(QString& _sourceFile, QString& _installDirectory);
+	int dispose(QString& _installFolder, QString& _sourceFile, QString& _destFile);
 };
 

@@ -3,8 +3,8 @@
 #include "controllerinterface.h"
 #include "imageprocess.h"
 #include "../../Public/util/functions.h"
-ConeScanInterface::ConeScanInterface(Panel* in_panel, ControllerInterface* in_controller, PanelImageProcess* in_imageProcess):
-	d_panel(in_panel), d_controller(in_controller), d_imageProcess(in_imageProcess),
+ConeScanInterface::ConeScanInterface(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _imageProcess):
+	d_panel(_panel), d_controller(_controller), d_imageProcess(_imageProcess),
 	d_imageProcessSleep(300)
 {
 	
@@ -15,25 +15,25 @@ ConeScanInterface::~ConeScanInterface()
 	
 }
 
-bool ConeScanInterface::saveFile(unsigned short * in_image)
+bool ConeScanInterface::saveFile(unsigned short * _image)
 {
 	QString index;
 	index.sprintf("%4d", d_graduationCount);
 	auto completeOrgFileName = d_fileFolder + d_fileName + "org/" + index;
 
 	if (d_orgFlag && !d_averageFlag)
-		d_imageProcess->saveMultiBitmapDataToFile(in_image, completeOrgFileName + d_fileName, d_framesPerGraduation, d_height, d_width);
+		d_imageProcess->saveMultiBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_framesPerGraduation, d_height, d_width);
 	else if (d_orgFlag && !d_averageFlag)
-		d_imageProcess->saveSingleBitmapDataToFile(in_image, completeOrgFileName + d_fileName, d_height, d_width);
+		d_imageProcess->saveSingleBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_height, d_width);
 
 	auto completeImageFileName = d_fileFolder + d_fileName + "ct/" + index;
 
 	if (d_bkgFlag && !d_airFlag && !d_defectFlag)
-		d_imageProcess->bkgCorrectDataToFile(in_image, completeImageFileName + d_fileName, d_height, d_width);
+		d_imageProcess->bkgCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
 	else if (d_bkgFlag && d_airFlag && !d_defectFlag)
-		d_imageProcess->airCorrectDataToFile(in_image, completeImageFileName + d_fileName, d_height, d_width);
+		d_imageProcess->airCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
 	else if (d_bkgFlag && d_airFlag && d_defectFlag)
-		d_imageProcess->defectCorrectDataToFile(in_image, completeImageFileName + d_fileName, d_height, d_width);
+		d_imageProcess->defectCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
 
 	return false;
 }
@@ -49,10 +49,10 @@ bool ConeScanInterface::checkMemory()
 	return allImageSize < getDiskFreeSpace(d_fileFolder);
 }
 
-void ConeScanInterface::frameProcessCallback(unsigned short * in_image)
+void ConeScanInterface::frameProcessCallback(unsigned short * _image)
 {
 	std::lock_guard<std::mutex> lock(d_hmtxQ);
-	d_imageList.push_back(in_image);
+	d_imageList.push_back(_image);
 	d_con.notify_one();
 }
 
@@ -216,19 +216,19 @@ bool ConeScanInterface::loadDefectData()
 {
 	return d_imageProcess->loadDefectData(QString("defect.tif"));
 }
-void ConeScanInterface::setFileName(QString& in_fileFolder, QString & in_name)
+void ConeScanInterface::setFileName(QString& _fileFolder, QString & _name)
 {
-	d_fileFolder = in_fileFolder;
-	d_fileName = in_name;
+	d_fileFolder = _fileFolder;
+	d_fileName = _name;
 }
 
-void ConeScanInterface::setDisposeFlag(bool in_bkgFlag, bool in_airFlag,
-	bool in_defectFlag, bool in_averageFlag)
+void ConeScanInterface::setDisposeFlag(bool _bkgFlag, bool _airFlag,
+	bool _defectFlag, bool _averageFlag)
 {
-	d_bkgFlag = in_bkgFlag;
-	d_airFlag = in_airFlag;
-	d_defectFlag = in_defectFlag;
-	d_averageFlag = in_averageFlag;
+	d_bkgFlag = _bkgFlag;
+	d_airFlag = _airFlag;
+	d_defectFlag = _defectFlag;
+	d_averageFlag = _averageFlag;
 }
 
 bool ConeScanInterface::beginScan()
@@ -256,10 +256,10 @@ bool ConeScanInterface::beginScan()
 	return true;
 }
 
-void ConeScanInterface::getScanProgress(int & in_out_thisRound, int & in_out_allProgress, QString & imagesCollectedAndSpaceOccupied)
+void ConeScanInterface::getScanProgress(int & _thisRound, int & _allProgress, QString & imagesCollectedAndSpaceOccupied)
 {
-	in_out_thisRound = 100 * d_graduationCount / d_graduation;
-	in_out_allProgress = 100 * d_graduationCount / d_graduation;
+	_thisRound = 100 * d_graduationCount / d_graduation;
+	_allProgress = 100 * d_graduationCount / d_graduation;
 	imagesCollectedAndSpaceOccupied.sprintf("已经采集%d幅，占用硬盘空间%dm", d_graduationCount,
 		size_t(d_graduation) * d_frameSize * d_framesPerGraduation / (1024 * 1024));
 }

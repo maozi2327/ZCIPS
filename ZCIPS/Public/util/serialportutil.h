@@ -12,13 +12,13 @@ class SerialPort : public QObject
 private:
 	struct SendCommand
 	{
-		const char* in_buffer;
-		int in_size;
+		const char* _buffer;
+		int _size;
 	};
 	struct RecvCommand
 	{
-		char* in_buffer;
-		int in_size;
+		char* _buffer;
+		int _size;
 	};
 	TheQueue<SendCommand> d_sendQueue;
 	TheQueue<RecvCommand> d_receiveQueue;
@@ -26,23 +26,23 @@ private:
 	SerialPortUtil* d_serialPortUtil;
 	QSerialPort* d_serialPort;
 	QString d_serialPortName;
-	void recvThread(std::promise<bool>& in_promise);
+	void recvThread(std::promise<bool>& _promise);
 	std::unique_ptr<std::promise<bool>> d_recvThreadPromisePtr;
 	bool d_isRecvRunning;
-	void sendThread(std::promise<bool>& in_promise);
+	void sendThread(std::promise<bool>& _promise);
 	std::unique_ptr<std::promise<bool>> d_sendThreadPromisePtr;
 	bool d_isSendRunning;
 
 signals:
-	void serialError(QString& out_serialName);
+	void serialError(QString& _serialName);
 
 public:
-	SerialPort(SerialPortUtil* in_serialPortUtil, QSerialPort* in_port, QString in_serialPortName);
+	SerialPort(SerialPortUtil* _serialPortUtil, QSerialPort* _port, QString _serialPortName);
 	~SerialPort();
 
 	bool closeSerialPort();
-	bool sendAsyn(const char* in_buffer, int in_size);
-	bool receive(char* in_buffer, int in_size);
+	bool sendAsyn(const char* _buffer, int _size);
+	bool receive(char* _buffer, int _size);
 };
 
 class SerialPortUtil : public QObject, public SerialPortInterface
@@ -58,14 +58,14 @@ public:
 	static SerialPortUtil* getHandle();
 	~SerialPortUtil();
 public:
-	bool browseSerialPort(std::vector<std::pair<QString, bool>>& in_portName);
-	bool openSerialPort(const QString& in_portName, QSerialPort::BaudRate, QSerialPort::DataBits, QSerialPort::StopBits
+	bool browseSerialPort(std::vector<std::pair<QString, bool>>& _portName);
+	bool openSerialPort(const QString& _portName, QSerialPort::BaudRate, QSerialPort::DataBits, QSerialPort::StopBits
 		, QSerialPort::FlowControl, QSerialPort::Parity);
-	bool closeSerialPort(const QString& in_portName);
-	bool send(const char* in_buffer, int in_size, const QString& in_portName);
-	bool receive(char* in_buffer, int in_size, const QString& in_portName);
+	bool closeSerialPort(const QString& _portName);
+	bool send(const char* _buffer, int _size, const QString& _portName);
+	bool receive(char* _buffer, int _size, const QString& _portName);
 public slots:
-	bool onSerialError(QString& out_serialName);
+	bool onSerialError(QString& _serialName);
 private:
 	std::map<QString, SerialPort*> d_serialPortMap;
 	QSerialPortInfo* d_serialPortInfo;

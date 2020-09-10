@@ -39,14 +39,14 @@ protected:
 public:
 	PESiPanel();
 	~PESiPanel();
-	virtual bool setFrames(int in_frames);
+	virtual bool setFrames(int _frames);
 	virtual void stopAcquire();
 	virtual bool initialise();
 	virtual bool beginAcquire(unsigned short d_quantity) override;
-	virtual bool setBinMode(BinMode in_binMode);
-	virtual bool setSampleTime(int in_milliseconds) override;
-	virtual bool setSampleMode(SampleMode in_sampleMode) override;
-	virtual bool setGainFactor(int in_gainFactor);
+	virtual bool setBinMode(BinMode _binMode);
+	virtual bool setSampleTime(int _milliseconds) override;
+	virtual bool setSampleMode(SampleMode _sampleMode) override;
+	virtual bool setGainFactor(int _gainFactor);
 	virtual void OnEndPESiDetFrameCallback(HACQDESC hAcqDesc);			//声明每帧图像采集回调函数
 	virtual void OnEndPESiDetAcqCallback(HACQDESC hAcqDesc);
 	virtual bool getReady();
@@ -54,8 +54,8 @@ public:
 	virtual bool getConnected();
 	virtual size_t getFrameSize();
 	virtual float getPixelSize();
-	virtual void setFrameCallback(std::function<void(unsigned short*)> in_imageProcessCallBack);
-	virtual bool getPanelSize(int& out_width, int& out_height);
-	virtual bool setPanelSize(int in_width, int in_height);
+	virtual void setFrameCallback(std::function<void(unsigned short*)> _imageProcessCallBack);
+	virtual bool getPanelSize(int& _width, int& _height);
+	virtual bool setPanelSize(int _width, int _height);
 };
 

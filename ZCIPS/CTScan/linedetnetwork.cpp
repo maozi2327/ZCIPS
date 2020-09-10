@@ -8,19 +8,19 @@
 
 static in_addr hostAddr;
 
-LineDetNetWork::LineDetNetWork(unsigned short in_port, unsigned short in_fifoMask, unsigned short in_channelDepth, unsigned short in_delayTime,
-	unsigned short in_intTime, unsigned short in_ampSize, std::vector<unsigned int> in_blockModuleVec, int in_detNum)
+LineDetNetWork::LineDetNetWork(unsigned short _port, unsigned short _fifoMask, unsigned short _channelDepth, unsigned short _delayTime,
+	unsigned short _intTime, unsigned short _ampSize, std::vector<unsigned int> _blockModuleVec, int _detNum)
 	: d_server(
 		new TcpServer(4, 4, 0
-		, [this](SOCKET in_sock){ return setParameterAfterConnect(in_sock); }
-		, [this](char* in_char, int in_size) { pocessData(in_char, in_size); }
+		, [this](SOCKET _sock){ return setParameterAfterConnect(_sock); }
+		, [this](char* _char, int _size) { pocessData(_char, _size); }
 		, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), 4000)
 	)
-	, d_fifoMask(in_fifoMask), d_channelDepth(in_channelDepth)
-	, d_delayTime(in_delayTime), d_intTime(in_intTime), d_ampSize(in_ampSize)
-	, d_netWorkBuffer(new char[2u << 12]), d_bytesReceived(0), d_blockModuleMap(in_blockModuleVec)
+	, d_fifoMask(_fifoMask), d_channelDepth(_channelDepth)
+	, d_delayTime(_delayTime), d_intTime(_intTime), d_ampSize(_ampSize)
+	, d_netWorkBuffer(new char[2u << 12]), d_bytesReceived(0), d_blockModuleMap(_blockModuleVec)
 	, d_isScanning(false), d_connected(false)
-	, d_detNum(in_detNum)
+	, d_detNum(_detNum)
 {
 	auto tempMask = d_fifoMask;
 	d_smallBoardNum = 0;
@@ -74,17 +74,17 @@ bool LineDetNetWork::getConnected()
 	return d_connected;
 }
 
-bool LineDetNetWork::setParameterAfterConnect(SOCKET in_sock)
+bool LineDetNetWork::setParameterAfterConnect(SOCKET _sock)
 {
 	int val = 0;
 	
-	if(setsockopt(in_sock, IPPROTO_TCP, TCP_NODELAY, (char*)(&val), sizeof(int)) == SOCKET_ERROR)
+	if(setsockopt(_sock, IPPROTO_TCP, TCP_NODELAY, (char*)(&val), sizeof(int)) == SOCKET_ERROR)
 		return false;
 
-	if(setsockopt(in_sock, SOL_SOCKET, SO_RCVBUF, (char*)(&val), sizeof(int)) == SOCKET_ERROR)
+	if(setsockopt(_sock, SOL_SOCKET, SO_RCVBUF, (char*)(&val), sizeof(int)) == SOCKET_ERROR)
 		return false;
 
-	if(setsockopt(in_sock, SOL_SOCKET, SO_SNDBUF, (char*)(&val), sizeof(int)) == SOCKET_ERROR)
+	if(setsockopt(_sock, SOL_SOCKET, SO_SNDBUF, (char*)(&val), sizeof(int)) == SOCKET_ERROR)
 		return false;
 
 	if (!ARMTest()) return false;
@@ -100,11 +100,11 @@ bool LineDetNetWork::setParameterAfterConnect(SOCKET in_sock)
 	return true;
 }
 
-void LineDetNetWork::pocessData(char * in_package, int in_size)
+void LineDetNetWork::pocessData(char * _package, int _size)
 {
 	int posecessedDataLenth = 0;
-	memcpy(d_netWorkBuffer + d_bytesReceived, in_package, in_size);
-	d_bytesReceived += in_size;
+	memcpy(d_netWorkBuffer + d_bytesReceived, _package, _size);
+	d_bytesReceived += _size;
 
 	while (true)
 	{
@@ -145,11 +145,11 @@ bool LineDetNetWork::NetSetup()
 }
 
 template<typename T1, typename T2>
-inline bool GetResult(T1& t1, T2 t2, std::condition_variable& in_con, std::mutex& in_mutex)
+inline bool GetResult(T1& t1, T2 t2, std::condition_variable& _con, std::mutex& _mutex)
 {
-	std::unique_lock<std::mutex> lk(in_mutex);
+	std::unique_lock<std::mutex> lk(_mutex);
 
-	if (in_con.wait_for(lk, std::chrono::milliseconds(1000), [&t1, &t2] { return t1 == t2; }))
+	if (_con.wait_for(lk, std::chrono::milliseconds(1000), [&t1, &t2] { return t1 == t2; }))
 		return true;
 	else
 		return false;
@@ -237,12 +237,12 @@ bool LineDetNetWork::DetectorTest()
 	return false;
 }
 
-bool LineDetNetWork::SetAmpSize(int in_ampSize)
+bool LineDetNetWork::SetAmpSize(int _ampSize)
 {
 	CMD_STRUCT cmdInfo;
 	cmdInfo.cmd = CMD_SET_AMP_SIZE;
 	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = in_ampSize;
+	cmdInfo.cmd_param = _ampSize;
 	cmdInfo.respond_type = 1;
 	d_recvType = PARAMETER;
 	d_dataList.clear();
@@ -253,12 +253,12 @@ bool LineDetNetWork::SetAmpSize(int in_ampSize)
 	return false;
 }
 
-bool LineDetNetWork::SetIntTime(int in_intTime)
+bool LineDetNetWork::SetIntTime(int _intTime)
 {
 	CMD_STRUCT cmdInfo;
 	cmdInfo.cmd = CMD_SET_INT_TIME;
 	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = in_intTime;
+	cmdInfo.cmd_param = _intTime;
 	cmdInfo.respond_type = 1;
 	d_recvType = PARAMETER;
 	d_dataList.clear();
@@ -269,12 +269,12 @@ bool LineDetNetWork::SetIntTime(int in_intTime)
 	return false;
 }
 
-bool LineDetNetWork::SetDelayTime(int in_delayTime)
+bool LineDetNetWork::SetDelayTime(int _delayTime)
 {
 	CMD_STRUCT cmdInfo;
 	cmdInfo.cmd = CMD_SET_DELAY_TIME;
 	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = in_delayTime;
+	cmdInfo.cmd_param = _delayTime;
 	cmdInfo.respond_type = 1;
 	d_recvType = PARAMETER;
 	d_dataList.clear();
@@ -348,34 +348,34 @@ bool LineDetNetWork::startExtTrigAcquire()
 	return false;
 }
 
-void LineDetNetWork::setCIFinished(bool in_finished)
+void LineDetNetWork::setCIFinished(bool _finished)
 {
-	d_isScanning = in_finished;
+	d_isScanning = _finished;
 }
 
-void LineDetNetWork::DecodePackages(char * in_buff, int in_size)
+void LineDetNetWork::DecodePackages(char * _buff, int _size)
 {
 	CMD_STRUCT cmdFeedback;
 
 	switch (d_recvType)
 	{
 	case CMD:
-		if(in_size == sizeof(CMD_STRUCT))
+		if(_size == sizeof(CMD_STRUCT))
 		{
 			std::lock_guard<std::mutex> lk(d_mutex);
-			d_cmdType = ((CMD_STRUCT*)in_buff)->cmd;
+			d_cmdType = ((CMD_STRUCT*)_buff)->cmd;
 			d_con.notify_one();
 		}
 		break;
 	case PARAMETER:
 	{
 		std::lock_guard<std::mutex> lk(d_mutex);
-		d_returnSize = CollectUsefulData(in_buff, in_size);
+		d_returnSize = CollectUsefulData(_buff, _size);
 		d_con.notify_one();
 	}
 		break;
 	case DATA:
-		CollectUsefulData(in_buff, in_size);
+		CollectUsefulData(_buff, _size);
 		break;
 	}
 }
@@ -395,9 +395,9 @@ int LineDetNetWork::getGraduationCount()
 	return 0;
 }
 
-int LineDetNetWork::CollectUsefulData(char * in_buff, int in_size)
+int LineDetNetWork::CollectUsefulData(char * _buff, int _size)
 {
-	int pulseNum = in_size / d_dataSizePerPulse;
+	int pulseNum = _size / d_dataSizePerPulse;
 	int smallBS = d_channelDepth * sizeof(unsigned int);
 
 	for (int pulseIndex = 0; pulseIndex != pulseNum; ++pulseIndex)
@@ -408,13 +408,13 @@ int LineDetNetWork::CollectUsefulData(char * in_buff, int in_size)
 
 		for (int smIndex = 0; smIndex != d_smallBoardNum; ++smIndex)
 		{
-			memmove(in_buff + 2 * sizeof(unsigned int) + smIndex * smallBS
-				, in_buff + 2 * sizeof(unsigned int) + pulseIndex * d_dataSizePerPulse + smIndex * smallBS
+			memmove(_buff + 2 * sizeof(unsigned int) + smIndex * smallBS
+				, _buff + 2 * sizeof(unsigned int) + pulseIndex * d_dataSizePerPulse + smIndex * smallBS
 				, smallBS);
 		}
 
 		int nonBlockDataIndex = 0;
-		memcpy(item, in_buff, 2 * sizeof(unsigned int));
+		memcpy(item, _buff, 2 * sizeof(unsigned int));
 		unsigned long* dataHead = item + 2;
 		auto moduleDataSize = 8 * sizeof(unsigned int);
 		auto virtualModuleNum = d_smallBoardNum * 8;
@@ -423,16 +423,16 @@ int LineDetNetWork::CollectUsefulData(char * in_buff, int in_size)
 		for (auto& blockIndex : d_blockModuleMap)
 		{
 			auto copyModuleNum = blockIndex - before - 1;
-			memcpy((char*)(dataHead) + dataCopied, in_buff + (before + 1) * moduleDataSize, copyModuleNum * moduleDataSize);
+			memcpy((char*)(dataHead) + dataCopied, _buff + (before + 1) * moduleDataSize, copyModuleNum * moduleDataSize);
 			dataCopied += copyModuleNum * moduleDataSize;
 			before = blockIndex;
 		}
 		
-		memcpy((char*)(dataHead)+dataCopied, in_buff + (before + 1) * moduleDataSize, (end - before -1) * moduleDataSize);
+		memcpy((char*)(dataHead)+dataCopied, _buff + (before + 1) * moduleDataSize, (end - before -1) * moduleDataSize);
 		d_dataList.push_back(item);
 	}
 
-	return in_size;
+	return _size;
 }
 
 LineDetList * LineDetNetWork::getRowList()

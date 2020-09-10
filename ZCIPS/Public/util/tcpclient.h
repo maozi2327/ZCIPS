@@ -13,24 +13,24 @@ private:
 	unsigned short d_serverPort;
 	struct command
 	{
-		const char* in_buffer;
-		int in_size;
+		const char* _buffer;
+		int _size;
 	};
 	bool d_connected;
 	bool initialNetWork();
-	void recvThread(std::promise<bool>& in_promise);
+	void recvThread(std::promise<bool>& _promise);
 	std::unique_ptr<std::promise<bool>> d_recvThreadPromisePtr;
 	bool d_isRecvRunning;
 	
-	void sendThread(std::promise<bool>& in_promise);
+	void sendThread(std::promise<bool>& _promise);
 	std::unique_ptr<std::promise<bool>> d_sendThreadPromisePtr;
 	bool d_isSendRunning;
 	TheQueue<command> d_sendQueue;
 public:
-	TcpClient(QString& in_hostAddress, quint16 in_port, QObject *parent = Q_NULLPTR);
+	TcpClient(QString& _hostAddress, quint16 _port, QObject *parent = Q_NULLPTR);
 	~TcpClient();
 
-	bool sendAsyn(const char* in_buffer, int in_size);
-	int sendSyn(const char* in_buffer, int in_size);
-	bool receive(char* in_buffer, int in_size);
+	bool sendAsyn(const char* _buffer, int _size);
+	int sendSyn(const char* _buffer, int _size);
+	bool receive(char* _buffer, int _size);
 };

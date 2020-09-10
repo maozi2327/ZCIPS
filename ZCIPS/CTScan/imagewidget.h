@@ -9,22 +9,22 @@ class ImageWidget : public QWidget
 	Q_OBJECT
 
 public:
-	ImageWidget(ImageWidgetManager* in_imageWidgetManager, int in_desktopWidth, int in_windowHeight, QWidget *parent = Q_NULLPTR);
-	ImageWidget(ImageWidgetManager* in_imageWidgetManager, int in_desktopWidth, int in_windowHeight, unsigned char* in_buffer,
-		int in_width, int in_height, QWidget *parent = Q_NULLPTR);
-	ImageWidget(ImageWidgetManager* in_imageWidgetManager, int in_desktopWidth, int in_windowHeight, QString& in_fileName,
+	ImageWidget(ImageWidgetManager* _imageWidgetManager, int _desktopWidth, int _windowHeight, QWidget *parent = Q_NULLPTR);
+	ImageWidget(ImageWidgetManager* _imageWidgetManager, int _desktopWidth, int _windowHeight, unsigned char* _buffer,
+		int _width, int _height, QWidget *parent = Q_NULLPTR);
+	ImageWidget(ImageWidgetManager* _imageWidgetManager, int _desktopWidth, int _windowHeight, QString& _fileName,
 		QWidget *parent = Q_NULLPTR);
 
-	bool loadImage(QString& in_fileName);
-	bool loadImage(unsigned char* in_buffer, int in_width, int in_height);
+	bool loadImage(QString& _fileName);
+	bool loadImage(unsigned char* _buffer, int _width, int _height);
 	~ImageWidget();
 	
 	void zoomOut();
 	void zoomIn();
 protected:
-	virtual void showEvent(QShowEvent* in_event);
+	virtual void showEvent(QShowEvent* _event);
 	virtual void resizeEvent(QResizeEvent *event);
-	void keyPressEvent(QKeyEvent * in_event);
+	void keyPressEvent(QKeyEvent * _event);
 	void mouseMoveEvent(QMouseEvent *event);
 	void zoomImage();
 	void initialLabelAndImageSize();
@@ -58,7 +58,7 @@ private:
 	int d_zoomRatioFactor = 10;
 	float d_zoomRecommendRatio;
 	static const int d_initialZoomRatioFactor;
-	bool caculateMousePosOnImage(int& in_posX, int& in_posY);
+	bool caculateMousePosOnImage(int& _posX, int& _posY);
 private slots:
 	void on_foldButton_clicked();
 };

@@ -4,9 +4,9 @@
 #include "controllerinterface.h"
 #include "..\Public\headers\machineType.h"
 
-MotorControlWidget::MotorControlWidget(ControllerInterface* in_controller, QWidget *parent)
+MotorControlWidget::MotorControlWidget(ControllerInterface* _controller, QWidget *parent)
 	: QWidget(parent)
-	, d_controller(in_controller)
+	, d_controller(_controller)
 {
 	ui.setupUi(this);
 	d_timer = new QTimer(this);

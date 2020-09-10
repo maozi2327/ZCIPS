@@ -16,9 +16,9 @@ class ConeScanWidget : public QWidget
 	Q_OBJECT
 
 public:
-	ConeScanWidget(MotorControlWidget* in_motorControl, int in_rayId, int in_panelDetId, const
-		std::vector<ScanMode>& in_scanMode, SetupData* in_setupData,
-		Panel* in_panel, ControllerInterface* in_controller, QWidget *parent = Q_NULLPTR);
+	ConeScanWidget(MotorControlWidget* _motorControl, int _rayId, int _panelDetId, const
+		std::vector<ScanMode>& _scanMode, SetupData* _setupData,
+		Panel* _panel, ControllerInterface* _controller, QWidget *parent = Q_NULLPTR);
 
 	~ConeScanWidget();
 
@@ -32,9 +32,9 @@ private:
 	SetupData* d_setupData;
 	ControllerInterface* d_controller;
 	Panel* d_panel;
-	void setConeScanProgress(int in_progress, const QString& in_msg);
-	void initiliseConeScanControls(ConeScanData& in_data);
-	void initiliseConeJointRotScanControls(ConeJointRotScanData& in_data);
+	void setConeScanProgress(int _progress, const QString& _msg);
+	void initiliseConeScanControls(ConeScanData& _data);
+	void initiliseConeJointRotScanControls(ConeJointRotScanData& _data);
 private slots:
 	void on_coneScanBeginSampleButton_clicked();
 	void on_scanProgressUpdated();

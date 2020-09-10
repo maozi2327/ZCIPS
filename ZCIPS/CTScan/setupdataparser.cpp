@@ -2,10 +2,10 @@
 #include "setupdataparser.h"
 #include <regex>
 
-bool SetupDataParser::parseLineDetSection(tinyxml2::XMLElement * in_element)
+bool SetupDataParser::parseLineDetSection(tinyxml2::XMLElement * _element)
 {
-	auto element = in_element->FirstChildElement()->NextSiblingElement();
-	d_setupData->lineDetNum = static_cast<unsigned short>(stoi(std::string(in_element->FirstChildElement()->GetText())));
+	auto element = _element->FirstChildElement()->NextSiblingElement();
+	d_setupData->lineDetNum = static_cast<unsigned short>(stoi(std::string(_element->FirstChildElement()->GetText())));
 	int i = 0;
 
 	for (auto element1 = element; i != d_setupData->lineDetNum && element1 != nullptr;
@@ -18,11 +18,11 @@ bool SetupDataParser::parseLineDetSection(tinyxml2::XMLElement * in_element)
 	return true;
 }
 
-bool SetupDataParser::parseLineDetData(tinyxml2::XMLElement * in_element, int i)
+bool SetupDataParser::parseLineDetData(tinyxml2::XMLElement * _element, int i)
 {
 	LineDetData localLineDetData;
 
-	for (auto element = in_element->FirstChildElement(); element != nullptr;
+	for (auto element = _element->FirstChildElement(); element != nullptr;
 		element = element->NextSiblingElement())
 	{
 		if (strcmp(element->Value(), "ID") == 0)
@@ -94,10 +94,10 @@ bool SetupDataParser::parseLineDetData(tinyxml2::XMLElement * in_element, int i)
 	return true;
 }
 
-bool SetupDataParser::parsePanelDetSection(tinyxml2::XMLElement * in_element)
+bool SetupDataParser::parsePanelDetSection(tinyxml2::XMLElement * _element)
 {
-	d_setupData->panDetNum = static_cast<unsigned short>(stoi(std::string(in_element->FirstChildElement()->GetText())));
-	auto element = in_element->FirstChildElement()->NextSiblingElement();
+	d_setupData->panDetNum = static_cast<unsigned short>(stoi(std::string(_element->FirstChildElement()->GetText())));
+	auto element = _element->FirstChildElement()->NextSiblingElement();
 	int i = 0;
 
 	for (auto element1 = element; i != d_setupData->panDetNum && element1 != nullptr;
@@ -110,11 +110,11 @@ bool SetupDataParser::parsePanelDetSection(tinyxml2::XMLElement * in_element)
 	return true;
 }
 
-bool SetupDataParser::parsePanelDetData(tinyxml2::XMLElement * in_element, int i)
+bool SetupDataParser::parsePanelDetData(tinyxml2::XMLElement * _element, int i)
 {
 	PanDetData localPanDetData;
 
-	for (auto element = in_element->FirstChildElement(); element != nullptr;
+	for (auto element = _element->FirstChildElement(); element != nullptr;
 		element = element->NextSiblingElement())
 	{
 		if (strcmp(element->Value(), "ID") == 0)
@@ -143,10 +143,10 @@ bool SetupDataParser::parsePanelDetData(tinyxml2::XMLElement * in_element, int i
 	return false;
 }
 
-bool SetupDataParser::parsekVRaySection(tinyxml2::XMLElement * in_element)
+bool SetupDataParser::parsekVRaySection(tinyxml2::XMLElement * _element)
 {
-	d_setupData->kVRayNum = static_cast<unsigned short>(stoi(std::string(in_element->FirstChildElement()->GetText())));
-	auto element = in_element->FirstChildElement()->NextSiblingElement();
+	d_setupData->kVRayNum = static_cast<unsigned short>(stoi(std::string(_element->FirstChildElement()->GetText())));
+	auto element = _element->FirstChildElement()->NextSiblingElement();
 	int i = 0;
 
 	for (auto element1 = element; i != d_setupData->kVRayNum && element1 != nullptr;
@@ -163,28 +163,28 @@ bool SetupDataParser::parsekVRaySection(tinyxml2::XMLElement * in_element)
 	return true;
 }
 
-bool SetupDataParser::parsekVRayData(tinyxml2::XMLElement * in_element, int in_number, kVRayData& in_kvRayData)
+bool SetupDataParser::parsekVRayData(tinyxml2::XMLElement * _element, int _number, kVRayData& _kvRayData)
 {
-	for (auto element = in_element->FirstChildElement(); element != nullptr;
+	for (auto element = _element->FirstChildElement(); element != nullptr;
 		element = element->NextSiblingElement())
 	{
 		if (strcmp(element->Value(), "ID") == 0)
-			in_kvRayData.ID= atoi(element->GetText());
+			_kvRayData.ID= atoi(element->GetText());
 		else if (strcmp(element->Value(), "rayType") == 0)
-			strcpy(in_kvRayData.rayType, element->GetText());
+			strcpy(_kvRayData.rayType, element->GetText());
 		else if (strcmp(element->Value(), "rayEnergy") == 0)
-			in_kvRayData.rayEnergy = atof(element->GetText());
+			_kvRayData.rayEnergy = atof(element->GetText());
 		else if (strcmp(element->Value(), "rayDoseRate") == 0)
-			in_kvRayData.rayDoseRate = atof(element->GetText());
+			_kvRayData.rayDoseRate = atof(element->GetText());
 	}
 
 	return true;
 }
 
-bool SetupDataParser::parseAcceleratorSection(tinyxml2::XMLElement * in_element)
+bool SetupDataParser::parseAcceleratorSection(tinyxml2::XMLElement * _element)
 {
-	d_setupData->acceleratorNum = static_cast<unsigned short>(stoi(std::string(in_element->FirstChildElement()->GetText())));
-	auto element = in_element->FirstChildElement()->NextSiblingElement();
+	d_setupData->acceleratorNum = static_cast<unsigned short>(stoi(std::string(_element->FirstChildElement()->GetText())));
+	auto element = _element->FirstChildElement()->NextSiblingElement();
 	int i = 0;
 
 	for (auto element1 = element; i != d_setupData->acceleratorNum && element1 != nullptr;
@@ -201,21 +201,21 @@ bool SetupDataParser::parseAcceleratorSection(tinyxml2::XMLElement * in_element)
 	return true;
 }
 
-bool SetupDataParser::parseAcceleratorData(tinyxml2::XMLElement * in_element, int in_number, AcceleratorData& in_accData)
+bool SetupDataParser::parseAcceleratorData(tinyxml2::XMLElement * _element, int _number, AcceleratorData& _accData)
 {
-	for (auto element = in_element->FirstChildElement(); element != nullptr;
+	for (auto element = _element->FirstChildElement(); element != nullptr;
 		element = element->NextSiblingElement())
 	{
 		if (strcmp(element->Value(), "ID") == 0)
-			in_accData.ID = atoi(element->GetText());
+			_accData.ID = atoi(element->GetText());
 		else if (strcmp(element->Value(), "rayType") == 0)
-			strcpy(in_accData.rayType, element->GetText());
+			strcpy(_accData.rayType, element->GetText());
 		else if (strcmp(element->Value(), "rayEnergy") == 0)
-			in_accData.rayEnergy = atof(element->GetText());
+			_accData.rayEnergy = atof(element->GetText());
 		else if (strcmp(element->Value(), "rayDoseRate") == 0)
-			in_accData.rayDoseRate = atof(element->GetText());
+			_accData.rayDoseRate = atof(element->GetText());
 		else if (strcmp(element->Value(), "accRiseTime") == 0)
-			in_accData.accRiseTime = atoi(element->GetText());
+			_accData.accRiseTime = atoi(element->GetText());
 		else if (strcmp(element->Value(), "syncFreqDefine") == 0)
 		{
 			std::regex pattern("\\d+");
@@ -224,25 +224,25 @@ bool SetupDataParser::parseAcceleratorData(tinyxml2::XMLElement * in_element, in
 			int index = 0;
 
 			for (std::sregex_iterator it(str.begin(), str.end(), pattern), end_it; it != end_it; ++it, ++index)
-				in_accData.syncFreqDefine.push_back(stoi(it->str()));
+				_accData.syncFreqDefine.push_back(stoi(it->str()));
 		}
 	}
 
 	return true;
 }
-void insertNumericDataFromString(std::vector<unsigned short>& int_data, tinyxml2::XMLElement * in_element)
+void insertNumericDataFromString(std::vector<unsigned short>& int_data, tinyxml2::XMLElement * _element)
 {
 	std::regex pattern("\\d+");
 	std::smatch results;
-	std::string str(in_element->GetText());
+	std::string str(_element->GetText());
 	int index = 0;
 
 	for (std::sregex_iterator it(str.begin(), str.end(), pattern), end_it; it != end_it; ++it)
 		int_data.push_back(stoi(it->str()));
 }
-bool SetupDataParser::parseScanModeSection(tinyxml2::XMLElement * in_element)
+bool SetupDataParser::parseScanModeSection(tinyxml2::XMLElement * _element)
 {
-	for (auto element = in_element->FirstChildElement(); element != nullptr;
+	for (auto element = _element->FirstChildElement(); element != nullptr;
 		element = element->NextSiblingElement())
 		//{
 		//	int rayNum = element->FirstAttribute()->IntValue();
@@ -329,9 +329,9 @@ bool SetupDataParser::parseScanModeSection(tinyxml2::XMLElement * in_element)
 	return false;
 }
 
-bool SetupDataParser::parseAxisDefinition(tinyxml2::XMLElement * in_element)
+bool SetupDataParser::parseAxisDefinition(tinyxml2::XMLElement * _element)
 {
-	for (auto element = in_element->FirstChildElement(); element != nullptr;
+	for (auto element = _element->FirstChildElement(); element != nullptr;
 		element = element->NextSiblingElement())
 	{
 		auto itr = AxisNameMap.find(element->Value());
@@ -343,12 +343,12 @@ bool SetupDataParser::parseAxisDefinition(tinyxml2::XMLElement * in_element)
 	return false;
 }
 
-bool SetupDataParser::parseCT2Data(tinyxml2::XMLElement * in_element)
+bool SetupDataParser::parseCT2Data(tinyxml2::XMLElement * _element)
 {
-	d_setupData->ct2DataNum = atoi(in_element->FirstChildElement()->GetText());
+	d_setupData->ct2DataNum = atoi(_element->FirstChildElement()->GetText());
 	int index = 0;
 
-	for (auto element1 = in_element->FirstChildElement()->NextSiblingElement();
+	for (auto element1 = _element->FirstChildElement()->NextSiblingElement();
 		element1 != nullptr && index != d_setupData->ct2DataNum; element1 = element1->NextSiblingElement())
 	{
 		CT2Data locaData;
@@ -388,12 +388,12 @@ bool SetupDataParser::parseCT2Data(tinyxml2::XMLElement * in_element)
 	return true;
 }
 
-bool SetupDataParser::parseCT3Data(tinyxml2::XMLElement * in_element)
+bool SetupDataParser::parseCT3Data(tinyxml2::XMLElement * _element)
 {
-	d_setupData->ct3DataNum = atoi(in_element->FirstChildElement()->GetText());
+	d_setupData->ct3DataNum = atoi(_element->FirstChildElement()->GetText());
 	int index = 0;
 
-	for (auto element1 = in_element->FirstChildElement()->NextSiblingElement();
+	for (auto element1 = _element->FirstChildElement()->NextSiblingElement();
 		element1 != nullptr && index != d_setupData->ct2DataNum; element1 = element1->NextSiblingElement())
 	{
 		CT3Data locaData;
@@ -433,12 +433,12 @@ bool SetupDataParser::parseCT3Data(tinyxml2::XMLElement * in_element)
 	return true;
 }
 
-bool SetupDataParser::parseDRData(tinyxml2::XMLElement * in_element)
+bool SetupDataParser::parseDRData(tinyxml2::XMLElement * _element)
 {
-	d_setupData->drDataNum = atoi(in_element->FirstChildElement()->GetText());
+	d_setupData->drDataNum = atoi(_element->FirstChildElement()->GetText());
 	int index = 0;
 
-	for (auto element1 = in_element->FirstChildElement()->NextSiblingElement();
+	for (auto element1 = _element->FirstChildElement()->NextSiblingElement();
 		element1 != nullptr && index != d_setupData->ct2DataNum; element1 = element1->NextSiblingElement())
 	{
 		DrScanData locaData;
@@ -486,12 +486,12 @@ bool SetupDataParser::parseDRData(tinyxml2::XMLElement * in_element)
 	return true;
 }
 
-bool SetupDataParser::parseConeScanData(tinyxml2::XMLElement * in_element)
+bool SetupDataParser::parseConeScanData(tinyxml2::XMLElement * _element)
 {
-	d_setupData->ConeScanDataNum = atoi(in_element->FirstChildElement()->GetText());
+	d_setupData->ConeScanDataNum = atoi(_element->FirstChildElement()->GetText());
 	int index = 0;
 
-	for (auto element1 = in_element->FirstChildElement()->NextSiblingElement();
+	for (auto element1 = _element->FirstChildElement()->NextSiblingElement();
 		element1 != nullptr && index != d_setupData->ct2DataNum; element1 = element1->NextSiblingElement())
 	{
 		ConeScanData locaData;
@@ -519,12 +519,12 @@ bool SetupDataParser::parseConeScanData(tinyxml2::XMLElement * in_element)
 	return true;
 }
 
-bool SetupDataParser::parseConeJointRotScanData(tinyxml2::XMLElement * in_element)
+bool SetupDataParser::parseConeJointRotScanData(tinyxml2::XMLElement * _element)
 {
-	d_setupData->ConeJointRotScanDataNum = atoi(in_element->FirstChildElement()->GetText());
+	d_setupData->ConeJointRotScanDataNum = atoi(_element->FirstChildElement()->GetText());
 	int index = 0;
 
-	for (auto element1 = in_element->FirstChildElement()->NextSiblingElement();
+	for (auto element1 = _element->FirstChildElement()->NextSiblingElement();
 		element1 != nullptr && index != d_setupData->ct2DataNum; element1 = element1->NextSiblingElement())
 	{
 		ConeJointRotScanData locaData;
@@ -556,8 +556,8 @@ bool SetupDataParser::parseConeJointRotScanData(tinyxml2::XMLElement * in_elemen
 	return true;
 }
 
-SetupDataParser::SetupDataParser(SetupData* in_setupData, QObject *parent)
-	: QObject(parent), d_setupData(in_setupData), d_setupXMLName("./CTScan.xml"), d_XMLDoc(new tinyxml2::XMLDocument())
+SetupDataParser::SetupDataParser(SetupData* _setupData, QObject *parent)
+	: QObject(parent), d_setupData(_setupData), d_setupXMLName("./CTScan.xml"), d_XMLDoc(new tinyxml2::XMLDocument())
 {
 	parseSetupXMLFile();
 }

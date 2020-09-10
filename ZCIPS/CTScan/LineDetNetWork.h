@@ -85,7 +85,7 @@ public:
 	{
 		clear();
 	}
-	void push_back(unsigned long* in_mem)
+	void push_back(unsigned long* _mem)
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
 
@@ -93,7 +93,7 @@ public:
 		{
 			d_ptr = new LineDetList;
 			d_listHead = d_ptr;
-			d_ptr->d_item = in_mem;
+			d_ptr->d_item = _mem;
 			d_ptr->d_prev = 0;
 			d_ptr->d_next = 0;
 			++d_graduationNum;
@@ -103,7 +103,7 @@ public:
 			d_ptr->d_next = new LineDetList;
 			d_ptr->d_next->d_prev = d_ptr;
 			d_ptr = d_ptr->d_next;
-			d_ptr->d_item = in_mem;
+			d_ptr->d_item = _mem;
 			d_ptr->d_next = 0;
 
 			if (d_ptr->d_item[0] != d_ptr->d_prev->d_item[0])
@@ -177,8 +177,8 @@ private:
 	int d_dataSizePerPulse;
 	int d_channelNum;
 	RowList d_dataList;
-	bool setParameterAfterConnect(SOCKET in_sock);
-	void pocessData(char* in_package, int in_size);
+	bool setParameterAfterConnect(SOCKET _sock);
+	void pocessData(char* _package, int _size);
 
 	bool d_isScanning;
 	std::atomic<bool> d_deadThreadRunFlag;
@@ -206,26 +206,26 @@ public:
 	bool StartCI();
 	bool FPGATest();
 	bool DetectorTest();
-	bool SetAmpSize(int in_ampSize);
-	bool SetIntTime(int in_intTime);
-	bool SetDelayTime(int in_delayTime);
+	bool SetAmpSize(int _ampSize);
+	bool SetIntTime(int _intTime);
+	bool SetDelayTime(int _delayTime);
 	bool ReadAmpSize();
 	bool ReadIntTime();
 	bool ReadDelayTime();
 	bool startExtTrigAcquire();
-	void setCIFinished(bool in_finished);
-	void DecodePackages(char* in_buff, int in_size);
+	void setCIFinished(bool _finished);
+	void DecodePackages(char* _buff, int _size);
 
 	int getListItemSize();
 	int getListItemNum();
 	int getGraduationCount();
-	int CollectUsefulData(char * in_buff, int in_size);
+	int CollectUsefulData(char * _buff, int _size);
 	LineDetList* getRowList();
 	void clearRowList();
 
 	bool getConnected();
-	LineDetNetWork(unsigned short in_port, unsigned short in_fifoMask, unsigned short in_channelDepth, unsigned short in_delayTime,
-		unsigned short in_intTime, unsigned short in_ampSize, std::vector<unsigned int> in_blockModuleVec, int in_detNum);
+	LineDetNetWork(unsigned short _port, unsigned short _fifoMask, unsigned short _channelDepth, unsigned short _delayTime,
+		unsigned short _intTime, unsigned short _ampSize, std::vector<unsigned int> _blockModuleVec, int _detNum);
 	~LineDetNetWork();
 };
 

@@ -169,7 +169,7 @@ size_t PESiPanel::getFrameSize()
 {
 	return size_t();
 }
-bool PESiPanel::setSampleTime(int in_milliseconds)
+bool PESiPanel::setSampleTime(int _milliseconds)
 {
 	unsigned int iRet;
 
@@ -184,18 +184,18 @@ bool PESiPanel::setSampleTime(int in_milliseconds)
 
 	return true;
 }
-bool PESiPanel::setBinMode(BinMode in_binMode)
+bool PESiPanel::setBinMode(BinMode _binMode)
 {
 	unsigned int iRet;
 	unsigned short binFmt;
 
-	auto it = d_binModeName.find(in_binMode);
+	auto it = d_binModeName.find(_binMode);
 	binFmt = std::get<1>(it->second);
 
 	if ((iRet = Acquisition_SetCameraBinningMode(hPESiAcqDesc, binFmt)) == HIS_ALL_OK)
 	{
 		LOG_INFO("设置合并模式:%d", std::get<1>(it->second));
-		d_binMode = in_binMode;
+		d_binMode = _binMode;
 		return true;
 	}
 	else
@@ -205,7 +205,7 @@ bool PESiPanel::setBinMode(BinMode in_binMode)
 	}
 
 }
-bool PESiPanel::setSampleMode(SampleMode in_sampleMode)
+bool PESiPanel::setSampleMode(SampleMode _sampleMode)
 {
 	unsigned int iRet;
 	QString errorMsg;
@@ -244,7 +244,7 @@ bool PESiPanel::setSampleMode(SampleMode in_sampleMode)
 
 	return true;
 }
-bool PESiPanel::setGainFactor(int in_gainFactor)
+bool PESiPanel::setGainFactor(int _gainFactor)
 {
 	unsigned int iRet;
 	
@@ -321,9 +321,9 @@ void PESiPanel::stopAcquire()
 {
 	Acquisition_Abort(hPESiAcqDesc);
 }
-bool PESiPanel::setFrames(int in_frames)
+bool PESiPanel::setFrames(int _frames)
 {
-	d_frames = in_frames;
+	d_frames = _frames;
 	d_frameSize = d_width * d_height * d_frames * sizeof(unsigned short);
 	return true;
 }
@@ -331,20 +331,20 @@ float PESiPanel::getPixelSize()
 {
 	return d_pixelSize;
 }
-void PESiPanel::setFrameCallback(std::function<void(unsigned short*)> in_imageProcessCallBack)
+void PESiPanel::setFrameCallback(std::function<void(unsigned short*)> _imageProcessCallBack)
 {
-	d_imageProcCallback = in_imageProcessCallBack;
+	d_imageProcCallback = _imageProcessCallBack;
 }
-bool PESiPanel::getPanelSize(int& out_width, int& out_height)
+bool PESiPanel::getPanelSize(int& _width, int& _height)
 {
-	out_width = d_width;
-	out_height = d_height;
+	_width = d_width;
+	_height = d_height;
 	return true;
 }
 
-bool PESiPanel::setPanelSize(int in_width, int in_height)
+bool PESiPanel::setPanelSize(int _width, int _height)
 {
-	d_width = in_width;
-	d_height = in_height;
+	d_width = _width;
+	d_height = _height;
 	return true;
 }

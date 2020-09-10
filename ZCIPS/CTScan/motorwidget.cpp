@@ -2,9 +2,9 @@
 #include "motorwidget.h"
 #include "controllerinterface.h"
 #
-MotorWidget::MotorWidget(ControllerInterface* in_controller, QWidget *parent)
+MotorWidget::MotorWidget(ControllerInterface* _controller, QWidget *parent)
 	: QWidget(parent)
-	, d_controller(in_controller)
+	, d_controller(_controller)
 {
 	ui.setupUi(this);	
 	d_timer = new QTimer(this);

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "thread.h"
 
-Thread::Thread(std::function<void()> in_function, std::atomic<bool>& in_threadRun)
-	: d_threadFinished(true), d_fun(in_function), d_threadRun(in_threadRun)
+Thread::Thread(std::function<void()> _function, std::atomic<bool>& _threadRun)
+	: d_threadFinished(true), d_fun(_function), d_threadRun(_threadRun)
 {
 	d_threadRun = false;
 }

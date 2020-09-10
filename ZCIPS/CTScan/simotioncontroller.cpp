@@ -17,8 +17,8 @@ SimotionController::SimotionController() : d_bytesReceived(0) , d_netWorkBuffer(
 	, d_server
 	(
 		new TcpServer(sizeof(tagCOMM_PACKET1), 2, 4
-			, [this](SOCKET in_sock) { return initialSend(in_sock); }
-			, [this](char* in_data, int in_lenth) { pocessData(in_data, in_lenth); }
+			, [this](SOCKET _sock) { return initialSend(_sock); }
+			, [this](char* _data, int _lenth) { pocessData(_data, _lenth); }
 			, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), d_port)
 	)
 {
@@ -58,9 +58,9 @@ inline bool GetResult(T1& t1, T2 t2, std::mutex& d_mutex, std::condition_variabl
 	return false;
 }
 
-float SimotionController::readAxisPostion(Axis in_axis)
+float SimotionController::readAxisPostion(Axis _axis)
 {
-	return d_axisPosition[in_axis];
+	return d_axisPosition[_axis];
 }
 
 std::map<Axis, float> SimotionController::readAxisPostion()
@@ -104,7 +104,7 @@ std::map<Axis, float> SimotionController::readAxisSpeed()
 	return std::map<Axis, float>();
 }
 
-bool SimotionController::initialSend(SOCKET in_sock)
+bool SimotionController::initialSend(SOCKET _sock)
 {
 	getSystemStatus();
 	getAxisPosition();
@@ -129,67 +129,67 @@ bool SimotionController::initialiseController()
 						ptr->tagHead[1] = 0xaa;\
 						ptr->tagHead[2] = 0x5a;
 
-bool SimotionController::axisSeekZero(Axis in_axis)
+bool SimotionController::axisSeekZero(Axis _axis)
 {
 	char data[1];
-	data[0] = char(in_axis);
+	data[0] = char(_axis);
 	fillInCmdStructAndFillCmdList(CMD_SEEK_AXIS_ABS_ZERO, data, 1, false);
 	return true;
 }
 
-bool SimotionController::axisAbsMove(Axis in_axis, float in_pos)
+bool SimotionController::axisAbsMove(Axis _axis, float _pos)
 {
 	char data[5];
-	data[0] = char(in_axis);
-	memcpy(data + 1, &in_pos, sizeof(float));
+	data[0] = char(_axis);
+	memcpy(data + 1, &_pos, sizeof(float));
 	fillInCmdStructAndFillCmdList(CMD_AXIS_ABS_MOVE, data, 5, false);
 	return true;
 }
 
-bool SimotionController::axisRelMove(Axis in_axis, float in_pos)
+bool SimotionController::axisRelMove(Axis _axis, float _pos)
 {
 	char data[5];
-	data[0] = char(in_axis);
-	memcpy(data + 1, &in_pos, sizeof(float));
+	data[0] = char(_axis);
+	memcpy(data + 1, &_pos, sizeof(float));
 	fillInCmdStructAndFillCmdList(CMD_AXIS_REL_MOVE, data, 5, false);
 	return true;
 }
 
-bool SimotionController::sliceMove(float in_pos)
+bool SimotionController::sliceMove(float _pos)
 {
 	char data[4];
-	memcpy(data, &in_pos, sizeof(float));
+	memcpy(data, &_pos, sizeof(float));
 	fillInCmdStructAndFillCmdList(CMD_SLICE_ABS_MOVE, data, 4, false);
 	return true;
 }
 
-void SimotionController::getAixsValueAndNotify(std::map<Axis, float>& in_value, char * in_data, int in_axisNum, int in_typeCode)
+void SimotionController::getAixsValueAndNotify(std::map<Axis, float>& _value, char * _data, int _axisNum, int _typeCode)
 {
-	for (int i = 0; i != in_axisNum; ++i)
-		in_value[Axis(i)] = *(float*)((in_data + i * 4));
+	for (int i = 0; i != _axisNum; ++i)
+		_value[Axis(i)] = *(float*)((_data + i * 4));
 	
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
-		d_receivedCmd = in_typeCode;
+		d_receivedCmd = _typeCode;
 		d_con.notify_all();
 	}
 }
 
-void SimotionController::fillInCmdStructAndFillCmdList(int in_cmd, char * in_data, int in_size, bool in_consist)
+void SimotionController::fillInCmdStructAndFillCmdList(int _cmd, char * _data, int _size, bool _consist)
 {
-	CommandType d_cmdData(sizeof(tagCOMM_PACKET) + in_size + 1);   //一位校验和
+	CommandType d_cmdData(sizeof(tagCOMM_PACKET) + _size + 1);   //一位校验和
 	tagCOMM_PACKET* ptr = (tagCOMM_PACKET*)(d_cmdData.d_data);
 	FILLX55XAAX5A;
-	memcpy(d_cmdData.d_data + sizeof(tagCOMM_PACKET), in_data, in_size);
-	ptr->typeCode = unsigned char(in_cmd);
-	ptr->tagLen = 3 + in_size;
+	memcpy(d_cmdData.d_data + sizeof(tagCOMM_PACKET), _data, _size);
+	ptr->typeCode = unsigned char(_cmd);
+	ptr->tagLen = 3 + _size;
 	unsigned char sum = 0;
 
-	for (int i = 0; i < 3 + in_size + 3; i++)
+	for (int i = 0; i < 3 + _size + 3; i++)
 		sum += *(d_cmdData.d_data + i);
 
-	*(d_cmdData.d_data + 3 + in_size + 3) = sum;
-	d_cmdList.pushBack(d_cmdData, in_consist);
+	*(d_cmdData.d_data + 3 + _size + 3) = sum;
+	d_cmdList.pushBack(d_cmdData, _consist);
 }
 
 bool SimotionController::sendCmd()
@@ -215,18 +215,18 @@ void SimotionController::setConnectdSts()
 //55  AA  5A    TP          BL           DW             VS
 //  包头(3B)  分类码(1B) 包长(2B)    n字节参数字      校验和(1B)
 
-void SimotionController::sendToControl(char * in_package, int in_size, bool in_consist)
+void SimotionController::sendToControl(char * _package, int _size, bool _consist)
 {
-	CommandType cmd(in_package, in_size);
-	d_cmdList.pushBack(cmd, in_consist);
+	CommandType cmd(_package, _size);
+	d_cmdList.pushBack(cmd, _consist);
 }
 
-void SimotionController::pocessData(char* in_package, int in_size)
+void SimotionController::pocessData(char* _package, int _size)
 {
 	setConnectdSts();
 	int posecessedDataLenth = 0;
-	memcpy(d_netWorkBuffer + d_bytesReceived, in_package, in_size);
-	d_bytesReceived += in_size;
+	memcpy(d_netWorkBuffer + d_bytesReceived, _package, _size);
+	d_bytesReceived += _size;
 
 	while (true)
 	{
@@ -292,25 +292,25 @@ void SimotionController::netCheckSlot()
 	}
 }
 
-void SimotionController::decodePackages(char* in_package, int in_size)
+void SimotionController::decodePackages(char* _package, int _size)
 {
-	char typeCode = ((tagCOMM_PACKET1*)in_package)->typeCode;
-	int dataSize = ((tagCOMM_PACKET1*)in_package)->tagLen;
+	char typeCode = ((tagCOMM_PACKET1*)_package)->typeCode;
+	int dataSize = ((tagCOMM_PACKET1*)_package)->tagLen;
 
 	switch (typeCode) 
 	{
 	case	STS_SYSTEM_STATUS:
-		d_sysStatus = *(SysStatus*)((in_package + sizeof(tagCOMM_PACKET1)));
+		d_sysStatus = *(SysStatus*)((_package + sizeof(tagCOMM_PACKET1)));
 		break;
 	case	STS_CONTROL_SYSTEM:
-		d_ctrlSysSts = *(ControlSystemStatus*)((in_package + sizeof(tagCOMM_PACKET1)));
+		d_ctrlSysSts = *(ControlSystemStatus*)((_package + sizeof(tagCOMM_PACKET1)));
 		break;
 	case	STS_GRADUATION_BASE:
 		break;
 	case	STS_WORKZERO:
 	{
 		int axisNum = dataSize / 4;
-		getAixsValueAndNotify(d_axisWorkZero, in_package + sizeof(tagCOMM_PACKET1), axisNum, typeCode);
+		getAixsValueAndNotify(d_axisWorkZero, _package + sizeof(tagCOMM_PACKET1), axisNum, typeCode);
 		break;
 	}
 	//(轴代号|轴坐标)|(轴代号|轴坐标)|(轴代号|轴坐标)|......(轴代号|轴坐标)|
@@ -318,13 +318,13 @@ void SimotionController::decodePackages(char* in_package, int in_size)
 	case	STS_ALL_COORDINATION:
 	{
 		int axisNum = dataSize / 4;
-		getAixsValueAndNotify(d_axisPosition, in_package + sizeof(tagCOMM_PACKET1), axisNum, typeCode);
+		getAixsValueAndNotify(d_axisPosition, _package + sizeof(tagCOMM_PACKET1), axisNum, typeCode);
 		break;
 	}
 	case	STS_AXIS_SPEED:
 	{
 		int axisNum = dataSize / 4;
-		getAixsValueAndNotify(d_axisSpeed, in_package + sizeof(tagCOMM_PACKET1), axisNum, typeCode);
+		getAixsValueAndNotify(d_axisSpeed, _package + sizeof(tagCOMM_PACKET1), axisNum, typeCode);
 		break;
 	}
 	case	STS_DIAGNICS_RESULT:
@@ -340,9 +340,9 @@ void SimotionController::decodePackages(char* in_package, int in_size)
 	}
 }
 
-void SimotionController::restartLineDet(int in_detNum)
+void SimotionController::restartLineDet(int _detNum)
 {
-	char data = char(in_detNum);
+	char data = char(_detNum);
 	fillInCmdStructAndFillCmdList(CMD_RESTART_DET, (char*)(&data), 1, true);
 }
 
@@ -376,13 +376,13 @@ void SimotionController::stopGettingAxisPostion()
 	;
 }
 
-void SimotionController::setAxisSpeed(std::map<Axis, float>& in_speed)
+void SimotionController::setAxisSpeed(std::map<Axis, float>& _speed)
 {
-	int size = in_speed.size() * 5;
+	int size = _speed.size() * 5;
 	char* data = new char[size];
 	int i = 0;
 
-	for (auto& pair : in_speed)
+	for (auto& pair : _speed)
 	{
 		data[i * 5] = char(pair.first);
 		memcpy(data + i * 5 + 1, &pair.second, sizeof(float));
@@ -393,13 +393,13 @@ void SimotionController::setAxisSpeed(std::map<Axis, float>& in_speed)
 	delete[] data;
 }
 
-void SimotionController::setAxisWorkZero(std::map<Axis, float>& in_workZero)
+void SimotionController::setAxisWorkZero(std::map<Axis, float>& _workZero)
 {
-	int size = in_workZero.size() * 5;
+	int size = _workZero.size() * 5;
 	char* data = new char[size];
 	int i = 0;
 
-	for (auto& pair : in_workZero)
+	for (auto& pair : _workZero)
 	{
 		data[i * 5] = char(pair.first);
 		memcpy(data + i * 5 + 1, &pair.second, sizeof(float));

@@ -8,10 +8,10 @@ public:
 	ImageWidgetManager();
 	~ImageWidgetManager();
 
-	bool showImageInNewWindow(unsigned char* in_imageMemory, int in_width, int in_height);
-	bool showImageInFrontWindow(unsigned char* in_imageMemory, int in_width, int in_height);
-	bool showImageInNewWindow(QString& in_fileName);
-	bool showImageInFrontWindow(QString& in_fileName);
+	bool showImageInNewWindow(unsigned char* _imageMemory, int _width, int _height);
+	bool showImageInFrontWindow(unsigned char* _imageMemory, int _width, int _height);
+	bool showImageInNewWindow(QString& _fileName);
+	bool showImageInFrontWindow(QString& _fileName);
 private:
 	QString d_rootDirectory;
 	std::vector<ImageWidget*> d_imageWidgetVec;

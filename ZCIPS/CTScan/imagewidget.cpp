@@ -26,8 +26,8 @@ QVector<QRgb> ImageWidget::initializeColorTable()
 
 	return colorTable;
 }
-ImageWidget::ImageWidget(ImageWidgetManager* in_imageWidgetManager, int in_desktopWidth, int in_windowHeight, QWidget *parent)
-	: d_manager(in_imageWidgetManager), QWidget(parent), d_desktopWidth(in_desktopWidth), d_desktopHeight(in_windowHeight)
+ImageWidget::ImageWidget(ImageWidgetManager* _imageWidgetManager, int _desktopWidth, int _windowHeight, QWidget *parent)
+	: d_manager(_imageWidgetManager), QWidget(parent), d_desktopWidth(_desktopWidth), d_desktopHeight(_windowHeight)
 {
 	ui.setupUi(this);
 	QString str;
@@ -45,18 +45,18 @@ ImageWidget::ImageWidget(ImageWidgetManager* in_imageWidgetManager, int in_deskt
 		resize(d_desktopHeight * 0.6 * d_imageWidth / d_imageHeight, d_desktopHeight * 0.6);
 	}
 }
-ImageWidget::ImageWidget(ImageWidgetManager* in_imageWidgetManager, int in_desktopWidth, int in_windowHeight,
-	unsigned char* in_buffer, int in_width, int in_height, QWidget *parent)
-	: d_manager(in_imageWidgetManager), QWidget(parent), d_desktopWidth(in_desktopWidth), d_desktopHeight(in_windowHeight)
+ImageWidget::ImageWidget(ImageWidgetManager* _imageWidgetManager, int _desktopWidth, int _windowHeight,
+	unsigned char* _buffer, int _width, int _height, QWidget *parent)
+	: d_manager(_imageWidgetManager), QWidget(parent), d_desktopWidth(_desktopWidth), d_desktopHeight(_windowHeight)
 {
-	loadImage(in_buffer, in_width, in_height);
+	loadImage(_buffer, _width, _height);
 }
-ImageWidget::ImageWidget(ImageWidgetManager* in_imageWidgetManager, int in_desktopWidth, int in_windowHeight, 
-	QString& in_fileName, QWidget *parent)
-	: d_manager(in_imageWidgetManager), QWidget(parent), d_desktopWidth(in_desktopWidth), d_desktopHeight(in_windowHeight)
+ImageWidget::ImageWidget(ImageWidgetManager* _imageWidgetManager, int _desktopWidth, int _windowHeight, 
+	QString& _fileName, QWidget *parent)
+	: d_manager(_imageWidgetManager), QWidget(parent), d_desktopWidth(_desktopWidth), d_desktopHeight(_windowHeight)
 {
 	ui.setupUi(this);
-	loadImage(in_fileName);
+	loadImage(_fileName);
 	initialLabelAndImageSize();
 }
 ImageWidget::~ImageWidget()
@@ -98,14 +98,14 @@ void ImageWidget::initialLabelAndImageSize()
 		ui.horizontalSpacer->minimumSize().width() * 2,
 		d_imageScreenHeight + lineWidth + ui.messageLabel->height() + ui.verticalSpacer->minimumSize().height() * 2);
 }
-bool ImageWidget::loadImage(QString& in_fileName)
+bool ImageWidget::loadImage(QString& _fileName)
 {
 	QImage image("D:/code/CTScan/CTScan_QT/x64/Debug/gain.tif");
 	d_pixmap = new QPixmap;
 	d_pixmap->convertFromImage(image);
 	return true;
 }
-void ImageWidget::showEvent(QShowEvent* in_event)
+void ImageWidget::showEvent(QShowEvent* _event)
 {
 }
 void ImageWidget::mouseMoveEvent(QMouseEvent *event)
@@ -123,7 +123,7 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 	mousePosStr.sprintf("%d, %d", posX, posY);
 	ui.messageLabel->setText(mousePosStr);
 }
-bool ImageWidget::caculateMousePosOnImage(int& in_posX, int& in_posY)
+bool ImageWidget::caculateMousePosOnImage(int& _posX, int& _posY)
 {
 	d_imageLabelRect = ui.imageLabel->geometry();
 
@@ -143,12 +143,12 @@ bool ImageWidget::caculateMousePosOnImage(int& in_posX, int& in_posY)
 	{
 		d_mousePosToImageLeft = d_mousePos.x() - d_imageLabelRect.left() - imageScreenLeftPos;
 		d_mousePosToImageRight = d_mousePos.y() - d_imageLabelRect.top() - imageScreenTopPos;
-		in_posX = (d_mousePosToImageLeft + d_imageTopLeftXOnImage) / d_zoomRatio;
-		in_posY = (d_mousePosToImageRight + d_imageTopLeftYOnImage) / d_zoomRatio;
+		_posX = (d_mousePosToImageLeft + d_imageTopLeftXOnImage) / d_zoomRatio;
+		_posY = (d_mousePosToImageRight + d_imageTopLeftYOnImage) / d_zoomRatio;
 		d_mousePosOnImageLabel.setX(d_mousePos.x() - d_imageLabelRect.left());
 		d_mousePosOnImageLabel.setY(d_mousePos.y() - d_imageLabelRect.top());
-		d_mousePosOnImage.setX(in_posX);
-		d_mousePosOnImage.setY(in_posY);
+		d_mousePosOnImage.setX(_posX);
+		d_mousePosOnImage.setY(_posY);
 		return true;
 	}
 	else
@@ -181,9 +181,9 @@ void ImageWidget::on_foldButton_clicked()
 		resize(newWidth, height());
 	}
 }
-bool ImageWidget::loadImage(unsigned char* in_buffer, int in_width, int in_height)
+bool ImageWidget::loadImage(unsigned char* _buffer, int _width, int _height)
 {
-	QImage* image = new QImage(in_buffer, in_width, in_height, in_width * sizeof(unsigned int),
+	QImage* image = new QImage(_buffer, _width, _height, _width * sizeof(unsigned int),
 		QImage::Format_Indexed8);
 	d_image = image;
 	d_imageWidth = image->width();
@@ -195,9 +195,9 @@ bool ImageWidget::loadImage(unsigned char* in_buffer, int in_width, int in_heigh
 	ui.imageLabel->setAlignment(Qt::AlignCenter);
 	return true;
 }
-void ImageWidget::keyPressEvent(QKeyEvent* in_event)
+void ImageWidget::keyPressEvent(QKeyEvent* _event)
 {
-	switch (in_event->key())
+	switch (_event->key())
 	{
 	case Qt::Key_Minus:
 		zoomIn();

@@ -7,10 +7,10 @@ class ConeContinusScan :
 private:
 	int d_graduationCount;
 public:
-	ConeContinusScan(Panel* in_panel, ControllerInterface* in_controller, PanelImageProcess* in_ctDispose);
+	ConeContinusScan(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _ctDispose);
 	~ConeContinusScan();
 
 	virtual bool stopScan();
-	virtual void scanThread(std::promise<bool>& in_promise);
+	virtual void scanThread(std::promise<bool>& _promise);
 };
 

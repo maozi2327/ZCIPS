@@ -6,39 +6,39 @@
 #include "../Public/headers/setupData.h"
 #include "ct3scan.h"
 
-LineDetScanWidget::LineDetScanWidget(MotorControlWidget* in_motorControl, int in_rayId, int in_lineDetId, 
-	const std::vector<ScanMode>& in_scanMode, SetupData* in_setupData, 
-	LineDetNetWork* in_lineDetNetWork, ControllerInterface* in_controller, QWidget *parent)
-	: QWidget(parent), d_motorControlDialog(in_motorControl)
-	, d_rayNum(in_rayId), d_detNum(in_lineDetId)
-	, d_setupData(in_setupData), d_lineDetNetWork(in_lineDetNetWork), d_controller(in_controller)
+LineDetScanWidget::LineDetScanWidget(MotorControlWidget* _motorControl, int _rayId, int _lineDetId, 
+	const std::vector<ScanMode>& _scanMode, SetupData* _setupData, 
+	LineDetNetWork* _lineDetNetWork, ControllerInterface* _controller, QWidget *parent)
+	: QWidget(parent), d_motorControlDialog(_motorControl)
+	, d_rayNum(_rayId), d_detNum(_lineDetId)
+	, d_setupData(_setupData), d_lineDetNetWork(_lineDetNetWork), d_controller(_controller)
 {
 	ui.setupUi(this);
 	initiliseControls();
 
-	for (auto& scanMode : in_scanMode)
+	for (auto& scanMode : _scanMode)
 	{
 		if (scanMode == ScanMode::CT3_SCAN)
 		{
 			auto itr = std::find_if(d_setupData->ct3Data.begin(), d_setupData->ct3Data.end(),
-				[=](CT3Data& in_ct3Data)
-			{	return in_ct3Data.Ray == in_rayId && in_ct3Data.Det == in_lineDetId; });
+				[=](CT3Data& _ct3Data)
+			{	return _ct3Data.Ray == _rayId && _ct3Data.Det == _lineDetId; });
 
 			initiliseCt3Controls(*itr);
 		}
 		else if (scanMode == ScanMode::DR_SCAN)
 		{
 			auto itr = std::find_if(d_setupData->drScanData.begin(), d_setupData->drScanData.end(),
-				[=](DrScanData& in_drData)
-			{	return in_drData.Ray == in_rayId && in_drData.Det == in_lineDetId; });
+				[=](DrScanData& _drData)
+			{	return _drData.Ray == _rayId && _drData.Det == _lineDetId; });
 
 			initiliseDrControls(*itr);
 		}
 		else if (scanMode == ScanMode::CT2_SCAN)
 		{
 			auto itr = std::find_if(d_setupData->ct2Data.begin(), d_setupData->ct2Data.end(),
-				[=](CT2Data& in_ct2Data)
-			{	return in_ct2Data.Ray == in_rayId && in_ct2Data.Det == in_lineDetId; });
+				[=](CT2Data& _ct2Data)
+			{	return _ct2Data.Ray == _rayId && _ct2Data.Det == _lineDetId; });
 
 			initiliseCt2Controls(*itr);
 		}
@@ -55,11 +55,11 @@ LineDetScanWidget::~LineDetScanWidget()
 
 }
 
-void LineDetScanWidget::onNetworkStsChanged(bool in_netWorkSts)
+void LineDetScanWidget::onNetworkStsChanged(bool _netWorkSts)
 {
-	//ui.startButton->setEnabled(in_netWorkSts);
-	//ui.startButton->setEnabled(in_netWorkSts);
-	//ui.scanModeTab->setEnabled(in_netWorkSts);
+	//ui.startButton->setEnabled(_netWorkSts);
+	//ui.startButton->setEnabled(_netWorkSts);
+	//ui.scanModeTab->setEnabled(_netWorkSts);
 }
 
 void LineDetScanWidget::contextMenuEvent(QContextMenuEvent * event)
@@ -71,9 +71,9 @@ void LineDetScanWidget::contextMenuEvent(QContextMenuEvent * event)
 	menu.exec(event->globalPos());
 }
 
-//void LineDetScanWidget::keyPressEvent(QKeyEvent * in_event)
+//void LineDetScanWidget::keyPressEvent(QKeyEvent * _event)
 //{
-//	switch (in_event->key())
+//	switch (_event->key())
 //	{
 //	case Qt::Key_Return:
 //		QString valueText = ui.ct3LayerPosLineEdit->text();
@@ -94,20 +94,20 @@ void LineDetScanWidget::disableAllControls()
 }
 
 template<typename T>
-void addItemToMatixVieSample(T& in_data, QComboBox* in_matrix, QComboBox* in_view, QComboBox* in_sampleTime,
-	int in_rayNum, int in_detNum)
+void addItemToMatixVieSample(T& _data, QComboBox* _matrix, QComboBox* _view, QComboBox* _sampleTime,
+	int _rayNum, int _detNum)
 {
-	//for(auto& matrixItr : in_data)
-	//	if (matrixItr != in_data.end())
+	//for(auto& matrixItr : _data)
+	//	if (matrixItr != _data.end())
 	//	{
-	for (auto& value : in_data.Matrix)
-		in_matrix->addItem(QString::number(value));
+	for (auto& value : _data.Matrix)
+		_matrix->addItem(QString::number(value));
 
-	for (auto& value : in_data.View)
-		in_view->addItem(QString::number(value));
+	for (auto& value : _data.View)
+		_view->addItem(QString::number(value));
 
-	for (auto& value : in_data.SampleTime)
-		in_sampleTime->addItem(QString::number(value));
+	for (auto& value : _data.SampleTime)
+		_sampleTime->addItem(QString::number(value));
 		//}
 }
 
@@ -135,9 +135,9 @@ void LineDetScanWidget::initiliseControls()
 	ui.scanModeTab->setCurrentWidget(ui.ct3Tab);
 }
 
-void LineDetScanWidget::initiliseCt3Controls(CT3Data& in_data)
+void LineDetScanWidget::initiliseCt3Controls(CT3Data& _data)
 {
-	addItemToMatixVieSample(in_data, ui.ct3MatrixComboBox, ui.ct3ViewComboBox,
+	addItemToMatixVieSample(_data, ui.ct3MatrixComboBox, ui.ct3ViewComboBox,
 		ui.ct3SampleTimeComboBox, d_rayNum, d_detNum);
 	ui.ct3MultiLayerComboBox->addItem(QString::fromLocal8Bit("单层"));
 	ui.ct3MultiLayerComboBox->addItem(QString::fromLocal8Bit("多层等间距"));
@@ -145,18 +145,18 @@ void LineDetScanWidget::initiliseCt3Controls(CT3Data& in_data)
 	ui.ct3MultiLayerComboBox->setCurrentText(QString::fromLocal8Bit("单层"));
 }
 
-void LineDetScanWidget::initiliseCt2Controls(CT2Data& in_data)
+void LineDetScanWidget::initiliseCt2Controls(CT2Data& _data)
 {
-	addItemToMatixVieSample(in_data, ui.ct2MatrixComboBox, ui.ct2ViewComboBox,
+	addItemToMatixVieSample(_data, ui.ct2MatrixComboBox, ui.ct2ViewComboBox,
 		ui.ct2SampleTimeComboBox, d_rayNum, d_detNum);
 	ui.ct2ScanModeComboBox->addItem(QString::fromLocal8Bit("360度"));
 	ui.ct2ScanModeComboBox->addItem(QString::fromLocal8Bit("360度间隔"));
 	ui.ct2ScanModeComboBox->addItem(QString::fromLocal8Bit("180度"));
 }
 
-void LineDetScanWidget::initiliseDrControls(DrScanData& in_data)
+void LineDetScanWidget::initiliseDrControls(DrScanData& _data)
 {
-	addItemToMatixVieSample(in_data, ui.drMatrixComboBox, ui.drViewComboBox,
+	addItemToMatixVieSample(_data, ui.drMatrixComboBox, ui.drViewComboBox,
 		ui.drSampleTimeComboBox, d_rayNum, d_detNum);
 	ui.drRatioComboBox->addItem(QString::fromLocal8Bit("等比例"));
 	ui.drRatioComboBox->addItem(QString::fromLocal8Bit("不等比例"));
@@ -189,9 +189,9 @@ void LineDetScanWidget::on_saveDirButton_clicked()
 	auto srcDirPath = QFileDialog::getExistingDirectory(this, "choose src Directory", "/");
 }
 
-void LineDetScanWidget::on_ct3MultiLayerComboBox_currentIndexChanged(const QString& in_text)
+void LineDetScanWidget::on_ct3MultiLayerComboBox_currentIndexChanged(const QString& _text)
 {
-	if (in_text == QString::fromLocal8Bit("单层"))
+	if (_text == QString::fromLocal8Bit("单层"))
 	{
 		ui.ct3LayerPosLineEdit->show();
 		ui.ct3LayerSpaceLineEdit->hide();
@@ -199,7 +199,7 @@ void LineDetScanWidget::on_ct3MultiLayerComboBox_currentIndexChanged(const QStri
 		ui.ct3SpaceNumLabel->hide();
 		ui.ct3LayerSpaceLabel->hide();
 	}
-	else if (in_text == QString::fromLocal8Bit("多层等间距"))
+	else if (_text == QString::fromLocal8Bit("多层等间距"))
 	{
 		ui.ct3LayerPosLineEdit->show();
 		ui.ct3LayerSpaceLineEdit->show();
@@ -207,7 +207,7 @@ void LineDetScanWidget::on_ct3MultiLayerComboBox_currentIndexChanged(const QStri
 		ui.ct3SpaceNumLabel->show();
 		ui.ct3LayerSpaceLabel->show();
 	}
-	else if (in_text == QString::fromLocal8Bit("多层不等间距"))
+	else if (_text == QString::fromLocal8Bit("多层不等间距"))
 	{
 		ui.ct3LayerPosLineEdit->show();
 		ui.ct3LayerSpaceLineEdit->hide();
