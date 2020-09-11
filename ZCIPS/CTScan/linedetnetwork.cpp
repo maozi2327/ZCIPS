@@ -39,6 +39,8 @@ LineDetNetWork::LineDetNetWork(unsigned short _port, unsigned short _fifoMask, u
 		(
 			[=]()
 			{
+				std::this_thread::sleep_for(std::chrono::seconds(20));
+
 				while (d_deadThreadRunFlag)
 				{
 					if (!d_isScanning && !StartCI())
@@ -157,27 +159,18 @@ inline bool GetResult(T1& t1, T2 t2, std::condition_variable& _con, std::mutex& 
 
 bool LineDetNetWork::ARMTest()
 {
-	CMD_STRUCT cmdInfo;
-	cmdInfo.cmd = CMD_ARM_TEST;
-	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = 0xffff;
-	cmdInfo.respond_type = 1;
+	CMD_STRUCT cmdInfo{ CMD_ARM_TEST , 16, 0xffff, 1 };
 	d_recvType = CMD;
 
 	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)) > 0)
 		return GetResult(d_cmdType, CMD_ARM_TEST, d_con, d_mutex);
 
 	return false;
-	
 }
 
 bool LineDetNetWork::ChannelSelect()
 {
-	CMD_STRUCT cmdInfo;
-	cmdInfo.cmd = CMD_CHANNEL_SELECT;
-	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = d_fifoMask;
-	cmdInfo.respond_type = 0;
+	CMD_STRUCT cmdInfo{ CMD_CHANNEL_SELECT , 16, d_fifoMask, 0 };
 	
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return true;
@@ -187,15 +180,10 @@ bool LineDetNetWork::ChannelSelect()
 
 bool LineDetNetWork::ChannelDepthSet()
 {
-	CMD_STRUCT cmdInfo;
-	cmdInfo.cmd = CMD_CHANNEL_DEPTH_SET;
-	cmdInfo.cmd_len = 16;
-
 	//实际FIFO的深度，也是单采样脉冲下ARM读FIFO的次数(16位总线位宽、67个整型数据，将进行134次读操作)
-	//此处channel_depth+3是数据中包含分度号、脉冲序号和校验和3个数据
-	cmdInfo.cmd_param = (d_channelDepth + 3) * 2;
-	cmdInfo.respond_type = 0;
-	
+	//此处channel_depth+3是数据中包含分度号、脉冲序号和校验和3个数据	
+	CMD_STRUCT cmdInfo{ CMD_CHANNEL_DEPTH_SET , 16, (unsigned int)((d_channelDepth + 3) * 2), 0 };
+
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return true;
 
@@ -204,11 +192,7 @@ bool LineDetNetWork::ChannelDepthSet()
 
 bool LineDetNetWork::StartCI()
 {
-	CMD_STRUCT cmdInfo;
-	cmdInfo.cmd = CMD_START_CI;
-	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = 0;
-	cmdInfo.respond_type = 0;
+	CMD_STRUCT cmdInfo{ CMD_START_CI , 16, 0, 0 };
 
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return true;
@@ -223,11 +207,7 @@ bool LineDetNetWork::FPGATest()
 
 bool LineDetNetWork::DetectorTest()
 {
-	CMD_STRUCT cmdInfo;
-	cmdInfo.cmd = CMD_DETECTOR_TEST;
-	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = d_channelDepth;
-	cmdInfo.respond_type = 1;
+	CMD_STRUCT cmdInfo{ CMD_DETECTOR_TEST , 16, d_channelDepth, 1 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 	
@@ -239,11 +219,7 @@ bool LineDetNetWork::DetectorTest()
 
 bool LineDetNetWork::SetAmpSize(int _ampSize)
 {
-	CMD_STRUCT cmdInfo;
-	cmdInfo.cmd = CMD_SET_AMP_SIZE;
-	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = _ampSize;
-	cmdInfo.respond_type = 1;
+	CMD_STRUCT cmdInfo{ CMD_SET_AMP_SIZE , 16, (unsigned int)_ampSize, 1 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
@@ -255,11 +231,7 @@ bool LineDetNetWork::SetAmpSize(int _ampSize)
 
 bool LineDetNetWork::SetIntTime(int _intTime)
 {
-	CMD_STRUCT cmdInfo;
-	cmdInfo.cmd = CMD_SET_INT_TIME;
-	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = _intTime;
-	cmdInfo.respond_type = 1;
+	CMD_STRUCT cmdInfo{ CMD_SET_INT_TIME , 16, (unsigned int)_intTime, 0 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
@@ -271,13 +243,10 @@ bool LineDetNetWork::SetIntTime(int _intTime)
 
 bool LineDetNetWork::SetDelayTime(int _delayTime)
 {
-	CMD_STRUCT cmdInfo;
-	cmdInfo.cmd = CMD_SET_DELAY_TIME;
-	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = _delayTime;
-	cmdInfo.respond_type = 1;
+	CMD_STRUCT cmdInfo{ CMD_SET_DELAY_TIME , 16, (unsigned int)_delayTime, 1 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
+	
 	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
@@ -286,11 +255,7 @@ bool LineDetNetWork::SetDelayTime(int _delayTime)
 
 bool LineDetNetWork::ReadAmpSize()
 {
-	CMD_STRUCT cmdInfo;
-	cmdInfo.cmd = CMD_READ_AMP_SIZE;
-	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = 0x0;
-	cmdInfo.respond_type = 1;
+	CMD_STRUCT cmdInfo{ CMD_READ_AMP_SIZE , 16, 0x0, 1 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
@@ -302,11 +267,7 @@ bool LineDetNetWork::ReadAmpSize()
 
 bool LineDetNetWork::ReadIntTime()
 {
-	CMD_STRUCT cmdInfo;
-	cmdInfo.cmd = CMD_READ_INT_TIME;
-	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = 0x0;
-	cmdInfo.respond_type = 1;
+	CMD_STRUCT cmdInfo{ CMD_READ_INT_TIME , 16, 0x0, 1 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
@@ -318,11 +279,7 @@ bool LineDetNetWork::ReadIntTime()
 
 bool LineDetNetWork::ReadDelayTime()
 {
-	CMD_STRUCT cmdInfo;
-	cmdInfo.cmd = CMD_READ_DELAY_TIME;
-	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = 0x0;
-	cmdInfo.respond_type = 1;
+	CMD_STRUCT cmdInfo{ CMD_READ_DELAY_TIME , 16, 0x0, 1 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
@@ -334,13 +291,8 @@ bool LineDetNetWork::ReadDelayTime()
 
 bool LineDetNetWork::startExtTrigAcquire()
 {
-	clearRowList();
-
-	CMD_STRUCT cmdInfo;
-	cmdInfo.cmd = CMD_INTERNAL_COLLECT;
-	cmdInfo.cmd_len = 16;
-	cmdInfo.cmd_param = 1;
-	cmdInfo.respond_type = 0;
+	d_dataList.clear();
+	CMD_STRUCT cmdInfo{ CMD_INTERNAL_COLLECT , 16, 1, 0 };
 
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return true;

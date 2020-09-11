@@ -13,7 +13,7 @@ class MotorControlWidget;
 class LineDetScanWidget;
 class ControllerInterface;
 class LineDetNetWork;
-class MsgListBox;
+class MsgListBoxDialog;
 class LineDetScanInterface;
 class ConeScanWidget;
 class MotorWidget;
@@ -34,18 +34,18 @@ private slots:
 	void errorMsgSlot(QString msg);
 	void infoMsgSlot(QString msg);
 	void bugMsgSlot(QString msg);
+	void ctScanWidgetClosedSlot();
 protected:
 
 private:
 	std::unique_ptr<SetupData> d_setupData;
 	std::unique_ptr<SetupDataParser> d_setupDataPaser;
 	std::unique_ptr<ImageWidgetManager> d_imageWidgetManager;
-	std::unique_ptr<RayPanelMotion> d_rayPanelMotion;
 	std::unique_ptr<ControllerInterface> d_controller;
-	std::unique_ptr<MotorControlWidget> d_motorControl;
 	MotorWidget* d_motorWidget;
 	std::unique_ptr<ConeScanWidget> d_panle1Det1ScanWidget;
-	std::unique_ptr<MsgListBox> d_msg;
+	//std::unique_ptr<MsgListBoxDialog> d_msg;			//消息对话框无父窗口
+	MsgListBoxDialog* d_msg;			//消息对话框无父窗口
 	std::map<int, std::unique_ptr<LineDetNetWork>> d_lineDetNetWorkMap;
 	std::map<std::pair<int, int>, std::vector<ScanMode>> d_lineDetScanModeMap;
 	std::map<std::pair<int, int>, std::vector<ScanMode>> d_panelDetScanModeMap;

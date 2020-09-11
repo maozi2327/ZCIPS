@@ -20,3 +20,6 @@ public:
 	static QObject* loadCtScanWidget(QWidget* _parent);
 };
 
+//TODO_DJ_NOTEPAD
+//使用unique_ptr包裹QDialog，不会自动析构;
+//ctscanwidget不能响应closeevent;

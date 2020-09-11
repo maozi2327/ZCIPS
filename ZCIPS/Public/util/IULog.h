@@ -15,7 +15,7 @@ enum class LOG_LEVEL
 class CIULog
 {
 public:
-    static bool Init(QString& pszLogFileName);
+    static bool Init(const QString& pszLogFileName);
 	static void Uninit();
 
     static void SetLevel(LOG_LEVEL nLevel);

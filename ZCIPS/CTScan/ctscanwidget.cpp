@@ -150,3 +150,4 @@ void CTScanWidget::changeEvent(QEvent * event)
 		d_tray->show();
 	}
 }
+

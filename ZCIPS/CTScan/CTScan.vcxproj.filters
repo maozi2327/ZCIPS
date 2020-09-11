@@ -51,9 +51,6 @@
     <ClCompile Include="setupdataparser.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="raypanelmotionwidget.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="linescainterface.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -120,13 +117,7 @@
     <ClCompile Include="..\Public\util\thread.cpp">
       <Filter>public\utility</Filter>
     </ClCompile>
-    <ClCompile Include="motorcontrolwidget.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="linedetbkgtune.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="msglistbox.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="drscan.cpp">
@@ -149,6 +140,9 @@
     </ClCompile>
     <ClCompile Include="..\Public\util\logmacro.cpp">
       <Filter>public\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="msglistboxdialog.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -250,9 +244,6 @@
     <QtMoc Include="setupdataparser.h">
       <Filter>Source</Filter>
     </QtMoc>
-    <QtMoc Include="raypanelmotionwidget.h">
-      <Filter>Source</Filter>
-    </QtMoc>
     <QtMoc Include="linedetscanwidget.h">
       <Filter>Source</Filter>
     </QtMoc>
@@ -277,12 +268,6 @@
     <QtMoc Include="..\Public\util\tcpclient.h">
       <Filter>public\utility</Filter>
     </QtMoc>
-    <QtMoc Include="motorcontrolwidget.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="msglistbox.h">
-      <Filter>Source</Filter>
-    </QtMoc>
     <QtMoc Include="conescanInterface.h">
       <Filter>Source</Filter>
     </QtMoc>
@@ -295,30 +280,24 @@
     <QtMoc Include="ctscanwidget.h">
       <Filter>Source</Filter>
     </QtMoc>
+    <QtMoc Include="msglistboxdialog.h">
+      <Filter>Source</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="raypanelmotion.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="conescanwidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="linedetscanwidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="motorcontrolwidget.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="msglistbox.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="scanprogresswidget.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="motorwidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="ctscanwidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="msglistboxdialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

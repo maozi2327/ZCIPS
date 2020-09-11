@@ -16,7 +16,7 @@ class ConeScanWidget : public QWidget
 	Q_OBJECT
 
 public:
-	ConeScanWidget(MotorControlWidget* _motorControl, int _rayId, int _panelDetId, const
+	ConeScanWidget(int _rayId, int _panelDetId, const
 		std::vector<ScanMode>& _scanMode, SetupData* _setupData,
 		Panel* _panel, ControllerInterface* _controller, QWidget *parent = Q_NULLPTR);
 

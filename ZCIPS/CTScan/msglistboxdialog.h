@@ -1,16 +1,16 @@
 #pragma once
 
-#include <QWidget>
+#include <QDialog>
 #include "ui_msglistbox.h"
 #include "../Public/util/iulog.h"
 
-class MsgListBox : public QWidget
+class MsgListBoxDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	MsgListBox(QString& _logFileName, QWidget *parent = Q_NULLPTR);
-	~MsgListBox();
+	MsgListBoxDialog(const QString& _logFileName, QWidget *parent = Q_NULLPTR);
+	~MsgListBoxDialog();
 	void logError(QString& _msg);
 	void logInfo(QString& _msg);
 	void logBug(QString& _msg);
@@ -18,5 +18,5 @@ private:
 	Ui::MsgListBox ui;
 
 protected:
-	void closeEvent(QCloseEvent * event);
+	void closeEvent(QCloseEvent *event) override;
 };

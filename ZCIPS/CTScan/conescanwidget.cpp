@@ -3,7 +3,7 @@
 #include "conescan.h"
 #include "../PanelDll/panel.h"
 
-ConeScanWidget::ConeScanWidget(MotorControlWidget* _motorControl, int _rayId, int _panelDetId, const std::vector<ScanMode>& _scanMode,
+ConeScanWidget::ConeScanWidget(int _rayId, int _panelDetId, const std::vector<ScanMode>& _scanMode,
 	SetupData* _setupData, Panel* _panel, ControllerInterface* _controller, QWidget *parent)
 	: QWidget(parent), d_panel(_panel), d_controller(_controller), d_rayNum(_rayId), d_detNum(_panelDetId), d_setupData(_setupData)
 {

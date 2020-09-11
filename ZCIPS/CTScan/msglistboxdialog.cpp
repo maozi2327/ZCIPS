@@ -1,18 +1,19 @@
 #include "stdafx.h"
-#include "msglistbox.h"
+#include "MsgListBoxDialog.h"
 #include <string>
 #include <regex>
 
-MsgListBox::MsgListBox(QString& _logFileName, QWidget *parent)
-	: QWidget(parent)
+MsgListBoxDialog::MsgListBoxDialog(const QString& _logFileName, QWidget *parent)
+	: QDialog(parent)
 {
 	CIULog::Init(_logFileName);
 	ui.setupUi(this);
 }
 
-MsgListBox::~MsgListBox()
+MsgListBoxDialog::~MsgListBoxDialog()
 {
 }
+
 QString extractMsg(QString& _msg)
 {
 	_msg.insert(1, QDateTime::currentDateTime().toString("hh:mm:ss.zzz") + " ");
@@ -33,29 +34,27 @@ QString extractMsg(QString& _msg)
 	return output;
 }
 
-void MsgListBox::logError(QString& _msg)
+void MsgListBoxDialog::logError(QString& _msg)
 {
 	ui.listWidget->addItem(extractMsg(_msg));
 	CIULog::Log(LOG_LEVEL::LOG_LEVEL_ERROR, _msg);
 	show();
 }
 
-void MsgListBox::logInfo(QString & _msg)
+void MsgListBoxDialog::logInfo(QString & _msg)
 {
 	ui.listWidget->addItem(extractMsg(_msg));
 	CIULog::Log(LOG_LEVEL::LOG_LEVEL_INFO, _msg);
-	show();
 }
 
-void MsgListBox::logBug(QString & _msg)
+void MsgListBoxDialog::logBug(QString & _msg)
 {
 	ui.listWidget->addItem(extractMsg(_msg));
 	CIULog::Log(LOG_LEVEL::LOG_LEVEL_BUG, _msg);
 	show();
 }
 
-void MsgListBox::closeEvent(QCloseEvent * event)
+void MsgListBoxDialog::closeEvent(QCloseEvent * event)
 {
 	hide();
 }
-

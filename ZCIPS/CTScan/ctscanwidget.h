@@ -2,7 +2,7 @@
 
 #include <QtWidgets>
 #include "ui_ctscan.h"
-
+//#include <QCloseEvent>
 class CTScanWidget : public QWidget
 {
     Q_OBJECT
@@ -24,11 +24,14 @@ private slots:
 	void copy();
 	void paste();
 	void on_activatedSysTrayIcon(QSystemTrayIcon::ActivationReason reason);
+signals:
+	void ctScanWidgetClosed();
 protected:
 #ifndef QT_NO_CONTEXTMENU
 	void contextMenuEvent(QContextMenuEvent *event) override;
 	void changeEvent(QEvent * event) override;
-#endif // QT_NO_CONTEXTMENU
+	//void closeEvent(QCloseEvent *event) override;
+#endif //QT_NO_CONTEXTMENU
 private:
     Ui::CTScanWidget ui;
 	QAction *cutAct;

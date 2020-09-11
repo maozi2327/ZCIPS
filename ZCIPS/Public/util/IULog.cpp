@@ -5,7 +5,7 @@
 
 LOG_LEVEL CIULog::d_logLevel = LOG_LEVEL::LOG_LEVEL_INFO;
 QFile CIULog::d_logFile;
-bool CIULog::Init(QString& pszLogFileName)
+bool CIULog::Init(const QString& pszLogFileName)
 {
     if (pszLogFileName.size() == 0)
 		return false;

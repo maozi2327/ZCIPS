@@ -10,17 +10,16 @@
 #include "setupdataparser.h"
 #include "../Public/headers/panelimageprocess.h"
 #include "../Public/headers/SetupData.h"
-#include "msglistbox.h"
+#include "MsgListBoxDialog.h"
 #include "ct3Scan.h"
 #include "ct2Scan.h"
 #include "drscan.h"
 #include "linedetnetwork.h"
-#include "msglistbox.h"
 
 CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	: d_mainWidget(nullptr), d_upperWidget(d_upper)
-	, d_rayPanelMotion(new RayPanelMotion()), d_imageWidgetManager(new ImageWidgetManager())
-	, d_controller(new SimotionController()), d_motorControl(new MotorControlWidget(d_controller.get()))
+	, d_imageWidgetManager(new ImageWidgetManager())
+	, d_controller(new SimotionController())
 	, d_setupData(new SetupData), d_setupDataPaser(new SetupDataParser(d_setupData.get()))
 	, d_workDir(QCoreApplication::applicationDirPath())
 {
@@ -33,13 +32,18 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 
 	QString logFileFullName = d_workDir + "/log/" +
 		QDateTime::currentDateTime().date().toString(Qt::ISODate) + '/' + time + ".txt";
-	d_msg.reset(new MsgListBox(logFileFullName));
-	connect(this, &CTScanApp::infoMsgSignal, this, &CTScanApp::infoMsgSlot, Qt::QueuedConnection);
-	connect(this, &CTScanApp::errorMsgSignal, this, &CTScanApp::errorMsgSlot, Qt::QueuedConnection);
-	connect(this, &CTScanApp::bugMsgSignal, this, &CTScanApp::bugMsgSlot, Qt::QueuedConnection);
+	//d_msg.reset(new MsgListBoxDialog(logFileFullName));
+	d_msg = new MsgListBoxDialog(logFileFullName);
+	connect(this, &CTScanApp::infoMsgSignal, this, &CTScanApp::infoMsgSlot);
+	connect(this, &CTScanApp::errorMsgSignal, this, &CTScanApp::errorMsgSlot);
+	connect(this, &CTScanApp::bugMsgSignal, this, &CTScanApp::bugMsgSlot);
+
+	LOG_INFO("软件启动");
+
 	connect(d_controller.get(), &ControllerInterface::netWorkStsSginal
 		, this, &CTScanApp::controllerNetWorkStsSlot, Qt::QueuedConnection);
 
+	d_motorWidget = new MotorWidget(d_controller.get(), nullptr);
 	for (int i = 0; i != d_setupData->lineDetNum; ++i)
 	{
 		int blockModuleIndex = 0;
@@ -55,7 +59,7 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 			pSetupData->lineDetData[i].AmplifyMultiple, blockModuleVec, pSetupData->lineDetData[i].ID));
 		d_lineDetNetWorkMap.insert({ d_setupData->lineDetData[i].ID,  std::move(ptr) });
 		connect(d_lineDetNetWorkMap[d_setupData->lineDetData[i].ID].get(), &LineDetNetWork::netWorkStatusSignal,
-			this, &CTScanApp::lineDetNetWorkStsSlot);
+			this, &CTScanApp::lineDetNetWorkStsSlot, Qt::QueuedConnection);
 	}
 
 	//查找同一种扫描方式有几种射线源和探测器组合，有几种就初始化几个线阵扫描和面阵扫描的widget
@@ -76,25 +80,27 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 
 	for (auto& mode : d_panelDetScanModeMap)
 	{
-		auto widget = new ConeScanWidget(d_motorControl.get(), mode.first.first, mode.first.second,
+		auto widget = new ConeScanWidget(mode.first.first, mode.first.second,
 			d_panelDetScanModeMap[mode.first], d_setupData.get(), nullptr, d_controller.get(), nullptr);
 		d_panelDetScanWidget[mode.first] = widget;
 	}
 
 	for (auto& mode : d_lineDetScanModeMap)
 	{
-		auto widget = new LineDetScanWidget(d_motorControl.get(), mode.first.first, mode.first.second,
+		auto widget = new LineDetScanWidget(mode.first.first, mode.first.second,
 			d_lineDetScanModeMap[mode.first], d_setupData.get(), d_lineDetNetWorkMap[0].get(), d_controller.get(), nullptr);
 		d_lineDetScanWidget[mode.first] = widget;
 	}
 
 	auto scanWidget = d_lineDetScanWidget[{0, 0}];
-	d_motorWidget = new MotorWidget(d_controller.get(), nullptr);
 	d_mainWidget = new CTScanWidget(scanWidget, d_motorWidget, d_upperWidget);
+	connect(d_mainWidget, &CTScanWidget::ctScanWidgetClosed, this, &CTScanApp::ctScanWidgetClosedSlot);
 }
 
 CTScanApp::~CTScanApp()
 {
+	LOG_INFO("软件退出");
+	delete d_msg;
 }
 
 void CTScanApp::lineDetNetWorkStsSlot(int _det, bool sts)
@@ -120,6 +126,11 @@ void CTScanApp::infoMsgSlot(QString msg)
 void CTScanApp::bugMsgSlot(QString msg)
 {
 	d_msg->logBug(msg);
+}
+
+void CTScanApp::ctScanWidgetClosedSlot()
+{
+	d_msg->close();
 }
 
 void CTScanApp::setMiddleWidget(QWidget * _widget)
