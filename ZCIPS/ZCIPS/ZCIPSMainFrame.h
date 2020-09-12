@@ -8,6 +8,7 @@
 #include "AreaSelect.h"
 #include "Marco.h"
 #include "DataBaseProcess.h"
+#include "../CTScan/ctscanexport.h"
 
 /***************************** ºê ******************************/
 
@@ -298,5 +299,8 @@ public slots:
 	void MarkCancelMouseSelect();
 	/******************************** Í¼Ïñ±ê¼Ç end *******************/
 
-
+private:
+	CTScanInterface* ctScanHandle;
+protected:
+	void closeEvent(QCloseEvent *event) override;
 };

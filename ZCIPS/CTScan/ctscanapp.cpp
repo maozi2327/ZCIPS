@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include "ctscanapp.h"
 #include "ctscanwidget.h"
-#include "motorcontrolwidget.h"
 #include "motorwidget.h"
-#include "raypanelmotionwidget.h"
 #include "simotioncontroller.h"
 #include "linedetscanwidget.h"
 #include "conescanwidget.h"
@@ -15,6 +13,9 @@
 #include "ct2Scan.h"
 #include "drscan.h"
 #include "linedetnetwork.h"
+#include "acceleratorwidget.h"
+#include "floatacceleratordialog.h"
+#include "createDumpFile.h"
 
 CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	: d_mainWidget(nullptr), d_upperWidget(d_upper)
@@ -22,7 +23,9 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	, d_controller(new SimotionController())
 	, d_setupData(new SetupData), d_setupDataPaser(new SetupDataParser(d_setupData.get()))
 	, d_workDir(QCoreApplication::applicationDirPath())
+	, d_acceleratorWidget(new AcceleratorWidget())
 {
+	RunCrashHandler();
 	QString time = QDateTime::currentDateTime().time().toString();
 	auto i = time.length();
 
@@ -93,8 +96,14 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	}
 
 	auto scanWidget = d_lineDetScanWidget[{0, 0}];
-	d_mainWidget = new CTScanWidget(scanWidget, d_motorWidget, d_upperWidget);
-	connect(d_mainWidget, &CTScanWidget::ctScanWidgetClosed, this, &CTScanApp::ctScanWidgetClosedSlot);
+	d_mainWidget = new CTScanWidget(d_acceleratorWidget, scanWidget, d_motorWidget, d_upperWidget);
+	connect(d_mainWidget, &CTScanWidget::showMotorButtonSignal, this, &CTScanApp::motorButonSlot);
+	d_floatAcceleratorDialog = new FloatAcceleratorDialog(nullptr, Qt::FramelessWindowHint);
+	QGridLayout* bLayout = new QGridLayout(d_floatAcceleratorDialog);
+	auto dig = new AcceleratorWidget();
+	bLayout->setContentsMargins(0, 0, 0, 0);
+	d_floatAcceleratorDialog->setContentsMargins(0, 0, 0, 0);
+	bLayout->addWidget(dig);
 }
 
 CTScanApp::~CTScanApp()
@@ -106,6 +115,7 @@ CTScanApp::~CTScanApp()
 void CTScanApp::lineDetNetWorkStsSlot(int _det, bool sts)
 {
 	d_controller->restartLineDet(_det);
+	//emit signal1(sts);²âÊÔdllÐÅºÅÁ¬½Ó
 	LOG_INFO("ÖØÆôÏßÕóÌ½²âÆ÷");
 }
 
@@ -128,9 +138,14 @@ void CTScanApp::bugMsgSlot(QString msg)
 	d_msg->logBug(msg);
 }
 
-void CTScanApp::ctScanWidgetClosedSlot()
+void CTScanApp::ctScanWidgetClosed()
 {
-	d_msg->close();
+	d_floatAcceleratorDialog->close();
+}
+
+void CTScanApp::motorButonSlot()
+{
+	d_floatAcceleratorDialog->show();
 }
 
 void CTScanApp::setMiddleWidget(QWidget * _widget)

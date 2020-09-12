@@ -7,7 +7,6 @@
 #include "../Public/headers/setupdata.h"
 
 struct CT3Data;
-class MotorControlWidget;
 class LineDetScanInterface;
 class ControllerInterface;
 class LineDetNetWork;
@@ -31,7 +30,6 @@ protected:
 private:
 	Ui::LineDetScanWidget ui;
 	QAction *showMotorTableAction;
-	MotorControlWidget* d_motorControlDialog;
 	SetupData* d_setupData;
 	LineDetNetWork* d_lineDetNetWork;
 	ControllerInterface* d_controller;

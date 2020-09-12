@@ -9,7 +9,6 @@
 
 class SetupDataParser;
 class RayPanelMotion;
-class MotorControlWidget;
 class LineDetScanWidget;
 class ControllerInterface;
 class LineDetNetWork;
@@ -18,6 +17,7 @@ class LineDetScanInterface;
 class ConeScanWidget;
 class MotorWidget;
 class CTScanWidget;
+class AcceleratorWidget;
 
 class CTScanApp : public CTScanInterface
 {
@@ -34,7 +34,7 @@ private slots:
 	void errorMsgSlot(QString msg);
 	void infoMsgSlot(QString msg);
 	void bugMsgSlot(QString msg);
-	void ctScanWidgetClosedSlot();
+	void motorButonSlot();
 protected:
 
 private:
@@ -52,6 +52,9 @@ private:
 	std::map<std::pair<int, int>, LineDetScanWidget*> d_lineDetScanWidget;
 	std::map<std::pair<int, int>, ConeScanWidget*> d_panelDetScanWidget;
 	CTScanWidget* d_mainWidget;
+	AcceleratorWidget* d_acceleratorWidget;
+
+	QDialog* d_floatAcceleratorDialog;
 
 	size_t frontImageIndex;
 	QSystemTrayIcon* d_tray;
@@ -60,4 +63,5 @@ private:
 public:
 	void setMiddleWidget(QWidget* _widget);
 	void setDownWidget(QWidget* _widget);
+	void ctScanWidgetClosed();
 };

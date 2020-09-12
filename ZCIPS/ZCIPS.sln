@@ -5,11 +5,11 @@ VisualStudioVersion = 15.0.28307.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZCIPS", "ZCIPS\ZCIPS.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CTScan", "CTScan\CTScan.vcxproj", "{F5BD4800-1C31-4A42-9880-118FD55DB3B0}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PanelDll", "PanelDll\PanelDll.vcxproj", "{5173E06F-DF86-4E83-A5DD-F92674EDE9FE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PanelImageProcess", "PanelImageProcess\PanelImageProcess.vcxproj", "{9498401C-3312-47E9-9240-457787383127}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CTScan", "CTScan\CTScan.vcxproj", "{F5BD4800-1C31-4A42-9880-118FD55DB3B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,12 +25,6 @@ Global
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.ActiveCfg = Release|x64
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.Build.0 = Release|x64
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x86.ActiveCfg = Release|x64
-		{F5BD4800-1C31-4A42-9880-118FD55DB3B0}.Debug|x64.ActiveCfg = Debug|x64
-		{F5BD4800-1C31-4A42-9880-118FD55DB3B0}.Debug|x64.Build.0 = Debug|x64
-		{F5BD4800-1C31-4A42-9880-118FD55DB3B0}.Debug|x86.ActiveCfg = Debug|x64
-		{F5BD4800-1C31-4A42-9880-118FD55DB3B0}.Release|x64.ActiveCfg = Release|x64
-		{F5BD4800-1C31-4A42-9880-118FD55DB3B0}.Release|x64.Build.0 = Release|x64
-		{F5BD4800-1C31-4A42-9880-118FD55DB3B0}.Release|x86.ActiveCfg = Release|x64
 		{5173E06F-DF86-4E83-A5DD-F92674EDE9FE}.Debug|x64.ActiveCfg = Debug|x64
 		{5173E06F-DF86-4E83-A5DD-F92674EDE9FE}.Debug|x64.Build.0 = Debug|x64
 		{5173E06F-DF86-4E83-A5DD-F92674EDE9FE}.Debug|x86.ActiveCfg = Debug|Win32
@@ -45,6 +39,12 @@ Global
 		{9498401C-3312-47E9-9240-457787383127}.Release|x64.ActiveCfg = Release|x64
 		{9498401C-3312-47E9-9240-457787383127}.Release|x64.Build.0 = Release|x64
 		{9498401C-3312-47E9-9240-457787383127}.Release|x86.ActiveCfg = Release|x64
+		{F5BD4800-1C31-4A42-9880-118FD55DB3B0}.Debug|x64.ActiveCfg = Debug|x64
+		{F5BD4800-1C31-4A42-9880-118FD55DB3B0}.Debug|x64.Build.0 = Debug|x64
+		{F5BD4800-1C31-4A42-9880-118FD55DB3B0}.Debug|x86.ActiveCfg = Debug|x64
+		{F5BD4800-1C31-4A42-9880-118FD55DB3B0}.Release|x64.ActiveCfg = Release|x64
+		{F5BD4800-1C31-4A42-9880-118FD55DB3B0}.Release|x64.Build.0 = Release|x64
+		{F5BD4800-1C31-4A42-9880-118FD55DB3B0}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

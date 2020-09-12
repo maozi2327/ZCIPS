@@ -572,7 +572,7 @@
   <action name="actionZoomIn">
    <property name="icon">
     <iconset>
-     <normaloff>../Icon/ZoomIn.png</normaloff>../Icon/ZoomIn.png</iconset>
+     <normaloff>Icon/ZoomIn.png</normaloff>Icon/ZoomIn.png</iconset>
    </property>
    <property name="text">
     <string>放大</string>
@@ -581,7 +581,7 @@
   <action name="action">
    <property name="icon">
     <iconset>
-     <normaloff>../Icon/ZoomOut.png</normaloff>../Icon/ZoomOut.png</iconset>
+     <normaloff>Icon/ZoomOut.png</normaloff>Icon/ZoomOut.png</iconset>
    </property>
    <property name="text">
     <string>缩小</string>
@@ -590,7 +590,7 @@
   <action name="actionUndo">
    <property name="icon">
     <iconset>
-     <normaloff>../Icon/undo_68.102564102564px_1211132_easyicon.net.png</normaloff>../Icon/undo_68.102564102564px_1211132_easyicon.net.png</iconset>
+     <normaloff>Icon/undo_68.102564102564px_1211132_easyicon.net.png</normaloff>Icon/undo_68.102564102564px_1211132_easyicon.net.png</iconset>
    </property>
    <property name="text">
     <string>回退</string>
@@ -599,7 +599,7 @@
   <action name="actionRedo">
    <property name="icon">
     <iconset>
-     <normaloff>../Icon/redo_68.102564102564px_1211078_easyicon.net.png</normaloff>../Icon/redo_68.102564102564px_1211078_easyicon.net.png</iconset>
+     <normaloff>Icon/redo_68.102564102564px_1211078_easyicon.net.png</normaloff>Icon/redo_68.102564102564px_1211078_easyicon.net.png</iconset>
    </property>
    <property name="text">
     <string>重做</string>
@@ -608,7 +608,7 @@
   <action name="MarkRectAction">
    <property name="icon">
     <iconset>
-     <normaloff>../Icon/矩形1.png</normaloff>../Icon/矩形1.png</iconset>
+     <normaloff>Icon/矩形1.png</normaloff>Icon/矩形1.png</iconset>
    </property>
    <property name="text">
     <string>矩形选择</string>
@@ -617,7 +617,7 @@
   <action name="MarkEllipseAction">
    <property name="icon">
     <iconset>
-     <normaloff>../Icon/椭圆.png</normaloff>../Icon/椭圆.png</iconset>
+     <normaloff>Icon/椭圆.png</normaloff>Icon/椭圆.png</iconset>
    </property>
    <property name="text">
     <string>圆形选择</string>
@@ -626,7 +626,7 @@
   <action name="MarkPolyAction">
    <property name="icon">
     <iconset>
-     <normaloff>../Icon/任意形状.png</normaloff>../Icon/任意形状.png</iconset>
+     <normaloff>Icon/任意形状.png</normaloff>Icon/任意形状.png</iconset>
    </property>
    <property name="text">
     <string>任意区域选择</string>
@@ -635,7 +635,7 @@
   <action name="MarkRulerAction">
    <property name="icon">
     <iconset>
-     <normaloff>../Icon/尺寸.png</normaloff>../Icon/尺寸.png</iconset>
+     <normaloff>Icon/尺寸.png</normaloff>Icon/尺寸.png</iconset>
    </property>
    <property name="text">
     <string>Length</string>

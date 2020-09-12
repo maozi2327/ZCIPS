@@ -3,7 +3,6 @@
 #include "AddMarcoWidget.h"
 #include "LoadMarcoWidget.h"
 #include "ImageWidget.h"
-#include "../CTScan/ctscanexport.h"
 /**************************************************************
 函数名： ZCIPSMainFrame
 
@@ -53,6 +52,7 @@ ZCIPSMainFrame::ZCIPSMainFrame(QWidget *parent)
 ****************************************************************/
 void ZCIPSMainFrame::LoadImageFromFileSlot()
 {
+
 	// 参数声明
 	int iRet;									// 函数返回值
 	int iHeight;								// 图像高度
@@ -1191,7 +1191,9 @@ void ZCIPSMainFrame::InitialUI()
 	//数据库界面
 	DataBaseUIInit();
 
-	CtScanExport::loadCtScanWidget(ui.DeviceControlTab);
+	ctScanHandle = CTScanInterface::loadCtScanInstance(ui.DeviceControlTab);
+	connect(ui.LoadFileAction, &QAction::triggered, ctScanHandle, &CTScanInterface::slot1);
+	connect(ctScanHandle, &CTScanInterface::signal1, this, &ZCIPSMainFrame::ClearSlot);
 }
 
 /**************************************************************
@@ -3128,6 +3130,10 @@ void ZCIPSMainFrame::MarkCancelMouseSelect()
 	if (true != bRet) return;
 	PairCurrImageIns.second->mouseType = Mouse_Default;
 	GetActWinandCurrentIns();
+}
+void ZCIPSMainFrame::closeEvent(QCloseEvent * event)
+{
+	ctScanHandle->ctScanWidgetClosed();
 }
 /*********************************************************************
 函数名称：MarkChangeToRuler

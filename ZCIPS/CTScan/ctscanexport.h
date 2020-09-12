@@ -2,22 +2,22 @@
 #include "ctscan_global.h"
 #include <QObject>
 
-class CTScanInterface : public QObject
+class CTSCANDLL_EXPORT CTScanInterface : public QObject
 {
+	Q_OBJECT
 public slots:
 	void slot1(int i);
 
 signals:
-	void signal1(int i);
-};
+	void signal1(bool);
 
-class CTSCANDLL_EXPORT CtScanExport
-{
+protected:
+	CTScanInterface();
+
 public:
-	CtScanExport() = delete;
-	~CtScanExport();
-
-	static QObject* loadCtScanWidget(QWidget* _parent);
+	static CTScanInterface* loadCtScanInstance(QWidget* _parent);
+	~CTScanInterface();
+	virtual void ctScanWidgetClosed();
 };
 
 //TODO_DJ_NOTEPAD

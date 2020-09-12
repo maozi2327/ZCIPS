@@ -144,6 +144,12 @@
     <ClCompile Include="msglistboxdialog.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="acceleratorwidget.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="floatacceleratordialog.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -227,9 +233,6 @@
     <ClInclude Include="..\Public\util\tcpserver.h">
       <Filter>public\utility</Filter>
     </ClInclude>
-    <ClInclude Include="ctscanexport.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="ctscan_global.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\util\logmacro.h">
       <Filter>public\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="createDumpFile.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -283,6 +289,15 @@
     <QtMoc Include="msglistboxdialog.h">
       <Filter>Source</Filter>
     </QtMoc>
+    <QtMoc Include="ctscanexport.h">
+      <Filter>Source</Filter>
+    </QtMoc>
+    <QtMoc Include="acceleratorwidget.h">
+      <Filter>Source</Filter>
+    </QtMoc>
+    <QtMoc Include="floatacceleratordialog.h">
+      <Filter>public</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="conescanwidget.ui">
@@ -298,6 +313,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="msglistboxdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="Acceleratorwidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

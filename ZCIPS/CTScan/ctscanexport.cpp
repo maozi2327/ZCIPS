@@ -7,12 +7,20 @@ void CTScanInterface::slot1(int i)
 {
 }
 
-CtScanExport::~CtScanExport()
+CTScanInterface::CTScanInterface()
 {
 }
 
-QObject* CtScanExport::loadCtScanWidget(QWidget* _parent)
+CTScanInterface::~CTScanInterface()
 {
-	static std::unique_ptr<CTScanInterface> handle(new CTScanApp(_parent));
+}
+
+void CTScanInterface::ctScanWidgetClosed()
+{
+}
+
+CTScanInterface * CTScanInterface::loadCtScanInstance(QWidget * _parent)
+{
+	static std::unique_ptr<CTScanApp> handle(new CTScanApp(_parent));
 	return handle.get();
 }

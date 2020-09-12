@@ -1,15 +1,20 @@
 #include "stdafx.h"
 #include "ctscanwidget.h"
 
-CTScanWidget::CTScanWidget(QWidget* _middleWidget, QWidget* _downWidget, QWidget *parent)
+CTScanWidget::CTScanWidget(QWidget* _upWidget, QWidget* _middleWidget, QWidget* _downWidget, QWidget *parent)
     : QWidget(parent)
-	, d_scanWidget(nullptr), d_middleWidget(_middleWidget), d_downWidget(_downWidget)
+	, d_scanWidget(nullptr), d_upWidget(_upWidget), d_middleWidget(_middleWidget), d_downWidget(_downWidget)
 {
 	ui.setupUi(this);
+	QGridLayout* layoutAcc = new QGridLayout(ui.acceleratorContainerwidget);
+	layoutAcc->addWidget(d_upWidget, 0, 0);
+	///layoutAcc->setMargin(0);
+	layoutAcc->setContentsMargins(0, 0, 0, 0);
+	d_upWidget->setContentsMargins(0, 0, 0, 0);
 	QVBoxLayout* layout = new QVBoxLayout;
 	layout->addWidget(d_middleWidget, 0, 0);
+	
 	QSpacerItem* vSpacer = new QSpacerItem(0, 0, QSizePolicy::Maximum, QSizePolicy::Expanding);
-
 	layout->addItem(vSpacer);
 	ui.scanTable->setLayout(layout);
 	//添加layout使位于中间
@@ -84,6 +89,7 @@ void CTScanWidget::on_ray1PanelDet0Button_clicked()
 
 void CTScanWidget::on_showMotorWidgetButton_clicked()
 {
+	emit showMotorButtonSignal();
 	ui.motorControlGroupBox->setVisible(!ui.motorControlGroupBox->isVisible());
 }
 
@@ -149,5 +155,9 @@ void CTScanWidget::changeEvent(QEvent * event)
 		hide();
 		d_tray->show();
 	}
+}
+
+void CTScanWidget::closeEvent(QCloseEvent * event)
+{
 }
 

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "linedetscanwidget.h"
-#include "motorcontrolwidget.h"
 #include "simotioncontroller.h"
 #include "LineDetNetWork.h"
 #include "../Public/headers/setupData.h"
@@ -273,5 +272,5 @@ void LineDetScanWidget::updateControlsSlot()
 
 void LineDetScanWidget::showMotorTable()
 {
-	d_motorControlDialog->show();
+	
 }

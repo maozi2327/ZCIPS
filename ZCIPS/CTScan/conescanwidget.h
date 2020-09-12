@@ -8,7 +8,6 @@
 class PanelImageProcess;
 class ConeScanInterface;
 class ControllerInterface;
-class MotorControlWidget;
 class Panel;
 
 class ConeScanWidget : public QWidget
@@ -28,7 +27,6 @@ private:
 	std::unique_ptr<PanelImageProcess> d_panelImageProcess;
 	unsigned short d_rayNum;
 	unsigned short d_detNum;
-	MotorControlWidget* d_motorControlDialog;
 	SetupData* d_setupData;
 	ControllerInterface* d_controller;
 	Panel* d_panel;

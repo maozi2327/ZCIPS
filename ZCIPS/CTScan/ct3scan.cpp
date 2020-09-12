@@ -7,7 +7,6 @@
 #include "../Public/util/IULog.h"
 #include "../Public/util/Thread.h"
 #include "../Public/util/functions.h"
-#include "motorcontrolwidget.h"
 #include "../Public/headers/setupdata.h"
 #include "../Public/util/logmacro.h"
 #include "simotioncontroller.h"

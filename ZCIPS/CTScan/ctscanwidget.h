@@ -1,14 +1,14 @@
 #pragma once
 
 #include <QtWidgets>
-#include "ui_ctscan.h"
+#include "ui_ctscanwidget.h"
 //#include <QCloseEvent>
 class CTScanWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    CTScanWidget(QWidget* _middleWidget, QWidget* _downWidget, QWidget *parent = Q_NULLPTR);
+    CTScanWidget(QWidget* _upWidget, QWidget* _middleWidget, QWidget* _downWidget, QWidget *parent = Q_NULLPTR);
 	~CTScanWidget();
 
 	QWidget* getWidget();
@@ -26,11 +26,12 @@ private slots:
 	void on_activatedSysTrayIcon(QSystemTrayIcon::ActivationReason reason);
 signals:
 	void ctScanWidgetClosed();
+	void showMotorButtonSignal();
 protected:
 #ifndef QT_NO_CONTEXTMENU
 	void contextMenuEvent(QContextMenuEvent *event) override;
 	void changeEvent(QEvent * event) override;
-	//void closeEvent(QCloseEvent *event) override;
+	void closeEvent(QCloseEvent *event) override;
 #endif //QT_NO_CONTEXTMENU
 private:
     Ui::CTScanWidget ui;
@@ -42,6 +43,7 @@ private:
 	QString	d_workDir;
 	QWidget* d_scanWidget;
 	QGridLayout* d_layout;
+	QWidget* d_upWidget;
 	QWidget* d_middleWidget;
 	QWidget* d_downWidget;
 };

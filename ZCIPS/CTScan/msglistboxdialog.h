@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QDialog>
-#include "ui_msglistbox.h"
+#include "ui_msglistboxDialog.h"
 #include "../Public/util/iulog.h"
 
 class MsgListBoxDialog : public QDialog
