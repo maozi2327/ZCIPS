@@ -279,6 +279,8 @@ struct LineDetData
 	short	NumberOfCalibrateHorizontalDetector;            //射线平面方向校正用探测器数(此参数为校正用探测器数量)
 	short	BeginSerialNoOfCt2Detector;                     //2代扫描开始探测器序号(从0开始)
 	short	EndSerialNoOfCt2Detector;                       //2代扫描结束探测器序号(从0开始)
+	short   SerialNo1OfMiddleHorizontalDetector;
+	short   SerialNo2OfMiddleHorizontalDetector;
 	short	AmplifyMultiple;								//采样放大倍数, 典型值6
 	short	IntegralTime;									//采样积分时间(us), 典型值70
 	short	DelayTime;										//采样延迟时间(us), 典型值10
@@ -293,6 +295,7 @@ struct LineDetData
 	float	SourceDetectorDistance;							//射线源探测器距离
 	unsigned char StandartInterpolationFlag;				//标准插值+1插值标志
 	unsigned char PhysicsInterpolationFlag;					//物理插值模拟插值标志
+	float	Ct2GraduationAngle;
 };
 struct PanDetData
 {

@@ -33,36 +33,33 @@ LineDetNetWork::LineDetNetWork(unsigned short _port, unsigned short _fifoMask, u
 
 	d_channelNum = (d_smallBoardNum * 8 - d_blockModuleMap.size()) * 8;
 	d_dataSizePerPulse = sizeof(int) * (d_smallBoardNum * (d_channelDepth + 3) + 1);
-	d_netWorkCheckThread.reset
-	(
-		new Thread
-		(
-			[=]()
-			{
-				std::this_thread::sleep_for(std::chrono::seconds(20));
+	//d_netWorkCheckThread.reset
+	//(
+	//	new Thread
+	//	(
+	//		[=]()
+	//		{
+	//			std::this_thread::sleep_for(std::chrono::seconds(20));
 
-				while (d_deadThreadRunFlag)
-				{
-					if (!d_isScanning && !StartCI())
-					{
-						d_connected = false;
-						d_server->reAccept();
-						emit netWorkStatusSignal(d_detNum, d_connected);
-						int counter = 0;
+	//			while (d_deadThreadRunFlag)
+	//			{
+	//				if (!d_isScanning && !StartCI())
+	//				{
+	//					d_connected = false;
+	//					d_server->reAccept();
+	//					emit netWorkStatusSignal(d_detNum, d_connected);
+	//				}
 
-						while (d_deadThreadRunFlag && counter++ != 10)
-							std::this_thread::sleep_for(std::chrono::seconds(1));
-					}
-					int counter = 0;
+	//				int counter = 0;
 
-					while(d_deadThreadRunFlag && counter++ != 3)
-						std::this_thread::sleep_for(std::chrono::seconds(1));
-				}
-			}
-			, d_deadThreadRunFlag
-		)
-	);	
-	d_netWorkCheckThread->detach();
+	//				while(d_deadThreadRunFlag && counter++ != 10)
+	//					std::this_thread::sleep_for(std::chrono::seconds(1));
+	//			}
+	//		}
+	//		, d_deadThreadRunFlag
+	//	)
+	//);	
+	//d_netWorkCheckThread->detach();
 }
 
 LineDetNetWork::~LineDetNetWork()
@@ -159,8 +156,9 @@ inline bool GetResult(T1& t1, T2 t2, std::condition_variable& _con, std::mutex& 
 
 bool LineDetNetWork::ARMTest()
 {
-	CMD_STRUCT cmdInfo{ CMD_ARM_TEST , 16, 0xffff, 1 };
+	CMD_STRUCT cmdInfo{ 16, CMD_ARM_TEST , 0xffff, 1 };
 	d_recvType = CMD;
+	d_dataList.clear();
 
 	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)) > 0)
 		return GetResult(d_cmdType, CMD_ARM_TEST, d_con, d_mutex);
@@ -170,7 +168,7 @@ bool LineDetNetWork::ARMTest()
 
 bool LineDetNetWork::ChannelSelect()
 {
-	CMD_STRUCT cmdInfo{ CMD_CHANNEL_SELECT , 16, d_fifoMask, 0 };
+	CMD_STRUCT cmdInfo{ 16, CMD_CHANNEL_SELECT, d_fifoMask, 0 };
 	
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return true;
@@ -192,7 +190,7 @@ bool LineDetNetWork::ChannelDepthSet()
 
 bool LineDetNetWork::StartCI()
 {
-	CMD_STRUCT cmdInfo{ CMD_START_CI , 16, 0, 0 };
+	CMD_STRUCT cmdInfo{ 16, CMD_START_CI, 0, 0 };
 
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return true;
@@ -207,7 +205,7 @@ bool LineDetNetWork::FPGATest()
 
 bool LineDetNetWork::DetectorTest()
 {
-	CMD_STRUCT cmdInfo{ CMD_DETECTOR_TEST , 16, d_channelDepth, 1 };
+	CMD_STRUCT cmdInfo{ 16, CMD_DETECTOR_TEST, d_channelDepth, 1 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 	
@@ -219,7 +217,7 @@ bool LineDetNetWork::DetectorTest()
 
 bool LineDetNetWork::SetAmpSize(int _ampSize)
 {
-	CMD_STRUCT cmdInfo{ CMD_SET_AMP_SIZE , 16, (unsigned int)_ampSize, 1 };
+	CMD_STRUCT cmdInfo{ 16, CMD_SET_AMP_SIZE, (unsigned int)_ampSize, 1 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
@@ -231,7 +229,7 @@ bool LineDetNetWork::SetAmpSize(int _ampSize)
 
 bool LineDetNetWork::SetIntTime(int _intTime)
 {
-	CMD_STRUCT cmdInfo{ CMD_SET_INT_TIME , 16, (unsigned int)_intTime, 0 };
+	CMD_STRUCT cmdInfo{ 16, CMD_SET_INT_TIME, (unsigned int)_intTime, 0 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
@@ -243,7 +241,7 @@ bool LineDetNetWork::SetIntTime(int _intTime)
 
 bool LineDetNetWork::SetDelayTime(int _delayTime)
 {
-	CMD_STRUCT cmdInfo{ CMD_SET_DELAY_TIME , 16, (unsigned int)_delayTime, 1 };
+	CMD_STRUCT cmdInfo{ 16, CMD_SET_DELAY_TIME, (unsigned int)_delayTime, 1 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 	
@@ -255,7 +253,7 @@ bool LineDetNetWork::SetDelayTime(int _delayTime)
 
 bool LineDetNetWork::ReadAmpSize()
 {
-	CMD_STRUCT cmdInfo{ CMD_READ_AMP_SIZE , 16, 0x0, 1 };
+	CMD_STRUCT cmdInfo{ 16, CMD_READ_AMP_SIZE, 0x0, 1 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
@@ -267,7 +265,7 @@ bool LineDetNetWork::ReadAmpSize()
 
 bool LineDetNetWork::ReadIntTime()
 {
-	CMD_STRUCT cmdInfo{ CMD_READ_INT_TIME , 16, 0x0, 1 };
+	CMD_STRUCT cmdInfo{ 16, CMD_READ_INT_TIME, 0x0, 1 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
@@ -279,7 +277,7 @@ bool LineDetNetWork::ReadIntTime()
 
 bool LineDetNetWork::ReadDelayTime()
 {
-	CMD_STRUCT cmdInfo{ CMD_READ_DELAY_TIME , 16, 0x0, 1 };
+	CMD_STRUCT cmdInfo{ 16, CMD_READ_DELAY_TIME, 0x0, 1 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
@@ -292,7 +290,7 @@ bool LineDetNetWork::ReadDelayTime()
 bool LineDetNetWork::startExtTrigAcquire()
 {
 	d_dataList.clear();
-	CMD_STRUCT cmdInfo{ CMD_INTERNAL_COLLECT , 16, 1, 0 };
+	CMD_STRUCT cmdInfo{ 16, CMD_INTERNAL_COLLECT, 1, 0 };
 
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return true;

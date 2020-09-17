@@ -12,8 +12,8 @@ signals:
 	void netWorkStsSginal(bool sts);
 protected:
 	std::map<Axis, float> d_axisSpeed;
-	std::map<Axis, float> d_axisPosition;
-	std::map<Axis, float> d_axisWorkZero;
+	std::map<AxisPosEnum, float> d_axisPosition;
+	std::map<AxisZeroEnum, float> d_axisWorkZero;
 	bool d_connected;
 	int d_timeoutCount;
 	QTimer* d_timer;
@@ -40,8 +40,8 @@ public:
 	virtual bool readWaitNextScanStatus() = 0;
 	virtual bool readIdleStatus() = 0;
 	virtual std::map<Axis, float> readAxisSpeed() = 0;
-	virtual float readAxisPostion(Axis _axis) = 0;
-	virtual std::map<Axis, float> readAxisPostion() = 0;
+	virtual float readAxisPostion(AxisPosEnum _axis) = 0;
+	virtual std::map<AxisPosEnum, float> readAxisPostion() = 0;
 	virtual std::map<Axis, float> readAxisWorkZero() = 0;
 
 	virtual void getSystemStatus() = 0;

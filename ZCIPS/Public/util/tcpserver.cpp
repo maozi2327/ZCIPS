@@ -12,7 +12,7 @@ TcpServer::TcpServer(int _packetHeadSize, int _packetSizeLenth, int _packetSizeP
 	, d_connected(false)
 {
 	d_sockaddr.sin_addr = d_address;
-	d_sockaddr.sin_port = AF_INET;
+	d_sockaddr.sin_family = AF_INET;
 	d_sockaddr.sin_port = htons(d_serverPort);
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);

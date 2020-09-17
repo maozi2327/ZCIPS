@@ -13,7 +13,7 @@ const unsigned short SimotionController::d_port = 8000;
 const int SimotionController::d_packetSize = 256;
 static in_addr hostAddr;
 
-SimotionController::SimotionController() : d_bytesReceived(0) , d_netWorkBuffer(new char[1000])
+SimotionController::SimotionController() : ControllerInterface(), d_bytesReceived(0) , d_netWorkBuffer(new char[1000])
 	, d_server
 	(
 		new TcpServer(sizeof(tagCOMM_PACKET1), 2, 4
@@ -58,12 +58,12 @@ inline bool GetResult(T1& t1, T2 t2, std::mutex& d_mutex, std::condition_variabl
 	return false;
 }
 
-float SimotionController::readAxisPostion(Axis _axis)
+float SimotionController::readAxisPostion(AxisPosEnum _axis)
 {
 	return d_axisPosition[_axis];
 }
 
-std::map<Axis, float> SimotionController::readAxisPostion()
+std::map<AxisPosEnum, float> SimotionController::readAxisPostion()
 {
 	return d_axisPosition;
 }
@@ -163,10 +163,10 @@ bool SimotionController::sliceMove(float _pos)
 	return true;
 }
 
-void SimotionController::getAixsValueAndNotify(std::map<Axis, float>& _value, char * _data, int _axisNum, int _typeCode)
+void SimotionController::getAixsValueAndNotify(std::map<AxisPosEnum, float>& _value, char * _data, int _axisNum, int _typeCode)
 {
 	for (int i = 0; i != _axisNum; ++i)
-		_value[Axis(i)] = *(float*)((_data + i * 4));
+		_value[AxisPosEnum(i)] = *(float*)((_data + i * 4));
 	
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
@@ -276,7 +276,7 @@ void SimotionController::netCheckSlot()
 {
 	if (++d_timeoutCount * 1000 > 5000)
 	{
-		if (d_connected = true)
+		if (d_connected == true)
 		{
 			d_connected = false;
 			emit netWorkStsSginal(false);
@@ -284,7 +284,7 @@ void SimotionController::netCheckSlot()
 	}
 	else
 	{
-		if (d_connected = false)
+		if (d_connected == false)
 		{
 			d_connected = true;
 			emit netWorkStsSginal(true);
@@ -310,7 +310,7 @@ void SimotionController::decodePackages(char* _package, int _size)
 	case	STS_WORKZERO:
 	{
 		int axisNum = dataSize / 4;
-		getAixsValueAndNotify(d_axisWorkZero, _package + sizeof(tagCOMM_PACKET1), axisNum, typeCode);
+		//getAixsValueAndNotify(d_axisWorkZero, _package + sizeof(tagCOMM_PACKET1), axisNum, typeCode);
 		break;
 	}
 	//(Öá´úºÅ|Öá×ø±ê)|(Öá´úºÅ|Öá×ø±ê)|(Öá´úºÅ|Öá×ø±ê)|......(Öá´úºÅ|Öá×ø±ê)|
@@ -324,7 +324,7 @@ void SimotionController::decodePackages(char* _package, int _size)
 	case	STS_AXIS_SPEED:
 	{
 		int axisNum = dataSize / 4;
-		getAixsValueAndNotify(d_axisSpeed, _package + sizeof(tagCOMM_PACKET1), axisNum, typeCode);
+		//getAixsValueAndNotify(d_axisSpeed, _package + sizeof(tagCOMM_PACKET1), axisNum, typeCode);
 		break;
 	}
 	case	STS_DIAGNICS_RESULT:

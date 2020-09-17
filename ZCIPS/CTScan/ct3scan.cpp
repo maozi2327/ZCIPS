@@ -56,8 +56,9 @@ void CT3Scan::scanThread()
 
 		}
 
-		d_start_time = std::chrono::steady_clock::now();
 		static std::chrono::steady_clock::time_point last_time;
+		last_time = d_start_time = std::chrono::steady_clock::now();
+		setGenerialFileHeader();
 		sendCmdToControl();
 
 		while (d_deadThreadRun)

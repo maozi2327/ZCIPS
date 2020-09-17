@@ -40,6 +40,10 @@ bool SetupDataParser::parseLineDetData(tinyxml2::XMLElement * _element, int i)
 			localLineDetData.BeginSerialNoOfCt2Detector = atoi(element->GetText());
 		else if (strcmp(element->Value(), "EndSerialNoOfCt2Detector") == 0)
 			localLineDetData.EndSerialNoOfCt2Detector = atoi(element->GetText());
+		else if (strcmp(element->Value(), "SerialNo1OfMiddleHorizontalDetector") == 0)
+			localLineDetData.SerialNo1OfMiddleHorizontalDetector = atoi(element->GetText());
+		else if (strcmp(element->Value(), "SerialNo2OfMiddleHorizontalDetector") == 0)
+			localLineDetData.SerialNo2OfMiddleHorizontalDetector = atoi(element->GetText());
 		else if (strcmp(element->Value(), "AmplifyMultiple") == 0)
 			localLineDetData.EndSerialNoOfCt2Detector = atoi(element->GetText());
 		else if (strcmp(element->Value(), "IntegralTime") == 0)
@@ -88,6 +92,8 @@ bool SetupDataParser::parseLineDetData(tinyxml2::XMLElement * _element, int i)
 			localLineDetData.StandartInterpolationFlag = atoi(element->GetText());
 		else if (strcmp(element->Value(), "PhysicsInterpolationFlag") == 0)
 			localLineDetData.PhysicsInterpolationFlag = atoi(element->GetText());
+		else if (strcmp(element->Value(), "Ct2GraduationAngle") == 0)
+			localLineDetData.Ct2GraduationAngle = atof(element->GetText());
 	}
 
 	d_setupData->lineDetData.push_back(localLineDetData);

@@ -42,7 +42,7 @@ private:
 	std::unique_ptr<std::promise<bool>> d_recvThreadPromisePtr;
 	std::atomic<bool> d_recvDeadThreadRun;
 	std::atomic<bool> d_sendDeadThreadRun;
-	bool d_connected;
+	std::atomic<bool> d_connected;
 	void sendThread(std::promise<bool>& _promise);
 	std::unique_ptr<std::promise<bool>> d_sendThreadPromisePtr;
 	bool d_readyToAccept;

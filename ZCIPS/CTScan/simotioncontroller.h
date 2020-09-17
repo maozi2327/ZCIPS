@@ -108,7 +108,7 @@ private:
 	std::unique_ptr<Thread> d_sendThread;
 	char* d_netWorkBuffer;
 	int d_bytesReceived;
-	void getAixsValueAndNotify(std::map<Axis, float>& _value, char* _data, int _axisNum, int _typeCode);
+	void getAixsValueAndNotify(std::map<AxisPosEnum, float>& _value, char* _data, int _axisNum, int _typeCode);
 	void fillInCmdStructAndFillCmdList(int _cmd, char* _data, int _size, bool _consist);
 protected:
 	virtual bool sendCmd();
@@ -137,8 +137,8 @@ public:
 	virtual bool readWaitNextScanStatus();
 	virtual bool readIdleStatus();
 	virtual std::map<Axis, float> readAxisSpeed();
-	virtual float readAxisPostion(Axis _axis);
-	virtual std::map<Axis, float> readAxisPostion();
+	virtual float readAxisPostion(AxisPosEnum _axis);
+	virtual std::map<AxisPosEnum, float> readAxisPostion();
 	virtual std::map<Axis, float> readAxisWorkZero();
 
 	virtual void getSystemStatus();

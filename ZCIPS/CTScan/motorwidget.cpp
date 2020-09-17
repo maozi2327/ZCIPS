@@ -43,14 +43,14 @@ MotorWidget::~MotorWidget()
 
 void MotorWidget::updateAxisStatus()
 {
-	std::map<Axis, float> axisPos = d_controller->readAxisPostion();
-	ui.rayLayerPosLabel->setText(QString("%1").arg(axisPos[Axis::rayLayer], 0, 'f', 2));
-	ui.objRadialPosLabel->setText(QString("%1").arg(axisPos[Axis::objRadial], 0, 'f', 2));
-	ui.objRotationPosLabel->setText(QString("%1").arg(axisPos[Axis::objRotation], 0, 'f', 2));
-	ui.objTranslationPosLabel->setText(QString("%1").arg(axisPos[Axis::objTranslation], 0, 'f', 2));
-	ui.detLayerPosLabel->setText(QString("%1").arg(axisPos[Axis::detLayer], 0, 'f', 2));
-	ui.detRadialPosLabel->setText(QString("%1").arg(axisPos[Axis::detRadial], 0, 'f', 2));
-	ui.detTranslationPosLabel->setText(QString("%1").arg(axisPos[Axis::detTranslation], 0, 'f', 2));
+	std::map<AxisPosEnum, float> axisPos = d_controller->readAxisPostion();
+	ui.rayLayerPosLabel->setText(QString("%1").arg(axisPos[AxisPosEnum::rayLayer], 0, 'f', 2));
+	ui.objRadialPosLabel->setText(QString("%1").arg(axisPos[AxisPosEnum::objRadial], 0, 'f', 2));
+	ui.objRotationPosLabel->setText(QString("%1").arg(axisPos[AxisPosEnum::objRotation], 0, 'f', 2));
+	ui.objTranslationPosLabel->setText(QString("%1").arg(axisPos[AxisPosEnum::objTranslation], 0, 'f', 2));
+	ui.detLayerPosLabel->setText(QString("%1").arg(axisPos[AxisPosEnum::detLayer], 0, 'f', 2));
+	ui.detRadialPosLabel->setText(QString("%1").arg(axisPos[AxisPosEnum::detRadial], 0, 'f', 2));
+	ui.detTranslationPosLabel->setText(QString("%1").arg(axisPos[AxisPosEnum::detTranslation], 0, 'f', 2));
 }
 void MotorWidget::on_negativePosButton_clicked()
 {

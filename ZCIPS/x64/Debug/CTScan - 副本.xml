@@ -12,20 +12,17 @@
 			</NumberOfCalibrateHorizontalDetector>
 			<BeginSerialNoOfCt2Detector>204</BeginSerialNoOfCt2Detector>
 			<EndSerialNoOfCt2Detector>403</EndSerialNoOfCt2Detector>
-			<SerialNo1OfMiddleHorizontalDetector>303</SerialNo1OfMiddleHorizontalDetector>
-			<SerialNo2OfMiddleHorizontalDetector>304</SerialNo2OfMiddleHorizontalDetector>
 			<AmplifyMultiple>7</AmplifyMultiple>
-			<IntegralTime>20000</IntegralTime>
+			<IntegralTime>20</IntegralTime>
 			<DelayTime>10</DelayTime>
 			<nFIFOdepth>64</nFIFOdepth>
-			<nChnnelMask>1111 1111 11</nChnnelMask>
+			<nChnnelMask>1111 1</nChnnelMask>
 			<HorizontalSectorAngle>36.48</HorizontalSectorAngle>
 			<HorizontalDetectorAngle>0.06</HorizontalDetectorAngle>
-			<nBlockMapTable>76,77,78,79</nBlockMapTable>
+			<nBlockMapTable>0,1</nBlockMapTable>
 			<IpAddress>192.168.2.120</IpAddress>
 			<nAcquireClientPort>4000</nAcquireClientPort>
 			<SourceDetectorDistance>1454</SourceDetectorDistance>
-			<Ct2GraduationAngle>12</Ct2GraduationAngle>
 		</LineDetData>
 	</LineDetSection>
 	<PanDetSection>

@@ -124,9 +124,10 @@ public:
 
 		while (ptr != nullptr)
 		{
+			auto temp = ptr;
 			delete[] ptr->d_item;
 			ptr = ptr->d_next;
-			delete ptr->d_prev;
+			delete temp;
 		}
 
 		d_size = 0;

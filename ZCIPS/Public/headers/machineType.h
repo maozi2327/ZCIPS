@@ -140,6 +140,44 @@ enum class Axis
 	detTranslation = 12
 };
 
+enum class AxisPosEnum
+{
+	objRotation = 0,
+#ifdef TABLETRANSLATION
+	objTranslation = 1,
+#endif 
+#ifdef RAYLAYER
+	rayLayer = 3,
+#endif
+#ifdef DETLAYER
+	detLayer = 4,
+#endif
+#ifdef TABLERADIAL
+	objRadial = 5,
+#endif
+	detRadial = 8,
+	detTranslation = 9
+};
+
+enum class AxisZeroEnum
+{
+	objRotation = 0,
+#ifdef TABLETRANSLATION
+	objTranslation = 1,
+#endif 
+#ifdef RAYLAYER
+	rayLayer = 3,
+#endif
+#ifdef DETLAYER
+	detLayer = 4,
+#endif
+#ifdef TABLERADIAL
+	objRadial = 5,
+#endif
+	detRadial = 13,
+	detTranslation = 14
+};
+
 const std::map<const char*, Axis> AxisNameMap
 {
 	{"ObjRotation", Axis::objRotation}, 

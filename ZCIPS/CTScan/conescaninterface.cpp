@@ -180,8 +180,8 @@ bool ConeScanInterface::makeParameterText()
 	d_parameterText[index++] = (";  局部坐标系绕全局系z轴旋转。\n");
 	d_parameterText[index++] = (";--------------------------------------------;\n");
 	d_parameterText[index++] = ("[GEOMETRY]\n");
-	d_parameterText[index++].sprintf("SOD=%.1f\t\t\t;射线源焦点到旋转轴的实际距离（mm）\n", Axis::objRadial);
-	d_parameterText[index++].sprintf("SDD=%.1f\t\t\t;射线源焦点到探测器的实际距离（mm）\n", d_controller->readAxisPostion(Axis::detRadial));
+	d_parameterText[index++].sprintf("SOD=%.1f\t\t\t;射线源焦点到旋转轴的实际距离（mm）\n", AxisPosEnum::objRadial);
+	d_parameterText[index++].sprintf("SDD=%.1f\t\t\t;射线源焦点到探测器的实际距离（mm）\n", d_controller->readAxisPostion(AxisPosEnum::detRadial));
 	d_parameterText[index++].sprintf("thetaY=%.2f\t\t\t;探测器绕y轴的旋转角度（度）\n", 0.0f);
 	d_parameterText[index++].sprintf("thetaX=%.2f\t\t\t;探测器绕x轴的旋转角度（度）\n", 0.0f);
 	d_parameterText[index++].sprintf("thetaZ=%.2f\t\t\t;探测器绕z轴的旋转角度（度）\n", 0.0f);

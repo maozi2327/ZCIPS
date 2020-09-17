@@ -76,8 +76,8 @@ bool LineDetScanInterface::setGenerialFileHeader()
 	d_ictHeader.ScanParameter.SpaceOfVerticalDetector = 0;
 	d_ictHeader.ScanParameter.HorizontalSectorAngle = d_setupData->lineDetData[d_lineDetIndex].HorizontalDetectorAngle;
 	d_ictHeader.ScanParameter.VerticalSectorAngle = 0;
-	d_ictHeader.ScanParameter.RadialPosition = d_controller->readAxisPostion(Axis::objRadial);
-	d_ictHeader.ScanParameter.SourceDetectorDistance = d_controller->readAxisPostion(Axis::detRadial);
+	d_ictHeader.ScanParameter.RadialPosition = d_controller->readAxisPostion(AxisPosEnum::objRadial);
+	d_ictHeader.ScanParameter.SourceDetectorDistance = d_controller->readAxisPostion(AxisPosEnum::detRadial);
 	d_ictHeader.ScanParameter.CollimationSize = d_colimateSize;
 	d_ictHeader.ScanParameter.LayerThickness = d_layerThickness;
 	d_ictHeader.ScanParameter.SampleTime = d_sampleTime / 1000;
@@ -87,10 +87,10 @@ bool LineDetScanInterface::setGenerialFileHeader()
 	//…Ë÷√ ±º‰
 	QString time = QDateTime::currentDateTime().time().toString();
 	QByteArray byteArray = time.toLatin1();
-	strcpy_s(d_ictHeader.Task.DateTime.Date, byteArray.data());
+	strcpy_s(d_ictHeader.Task.DateTime.Time, byteArray.data());
 	QString date = QDateTime::currentDateTime().date().toString(Qt::ISODate);
 	byteArray = date.toLatin1();
-	strcpy_s(d_ictHeader.Task.DateTime.Time, byteArray);
+	strcpy_s(d_ictHeader.Task.DateTime.Date, byteArray);
 
 	strcpy_s(d_ictHeader.ScanParameter.FilenameTemperature, "");
 	strcpy_s(d_ictHeader.ScanParameter.FilenameOfCTdata, "");
