@@ -33,68 +33,71 @@
     <Filter Include="public\utility">
       <UniqueIdentifier>{6442bf5d-ba88-4875-99ec-76643798f1fe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source">
+    <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{55a49b35-4a50-473f-9092-d3b2d2d3cbf1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\lib\tinyxml2.cpp">
       <Filter>public\lib</Filter>
     </ClCompile>
     <ClCompile Include="simotioncontroller.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="setupdataparser.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="linescainterface.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="linedetscanwidget.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="linedetscaninterface.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="linedetnetwork.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="linedetimageprocess.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="linedetairtune.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="imagewidgetmanager.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="imagewidget.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="imageprocess.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ct3scan.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="controllerinterface.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="conescanwidget.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="conescaninterface.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="conescan.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="conecontinusscan.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\util\functions.cpp">
       <Filter>public\utility</Filter>
@@ -118,78 +121,42 @@
       <Filter>public\utility</Filter>
     </ClCompile>
     <ClCompile Include="linedetbkgtune.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="drscan.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ct2scan.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ctscanexport.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="motorwidget.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ctscanapp.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ctscanwidget.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\util\logmacro.cpp">
       <Filter>public\utility</Filter>
     </ClCompile>
     <ClCompile Include="msglistboxdialog.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="acceleratorwidget.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="floatacceleratordialog.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\lib\tinyxml2.h">
       <Filter>public\lib</Filter>
-    </ClInclude>
-    <ClInclude Include="simotioncontroller.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="linescaninterface.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="linedetimageprocess.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="linedetbkgtune.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="linedetairtune.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="imagewidgetmanager.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="imageprocess.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="ct3Scan.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="conescan.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="conecontinusscan.h">
-      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\util\functions.h">
       <Filter>public\utility</Filter>
@@ -227,76 +194,112 @@
     <ClInclude Include="..\Public\util\stdafx.h">
       <Filter>public\publicHeaders</Filter>
     </ClInclude>
-    <ClInclude Include="drscan.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\util\tcpserver.h">
       <Filter>public\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="ctscan_global.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="ct2scan.h">
-      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\util\logmacro.h">
       <Filter>public\utility</Filter>
     </ClInclude>
+    <ClInclude Include="conecontinusscan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="conescan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="createDumpFile.h">
-      <Filter>Source</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ct2scan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ct3Scan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ctscan_global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="drscan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imageprocess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imagewidgetmanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="linedetairtune.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="linedetbkgtune.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="linedetimageprocess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="linescaninterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simotioncontroller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="setupdataparser.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="linedetscanwidget.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="linedetscaninterface.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="linedetnetwork.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="imagewidget.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="controllerinterface.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="conescanwidget.h">
-      <Filter>Source</Filter>
-    </QtMoc>
     <QtMoc Include="..\Public\util\serialportutil.h">
       <Filter>public\utility</Filter>
     </QtMoc>
     <QtMoc Include="..\Public\util\tcpclient.h">
       <Filter>public\utility</Filter>
     </QtMoc>
-    <QtMoc Include="conescanInterface.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="motorwidget.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="ctscanapp.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="ctscanwidget.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="msglistboxdialog.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="ctscanexport.h">
-      <Filter>Source</Filter>
-    </QtMoc>
-    <QtMoc Include="acceleratorwidget.h">
-      <Filter>Source</Filter>
-    </QtMoc>
     <QtMoc Include="floatacceleratordialog.h">
       <Filter>public</Filter>
+    </QtMoc>
+    <QtMoc Include="acceleratorwidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="conescanInterface.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="conescanwidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="controllerinterface.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ctscanapp.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ctscanexport.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ctscanwidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="imagewidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="linedetnetwork.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="linedetscaninterface.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="linedetscanwidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="motorwidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="msglistboxdialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="setupdataparser.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -329,10 +332,11 @@
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="ctscan.qrc">
-      <Filter>Source</Filter>
+      <Filter>Source Files</Filter>
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

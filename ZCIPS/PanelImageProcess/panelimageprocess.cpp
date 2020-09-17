@@ -68,7 +68,7 @@ bool PanelImageProcess::loadTiff(const QString & _sourceFile, unsigned short*& _
 
 	realloc(buf, bytesRead);
 	TIFFClose(tif);
-	in_data = (unsigned short*)(buf);
+	_data = (unsigned short*)(buf);
 	return true;
 }
 
@@ -228,14 +228,14 @@ int PanelImageProcess::binProcessDataToFile(unsigned short * _sourceData, const 
 {
 	QByteArray destFileName = _destFile.toLocal8Bit();
 	return _nCTBinModeProcess(_sourceData, nullptr, nullptr, destFileName.data(), _line, _column,
-		in_binHeight, _binHeight);
+		_binHeight, _binHeight);
 }
 
 int PanelImageProcess::binProcessDataToData(unsigned short * _sourceData, int _line, int _column
 	, int _binWidth, int _binHeight)
 {
 	return _nCTBinModeProcess(_sourceData, nullptr, d_impl->d_correctedData, nullptr,
-		in_line, _column, _binWidth, _binHeight);
+		_line, _column, _binWidth, _binHeight);
 }
 
 int PanelImageProcess::rotateProcessFileToFile(const QString& _sourceFile, const QString& _destFile
@@ -244,14 +244,14 @@ int PanelImageProcess::rotateProcessFileToFile(const QString& _sourceFile, const
 	QByteArray sourceFileName = _sourceFile.toLocal8Bit();
 	QByteArray destFileName = _destFile.toLocal8Bit();
 	return _nCTRotationProcess(nullptr, sourceFileName.data(), nullptr, destFileName.data(),
-		in_iRotationType, _iRotationAngle, 0, 0);
+		_iRotationType, _iRotationAngle, 0, 0);
 }
 
 int PanelImageProcess::rotateProcessFileToData(const QString& _sourceFile, int _iRotationType, int _iRotationAngle)
 {
 	QByteArray sourceFileName = _sourceFile.toLocal8Bit();
 	return _nCTRotationProcess(nullptr, sourceFileName.data(), d_impl->d_correctedData, nullptr,
-		in_iRotationType, _iRotationAngle, 0, 0);
+		_iRotationType, _iRotationAngle, 0, 0);
 }
 
 int PanelImageProcess::rotateProcessDataToFile(unsigned short * _sourceData, const QString& _destFile,
@@ -259,14 +259,14 @@ int PanelImageProcess::rotateProcessDataToFile(unsigned short * _sourceData, con
 {
 	QByteArray destFileName = _destFile.toLocal8Bit();
 	return _nCTRotationProcess(_sourceData, nullptr, nullptr, destFileName.data(),
-		in_iRotationType, _iRotationAngle, _line, _column);
+		_iRotationType, _iRotationAngle, _line, _column);
 }
 
 int PanelImageProcess::rotateProcessDataToData(unsigned short * _sourceData,
 	int _line, int _column, int _iRotationType, int _iRotationAngle)
 {
 	return _nCTRotationProcess(_sourceData, nullptr, d_impl->d_correctedData, nullptr,
-		in_iRotationType, _iRotationAngle, _line, _column);
+		_iRotationType, _iRotationAngle, _line, _column);
 }
 
 int PanelImageProcess::mergeProcessFileToFile(const QString& _sourceFile, const QString& _destFile)
