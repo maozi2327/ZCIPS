@@ -60,6 +60,7 @@ void CT3Scan::scanThread()
 		last_time = d_start_time = std::chrono::steady_clock::now();
 		setGenerialFileHeader();
 		sendCmdToControl();
+		std::this_thread::sleep_for(std::chrono::seconds(3));
 
 		while (d_deadThreadRun)
 		{
@@ -68,8 +69,8 @@ void CT3Scan::scanThread()
 			if (now > last_time + d_intervalForSaveTempFile)
 			{
 				auto listTempHead = d_lineDetNetWork->getRowList();
-				d_lineDetNetWork->clearRowList();
 				saveTempFile(listTempHead);
+				d_lineDetNetWork->clearRowList();
 				last_time = now;
 			}
 
@@ -78,7 +79,7 @@ void CT3Scan::scanThread()
 			if (d_controller->readSaveStatus())
 			{
 				saveFile();
-				stopScan();
+				break;
 			}
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -91,12 +92,11 @@ void CT3Scan::scanThread()
 
 void CT3Scan::sendCmdToControl()
 {
-	char buf[RTBUF_LEN];
 	CT23ScanCmdData	cmdData, *pCmdData;
 	cmdData.stsBit.s.changeLayerSpace = 0;
 	cmdData.stsBit.s.czAmountInc1 = d_ictHeader.ScanParameter.InterpolationFlag 
 		= d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
-	cmdData.stsBit.s.currentLayer = 0;
+	cmdData.stsBit.s.currentLayer = 1;
 	cmdData.stsBit.s1.physiInterpolation = d_setupData->lineDetData[d_lineDetIndex].PhysicsInterpolationFlag;
 	cmdData.stsBit.s.thirdGeneration = 1;
 	cmdData.interpolationAmount = (BYTE)d_ictHeader.ScanParameter.NumberOfInterpolation;
@@ -114,39 +114,36 @@ void CT3Scan::sendCmdToControl()
 	cmdData.stsBit.s.autoStopBeam = 0;
 	cmdData.firstLayerOffset = d_layer;
 	cmdData.layerSpace = 0;
-	COMM_PACKET* ptr = (COMM_PACKET*)buf;
-	ptr->tagHead[0] = 0x55;
-	ptr->tagHead[1] = 0xaa;
-	ptr->tagHead[2] = 0x5a;
-	ptr->typeCode = CMD_CT_SCAN;
-	ptr->tagLen = 3 + sizeof(CT23ScanCmdData);
-	memcpy(buf + 6, &cmdData, sizeof(cmdData));
-	d_controller->sendToControl(buf, 6 + sizeof(CT23ScanCmdData));
+	d_controller->sendToControl(CMD_CT_SCAN, (char*)(&cmdData), sizeof(CT23ScanCmdData), false);
 }
 
 void CT3Scan::saveFile()
 {
-	std::unique_ptr<RowList> finalList(new RowList);
+	//std::unique_ptr<RowList> finalList(new RowList);
 
-	for (auto& tempFile : d_tempFileVec)
-	{
-		QFile file;
-		file.setFileName(tempFile);
-		file.open(QIODevice::ReadWrite);
-		auto byteArray = file.readAll();
-		int listItemNum = byteArray.size() / d_lineDetNetWork->getListItemSize();
-		auto listItemSize = d_lineDetNetWork->getListItemSize();
-		char* memory = new char[byteArray.size()];
-		memcpy(memory, byteArray.data(), byteArray.size());
+	//for (auto& tempFile : d_tempFileVec)
+	//{
+	//	QFile file;
+	//	file.setFileName(tempFile);
+	//	file.open(QIODevice::ReadWrite);
+	//	auto byteArray = file.readAll();
+	//	int listItemNum = byteArray.size() / d_lineDetNetWork->getListItemSize();
+	//	auto listItemSize = d_lineDetNetWork->getListItemSize();
+	//	char* memory = new char[byteArray.size()];
+	//	memcpy(memory, byteArray.data(), byteArray.size());
 
-		for (int i = 0; i != listItemNum; ++i)
-			finalList->push_back((unsigned long*)(memory + listItemSize * i));
-	}	
-	
-	saveOrgFile(finalList.get()->getList());
-	QString orgFileName(d_orgPath + d_fileName + ".org");
-	QString disposedFileName(d_orgPath + d_fileName);
-	d_lineDetImageProcess->dispose(d_installDirectory, orgFileName, disposedFileName);
+	//	for (int i = 0; i != listItemNum; ++i)
+	//		finalList->push_back((unsigned long*)(memory + listItemSize * i));
+	//}	
+	//
+	//saveOrgFile(finalList.get()->getList());
+	d_orgPath = "d:\\org\\";
+	d_fileName = "1.org";
+	saveOrgFile(d_lineDetNetWork->getRowList());
+
+	//QString orgFileName(d_orgPath + d_fileName + ".org");
+	//QString disposedFileName(d_orgPath + d_fileName);
+	//d_lineDetImageProcess->dispose(d_installDirectory, orgFileName, disposedFileName);
 }
 
 bool CT3Scan::beginScan()
@@ -177,6 +174,7 @@ bool CT3Scan::setGenerialFileHeader()
 	d_ictHeader.ScanParameter.HelixScanPitch = 0;
 	d_ictHeader.ScanParameter.FirstSectStartCoordinateOfDR = 0;
 	d_ictHeader.ScanParameter.SecondSectStartCoordinateOfDR = 0;
+	d_ictHeader.ScanParameter.TotalLayers = 1;
 	d_ictHeader.ScanParameter.TotalLayers2 = 0;
 	d_ictHeader.ScanParameter.Ct2ScanMode = 0;
 	d_ictHeader.ScanParameter.DataTransferMode = 1;
@@ -244,6 +242,5 @@ void CT3Scan::saveTempFile(LineDetList* _listHead)
 
 void CT3Scan::stopScan()
 {
-	d_lineDetNetWork->setCIFinished(true);
-	d_scanThread->stopThread();
+	LineDetScanInterface::stopScan();
 }

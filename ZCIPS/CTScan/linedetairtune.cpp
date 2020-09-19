@@ -53,12 +53,8 @@ void LineDetAirTune::sendCmdToControl()
 {
 	char buf[RTBUF_LEN];
 	COMM_PACKET* ptr = (COMM_PACKET*)buf;
-	ptr->tagHead[0] = 0x55;
-	ptr->tagHead[1] = 0xaa;
-	ptr->tagHead[2] = 0x5a;
 	ptr->typeCode = static_cast<char>(ScanMode::AIR_SCAN);
-	ptr->tagLen = 3 + 0;
-	d_controller->sendToControl(buf, 6);
+	d_controller->sendToControl(static_cast<char>(ScanMode::AIR_SCAN), nullptr, 0, false);
 }
 
 void LineDetAirTune::scanThread()

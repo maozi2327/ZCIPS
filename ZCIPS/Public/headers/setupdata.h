@@ -404,6 +404,7 @@ struct SetupData
 };
 
 #define	RTBUF_LEN	256						//定义接收/发送缓冲区长度
+#pragma pack(1)								//按字节对齐
 struct COMM_PACKET
 {
 	BYTE	tagHead[3];						//包头(0x55,0xaa,0x5a)
@@ -412,6 +413,7 @@ struct COMM_PACKET
 	BYTE	data[RTBUF_LEN - 6];			//命令参数
 };
 
+#pragma pack()
 
 struct tempData
 {

@@ -23,14 +23,15 @@ LineDetScanInterface::~LineDetScanInterface()
 
 void LineDetScanInterface::stopScan()
 {
-	d_controller->stopAll();
-	d_lineDetNetWork->clearRowList();
+	d_lineDetNetWork->stopAcquire(true);
+	d_scanThread->stopThread();
 }
 
 void LineDetScanInterface::saveOrgFile(LineDetList* _List)
 {
 	QString fileFullName(d_orgPath + d_fileName);
-	d_lineDetImageProcess->saveOrgFile(fileFullName, &d_ictHeader, _List, 1);
+	d_ictHeader.DataFormat.TotalLines = d_lineDetNetWork->getListItemNum();
+	auto ret = d_lineDetImageProcess->saveOrgFile(fileFullName, &d_ictHeader, _List, 1);
 }
 
 bool LineDetScanInterface::setGenerialFileHeader()
@@ -68,8 +69,12 @@ bool LineDetScanInterface::setGenerialFileHeader()
 	d_ictHeader.ScanParameter.NumberOfSystemHorizontalDetector
 		= d_setupData->lineDetData[d_lineDetIndex].NumberOfSystemHorizontalDetector;
 	d_ictHeader.ScanParameter.SerialNo1OfMiddleHorizontalDetector
-		= d_setupData->lineDetData[d_lineDetIndex].BeginSerialNoOfCt2Detector;
+		= d_setupData->lineDetData[d_lineDetIndex].SerialNo1OfMiddleHorizontalDetector;
 	d_ictHeader.ScanParameter.SerialNo2OfMiddleHorizontalDetector
+		= d_setupData->lineDetData[d_lineDetIndex].SerialNo2OfMiddleHorizontalDetector;
+	d_ictHeader.ScanParameter.BeginSerialNoOfCt2Detector
+		= d_setupData->lineDetData[d_lineDetIndex].BeginSerialNoOfCt2Detector;
+	d_ictHeader.ScanParameter.EndSerialNoOfCt2Detector
 		= d_setupData->lineDetData[d_lineDetIndex].EndSerialNoOfCt2Detector;
 	d_ictHeader.ScanParameter.NumberofSystemVerticalDetector = 1;
 	d_ictHeader.ScanParameter.SpaceOfHorizontalDetector	= 0;
@@ -79,8 +84,8 @@ bool LineDetScanInterface::setGenerialFileHeader()
 	d_ictHeader.ScanParameter.RadialPosition = d_controller->readAxisPostion(AxisPosEnum::objRadial);
 	d_ictHeader.ScanParameter.SourceDetectorDistance = d_controller->readAxisPostion(AxisPosEnum::detRadial);
 	d_ictHeader.ScanParameter.CollimationSize = d_colimateSize;
-	d_ictHeader.ScanParameter.LayerThickness = d_layerThickness;
-	d_ictHeader.ScanParameter.SampleTime = d_sampleTime / 1000;
+	d_ictHeader.ScanParameter.LayerThickness = 2/*d_layerThickness*/; //TODO_DJ
+	d_ictHeader.ScanParameter.SampleTime = float(d_sampleTime) / 1000;
 	d_ictHeader.ScanParameter.SetupSynchPulseNumber
 		= (WORD)(d_ictHeader.ScanParameter.SampleTime * d_ictHeader.SystemParameter.SynchFrequency);
 	
@@ -109,7 +114,7 @@ void LineDetScanInterface::CalculateView_ValidDetector(float _diameter)
 	int leftMiddle = d_ictHeader.ScanParameter.SerialNo1OfMiddleHorizontalDetector;
 	int rightMiddle = d_ictHeader.ScanParameter.SerialNo2OfMiddleHorizontalDetector;
 
-	if (d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag)		//确定3代扫描有效探测器数Nv
+	if (false)		//确定3代扫描有效探测器数Nv
 	{
 		int	Nv;
 
@@ -119,11 +124,11 @@ void LineDetScanInterface::CalculateView_ValidDetector(float _diameter)
 			Nv = 2 * std::min<int>(rightMiddle, systemDetector - rightMiddle);
 		
 		d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector = Nv;
-		_diameter = 2 * d_SOD * (float)sin(delta*(Nv - 1) / 2);
+		_diameter = 2 * 980 * (float)sin(delta*(Nv - 1) / 2);
 	}
 	else 
 	{
-		float beta = (float)(2 * asin(_diameter / 2 / d_SOD));        //计算视场D占用的扇角beta
+		float beta = (float)(2 * asin(_diameter / 2 / 980));        //计算视场D占用的扇角beta
 		int	Nv;
 
 		if (leftMiddle == rightMiddle)
@@ -135,9 +140,9 @@ void LineDetScanInterface::CalculateView_ValidDetector(float _diameter)
 			Nv = realSysDetectorNum;
 
 		d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector = Nv;
-		_diameter = 2 * _diameter * (float)sin(delta*(Nv - 1) / 2);
+		_diameter = 2 * 980 * (float)sin(delta*(Nv - 1) / 2);
 	}
-
+	//TODO_DJ
 	d_ictHeader.ScanParameter.ViewDiameter = (float)((int)(100.0 * _diameter)) / 100;
 }
 

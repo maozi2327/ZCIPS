@@ -36,6 +36,8 @@ bool SetupDataParser::parseLineDetData(tinyxml2::XMLElement * _element, int i)
 		}
 		else if (strcmp(element->Value(), "NumberOfCalibrateHorizontalDetector") == 0)
 			localLineDetData.NumberOfCalibrateHorizontalDetector = atoi(element->GetText());
+		else if (strcmp(element->Value(), "NumberOfSystemHorizontalDetector") == 0)
+			localLineDetData.NumberOfSystemHorizontalDetector = atoi(element->GetText());
 		else if (strcmp(element->Value(), "BeginSerialNoOfCt2Detector") == 0)
 			localLineDetData.BeginSerialNoOfCt2Detector = atoi(element->GetText());
 		else if (strcmp(element->Value(), "EndSerialNoOfCt2Detector") == 0)
@@ -45,7 +47,7 @@ bool SetupDataParser::parseLineDetData(tinyxml2::XMLElement * _element, int i)
 		else if (strcmp(element->Value(), "SerialNo2OfMiddleHorizontalDetector") == 0)
 			localLineDetData.SerialNo2OfMiddleHorizontalDetector = atoi(element->GetText());
 		else if (strcmp(element->Value(), "AmplifyMultiple") == 0)
-			localLineDetData.EndSerialNoOfCt2Detector = atoi(element->GetText());
+			localLineDetData.AmplifyMultiple = atoi(element->GetText());
 		else if (strcmp(element->Value(), "IntegralTime") == 0)
 			localLineDetData.IntegralTime = atoi(element->GetText());
 		else if (strcmp(element->Value(), "DelayTime") == 0)
@@ -67,7 +69,7 @@ bool SetupDataParser::parseLineDetData(tinyxml2::XMLElement * _element, int i)
 		else if (strcmp(element->Value(), "HorizontalSectorAngle") == 0)
 			localLineDetData.HorizontalSectorAngle = atoi(element->GetText());
 		else if (strcmp(element->Value(), "HorizontalDetectorAngle") == 0)
-			localLineDetData.HorizontalDetectorAngle = atoi(element->GetText());
+			localLineDetData.HorizontalDetectorAngle = atof(element->GetText());
 		else if (strcmp(element->Value(), "IpAddress") == 0)
 			strcpy(localLineDetData.szAcquireClientIP, element->GetText());
 		else if (strcmp(element->Value(), "nBlockMapTable") == 0)

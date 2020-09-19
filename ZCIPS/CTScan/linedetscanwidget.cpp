@@ -230,6 +230,9 @@ void LineDetScanWidget::on_ct3LayerPosLineEdit_returnd()
 
 void LineDetScanWidget::on_stopButton_clicked()
 {
+	if(d_scan)
+		d_scan->stopScan();
+
 	d_controller->stopAll();
 }
 

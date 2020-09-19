@@ -37,6 +37,6 @@ void ConeContinusScan::scanThread(std::promise<bool>& _promise)
 
 bool ConeContinusScan::stopScan()
 {
-	d_controller->sendToControl(0, 0);
+	//d_controller->sendToControl(0, 0);
 	return true;
 }

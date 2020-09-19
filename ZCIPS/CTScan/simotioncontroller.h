@@ -151,7 +151,7 @@ public:
 	virtual void setAxisSpeed(std::map<Axis, float>& _speed);
 	virtual void setAxisWorkZero(std::map<Axis, float>& _workZero);
 	
-	virtual void sendToControl(char* _package, int _size, bool _consist = false);
+	virtual void sendToControl(int _cmd, char * _data, int _size, bool _consist);
 	virtual void decodePackages(char* _package, int _size);
 	virtual void restartLineDet(int _detNum);
 };

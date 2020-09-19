@@ -53,8 +53,7 @@ bool ConeScan::intialise()
 
 void ConeScan::sendCmdToController()
 {
-	char buf[RTBUF_LEN];
-	ConeScanCmdData	cmdData, *pCmdData;
+	ConeScanCmdData	cmdData;
 	cmdData.stsBit.s.translationCone = 0;
 	cmdData.stsBit.s.currentLayer = 1;
 	cmdData.stsBit.s.coneHelix = 0;
@@ -68,12 +67,5 @@ void ConeScan::sendCmdToController()
 	cmdData.b180Scan = 0;
 	cmdData.centerOffset = 0;
 	cmdData.stsBit.s.coneHelix = 0;
-	COMM_PACKET* ptr = (COMM_PACKET*)buf;
-	ptr->tagHead[0] = 0x55;
-	ptr->tagHead[1] = 0xaa;
-	ptr->tagHead[2] = 0x5a;
-	ptr->typeCode = CMD_CONE_SCAN;
-	ptr->tagLen = 3 + sizeof(ConeScanCmdData);
-	memcpy(buf + 6, &cmdData, sizeof(cmdData));
-	d_controller->sendToControl(buf, 6 + sizeof(ConeScanCmdData));
+	d_controller->sendToControl(CMD_CONE_SCAN, (char*)(&cmdData), sizeof(ConeScanCmdData), false);
 }

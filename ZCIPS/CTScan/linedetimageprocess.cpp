@@ -41,6 +41,6 @@ int LineDetImageProcess::dispose(QString& _installFolder, QString& _sourceFile, 
 	unsigned short setupWord = EN_BKGTUNE | EN_AIRTUNE | EN_SENSITIVE | EN_RANGE | EN_CROSSTALK 
 		| EN_PULSEDOSE | EN_HARDEN | EN_ABNORMALDETECTOR;
 
-	return fDataDispose(installFolder.data(), sourceFileName.data(), destFileName.data(), nullptr, setupWord);
+	return 0;// fDataDispose(installFolder.data(), sourceFileName.data(), destFileName.data(), nullptr, setupWord);
 }
 

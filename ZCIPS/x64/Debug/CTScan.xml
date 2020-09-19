@@ -8,8 +8,10 @@
 			<ID>0</ID>
 			<LineDetType>Arch<!--线阵类型-->
 			</LineDetType>
-			<NumberOfCalibrateHorizontalDetector>608<!--探测器通道数量-->
+			<NumberOfCalibrateHorizontalDetector>0<!--校正探测器通道数量-->
 			</NumberOfCalibrateHorizontalDetector>
+			<NumberOfSystemHorizontalDetector>608<!--探测器通道数量-->
+			</NumberOfSystemHorizontalDetector>
 			<BeginSerialNoOfCt2Detector>204</BeginSerialNoOfCt2Detector>
 			<EndSerialNoOfCt2Detector>403</EndSerialNoOfCt2Detector>
 			<SerialNo1OfMiddleHorizontalDetector>303</SerialNo1OfMiddleHorizontalDetector>

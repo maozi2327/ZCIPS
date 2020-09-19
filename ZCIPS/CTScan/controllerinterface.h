@@ -53,7 +53,7 @@ public:
 
 	virtual void setAxisSpeed(std::map<Axis, float>& _speed) = 0;
 	virtual void setAxisWorkZero(std::map<Axis, float>& _workZero) = 0;
-	virtual void sendToControl(char* _package, int _size, bool _consist = false) = 0;
+	virtual void sendToControl(int _cmd, char * _data, int _size, bool _consist) = 0;
 	virtual void decodePackages(char* _package, int _size) = 0;
 	virtual void restartLineDet(int _detNum) = 0;
 };

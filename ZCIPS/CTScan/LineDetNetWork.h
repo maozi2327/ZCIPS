@@ -214,7 +214,7 @@ public:
 	bool ReadIntTime();
 	bool ReadDelayTime();
 	bool startExtTrigAcquire();
-	void setCIFinished(bool _finished);
+	void stopAcquire(bool _finished);
 	void DecodePackages(char* _buff, int _size);
 
 	int getListItemSize();

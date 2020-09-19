@@ -14,7 +14,7 @@ Thread::~Thread()
 
 void Thread::realThread()
 {
-	std::lock_guard<std::mutex> lk(d_mutex);
+	std::lock_guard<std::mutex> lock(d_mutex);
 	d_threadFinished = false;
 	d_fun();
 	d_threadFinished = true;
@@ -29,13 +29,14 @@ void Thread::detach()
 	d_thread->detach();
 }
 
+
 void Thread::stopThread()
 {
 	if (d_threadRun)
 	{
 		d_threadRun = false;
-		std::unique_lock<std::mutex> d_lock(d_mutex);
-		d_con.wait(d_lock, [this]() { return d_threadFinished == true; });
+		std::unique_lock<std::mutex> lock(d_mutex);
+		d_con.wait(lock, [this]() { return d_threadFinished == true; });
 	}
 }
 

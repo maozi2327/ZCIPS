@@ -32,7 +32,7 @@ LineDetNetWork::LineDetNetWork(unsigned short _port, unsigned short _fifoMask, u
 	}
 
 	d_channelNum = (d_smallBoardNum * 8 - d_blockModuleMap.size()) * 8;
-	d_dataSizePerPulse = sizeof(int) * (d_smallBoardNum * (d_channelDepth + 3) + 1);
+	d_dataSizePerPulse = sizeof(int) * (d_smallBoardNum * (d_channelDepth + 3));
 	//d_netWorkCheckThread.reset
 	//(
 	//	new Thread
@@ -117,7 +117,7 @@ void LineDetNetWork::pocessData(char * _package, int _size)
 		else
 		{
 			DecodePackages(d_netWorkBuffer + posecessedDataLenth, packetSize);
-			posecessedDataLenth = packetSize;
+			posecessedDataLenth += packetSize;
 		}
 	}
 
@@ -160,7 +160,7 @@ bool LineDetNetWork::ARMTest()
 	d_recvType = CMD;
 	d_dataList.clear();
 
-	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)) > 0)
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)) == sizeof(cmdInfo))
 		return GetResult(d_cmdType, CMD_ARM_TEST, d_con, d_mutex);
 
 	return false;
@@ -180,7 +180,7 @@ bool LineDetNetWork::ChannelDepthSet()
 {
 	//实际FIFO的深度，也是单采样脉冲下ARM读FIFO的次数(16位总线位宽、67个整型数据，将进行134次读操作)
 	//此处channel_depth+3是数据中包含分度号、脉冲序号和校验和3个数据	
-	CMD_STRUCT cmdInfo{ CMD_CHANNEL_DEPTH_SET , 16, (unsigned int)((d_channelDepth + 3) * 2), 0 };
+	CMD_STRUCT cmdInfo{ 16, CMD_CHANNEL_DEPTH_SET, (unsigned int)((d_channelDepth + 3) * 2), 0 };
 
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return true;
@@ -209,8 +209,8 @@ bool LineDetNetWork::DetectorTest()
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 	
-	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
-		return GetResult(d_returnSize, sizeof(int) * (d_smallBoardNum * (d_channelDepth + 3) + 1), d_con, d_mutex);
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(cmdInfo)) == sizeof(cmdInfo))
+		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
 }
@@ -221,7 +221,7 @@ bool LineDetNetWork::SetAmpSize(int _ampSize)
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
-	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
@@ -233,7 +233,7 @@ bool LineDetNetWork::SetIntTime(int _intTime)
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
-	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
@@ -245,7 +245,7 @@ bool LineDetNetWork::SetDelayTime(int _delayTime)
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 	
-	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
@@ -257,7 +257,7 @@ bool LineDetNetWork::ReadAmpSize()
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
-	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
@@ -269,7 +269,7 @@ bool LineDetNetWork::ReadIntTime()
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
-	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
@@ -281,7 +281,7 @@ bool LineDetNetWork::ReadDelayTime()
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
-	if(d_server->sendSyn((char*)&cmdInfo, sizeof(CMD_STRUCT)))
+	if(d_server->sendSyn((char*)&cmdInfo, sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return GetResult(d_returnSize, d_dataSizePerPulse, d_con, d_mutex);
 
 	return false;
@@ -290,6 +290,8 @@ bool LineDetNetWork::ReadDelayTime()
 bool LineDetNetWork::startExtTrigAcquire()
 {
 	d_dataList.clear();
+	d_recvType = DATA;
+	d_isScanning = false;
 	CMD_STRUCT cmdInfo{ 16, CMD_INTERNAL_COLLECT, 1, 0 };
 
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
@@ -298,9 +300,10 @@ bool LineDetNetWork::startExtTrigAcquire()
 	return false;
 }
 
-void LineDetNetWork::setCIFinished(bool _finished)
+void LineDetNetWork::stopAcquire(bool _finished)
 {
 	d_isScanning = _finished;
+	clearRowList();
 }
 
 void LineDetNetWork::DecodePackages(char * _buff, int _size)
@@ -347,20 +350,22 @@ int LineDetNetWork::getGraduationCount()
 
 int LineDetNetWork::CollectUsefulData(char * _buff, int _size)
 {
-	int pulseNum = _size / d_dataSizePerPulse;
-	int smallBS = d_channelDepth * sizeof(unsigned int);
-
+	int pulseNum = (_size - sizeof(int)) / d_dataSizePerPulse; //前面四个字节是数据长度
+	int smallBS = (d_channelDepth + 3) * sizeof(unsigned int); //分度号+脉冲号+数据+校验和
+	int smallBD = d_channelDepth * sizeof(unsigned int);
 	for (int pulseIndex = 0; pulseIndex != pulseNum; ++pulseIndex)
 	{
+		memmove(_buff, _buff + sizeof(unsigned int), 2 * sizeof(unsigned int));
 		//分度计数+脉冲计数+总通道数
 		unsigned long* item = new unsigned long[d_channelNum + 2];
 		int smIndex = 0;
 
+
 		for (int smIndex = 0; smIndex != d_smallBoardNum; ++smIndex)
 		{
-			memmove(_buff + 2 * sizeof(unsigned int) + smIndex * smallBS
-				, _buff + 2 * sizeof(unsigned int) + pulseIndex * d_dataSizePerPulse + smIndex * smallBS
-				, smallBS);
+			memmove(_buff + 2 * sizeof(unsigned int) + smIndex * smallBD	//下面第一个数据是数据长度
+				, _buff + sizeof(unsigned int) + pulseIndex * d_dataSizePerPulse + smIndex * smallBS + 2 * sizeof(unsigned int)
+				, smallBD);
 		}
 
 		int nonBlockDataIndex = 0;
@@ -373,16 +378,20 @@ int LineDetNetWork::CollectUsefulData(char * _buff, int _size)
 		for (auto& blockIndex : d_blockModuleMap)
 		{
 			auto copyModuleNum = blockIndex - before - 1;
-			memcpy((char*)(dataHead) + dataCopied, _buff + (before + 1) * moduleDataSize, copyModuleNum * moduleDataSize);
+			memcpy((char*)(dataHead) + dataCopied
+				, _buff + 2 * sizeof(unsigned int) + (before + 1) * moduleDataSize
+				, copyModuleNum * moduleDataSize);
 			dataCopied += copyModuleNum * moduleDataSize;
 			before = blockIndex;
 		}
 		
-		memcpy((char*)(dataHead)+dataCopied, _buff + (before + 1) * moduleDataSize, (end - before -1) * moduleDataSize);
+		memcpy((char*)(dataHead)+dataCopied
+			, _buff + 2 * sizeof(unsigned int) + (before + 1) * moduleDataSize
+			, (end - before -1) * moduleDataSize);
 		d_dataList.push_back(item);
 	}
 
-	return _size;
+	return _size - sizeof(int);
 }
 
 LineDetList * LineDetNetWork::getRowList()
