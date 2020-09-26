@@ -45,17 +45,17 @@ QLayout * CTScanWidget::getLayout()
 
 void CTScanWidget::on_ray0LineDet0Button_clicked()
 {
-	//if (d_lineDetScanWidget[{0, 0}].get() == nullptr)
+	//if (d_lineDetScanWidgetMap[{0, 0}].get() == nullptr)
 	//{
 	//	auto widget = new LineDetScanWidget(d_motorControl.get(), 0, 0,
 	//		d_lineDetScanModeMap[{ 0, 0}], d_setupData.get(), d_lineDetNetWorkMap[0].get(), d_controller.get(), this);
-	//	d_lineDetScanWidget[{0, 0}].reset(widget);
+	//	d_lineDetScanWidgetMap[{0, 0}].reset(widget);
 	//}
 	//
 	//if(d_scanWidget != nullptr && d_scanWidget->isVisible())
 	//	d_scanWidget->hide();
 
-	//d_scanWidget = d_lineDetScanWidget[{0, 0}].get();
+	//d_scanWidget = d_lineDetScanWidgetMap[{0, 0}].get();
 	//d_scanWidget->setGeometry((QRect(0, 0, 520, 730)));
 	//d_scanWidget->show();
 }

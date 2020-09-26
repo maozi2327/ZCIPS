@@ -18,7 +18,7 @@ class ConeScanWidget;
 class MotorWidget;
 class CTScanWidget;
 class AcceleratorWidget;
-
+class CT3TemplateWidget;
 class CTScanApp : public CTScanInterface
 {
 	Q_OBJECT
@@ -49,7 +49,7 @@ private:
 	std::map<int, std::unique_ptr<LineDetNetWork>> d_lineDetNetWorkMap;
 	std::map<std::pair<int, int>, std::vector<ScanMode>> d_lineDetScanModeMap;
 	std::map<std::pair<int, int>, std::vector<ScanMode>> d_panelDetScanModeMap;
-	std::map<std::pair<int, int>, LineDetScanWidget*> d_lineDetScanWidget;
+	std::map<std::pair<int, int>, LineDetScanWidget*> d_lineDetScanWidgetMap;
 	std::map<std::pair<int, int>, ConeScanWidget*> d_panelDetScanWidget;
 	CTScanWidget* d_mainWidget;
 	AcceleratorWidget* d_acceleratorWidget;

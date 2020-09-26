@@ -141,6 +141,7 @@
     <ClCompile Include="controllerinterface.cpp" />
     <ClCompile Include="ct2scan.cpp" />
     <ClCompile Include="ct3scan.cpp" />
+    <ClCompile Include="ct3templatewidget.cpp" />
     <ClCompile Include="ctscanwidget.cpp" />
     <ClCompile Include="ctscanapp.cpp" />
     <ClCompile Include="ctscanexport.cpp" />
@@ -262,6 +263,11 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
     </QtMoc>
+    <QtMoc Include="ct3templatewidget.h">
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
+    </QtMoc>
     <ClInclude Include="ctscan_global.h" />
     <ClInclude Include="drscan.h" />
     <QtMoc Include="floatacceleratordialog.h">
@@ -292,6 +298,7 @@
   <ItemGroup>
     <QtUic Include="Acceleratorwidget.ui" />
     <QtUic Include="conescanwidget.ui" />
+    <QtUic Include="ct3templatewidget.ui" />
     <QtUic Include="ctscanwidget.ui" />
     <CustomBuild Include="imagewidget.ui">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>

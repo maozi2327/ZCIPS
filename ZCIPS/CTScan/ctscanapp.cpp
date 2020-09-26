@@ -92,10 +92,10 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	{
 		auto widget = new LineDetScanWidget(mode.first.first, mode.first.second,
 			d_lineDetScanModeMap[mode.first], d_setupData.get(), d_lineDetNetWorkMap[0].get(), d_controller.get(), nullptr);
-		d_lineDetScanWidget[mode.first] = widget;
+		d_lineDetScanWidgetMap[mode.first] = widget;
 	}
 
-	auto scanWidget = d_lineDetScanWidget[{0, 0}];
+	auto scanWidget = d_lineDetScanWidgetMap[{0, 0}];
 	d_mainWidget = new CTScanWidget(d_acceleratorWidget, scanWidget, d_motorWidget, d_upperWidget);
 	connect(d_mainWidget, &CTScanWidget::showMotorButtonSignal, this, &CTScanApp::motorButonSlot);
 	d_floatAcceleratorDialog = new FloatAcceleratorDialog(nullptr, Qt::FramelessWindowHint);

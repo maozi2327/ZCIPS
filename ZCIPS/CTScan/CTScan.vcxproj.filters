@@ -153,6 +153,9 @@
     <ClCompile Include="floatacceleratordialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ct3templatewidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\lib\tinyxml2.h">
@@ -301,6 +304,9 @@
     <QtMoc Include="setupdataparser.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="ct3templatewidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="conescanwidget.ui">
@@ -319,6 +325,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="Acceleratorwidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="ct3templatewidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

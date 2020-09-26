@@ -145,6 +145,9 @@ void CT3Scan::saveFile()
 	//QString disposedFileName(d_orgPath + d_fileName);
 	//d_lineDetImageProcess->dispose(d_installDirectory, orgFileName, disposedFileName);
 }
+//TODO_DJ
+//检测线阵采集数据大小是否为虚拟通道数整数倍
+//TODO_DJ
 
 bool CT3Scan::beginScan()
 {	

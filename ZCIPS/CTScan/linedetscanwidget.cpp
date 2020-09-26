@@ -4,6 +4,7 @@
 #include "LineDetNetWork.h"
 #include "../Public/headers/setupData.h"
 #include "ct3scan.h"
+#include "ct3templatewidget.h"
 
 LineDetScanWidget::LineDetScanWidget(int _rayId, int _lineDetId, 
 	const std::vector<ScanMode>& _scanMode, SetupData* _setupData, 
@@ -24,6 +25,7 @@ LineDetScanWidget::LineDetScanWidget(int _rayId, int _lineDetId,
 			{	return _ct3Data.Ray == _rayId && _ct3Data.Det == _lineDetId; });
 
 			initiliseCt3Controls(*itr);
+			d_ct3TemplateWidget = new CT3TemplateWidget(*itr, this);
 		}
 		else if (scanMode == ScanMode::DR_SCAN)
 		{
@@ -234,6 +236,11 @@ void LineDetScanWidget::on_stopButton_clicked()
 		d_scan->stopScan();
 
 	d_controller->stopAll();
+}
+
+void LineDetScanWidget::on_ct3LoadTemplateButton_clicked()
+{
+	d_ct3TemplateWidget->show();
 }
 
 void LineDetScanWidget::updateControlsSlot()

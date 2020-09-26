@@ -10,6 +10,7 @@ struct CT3Data;
 class LineDetScanInterface;
 class ControllerInterface;
 class LineDetNetWork;
+class CT3TemplateWidget;
 class LineDetScanWidget : public QWidget
 {
 	Q_OBJECT
@@ -43,6 +44,7 @@ private:
 	void initiliseDrControls(DrScanData& _data);
 	std::map<ScanMode, LineDetScanInterface*> d_scanMap;
 	std::unique_ptr<LineDetScanInterface> d_scan;
+	CT3TemplateWidget* d_ct3TemplateWidget;
 private slots:
 	void showMotorTable();
 	void on_Ct3StartButton_clicked();
@@ -50,5 +52,6 @@ private slots:
 	void on_ct3MultiLayerComboBox_currentIndexChanged(const QString& _text);
 	void on_ct3LayerPosLineEdit_returnd();
 	void on_stopButton_clicked();
+	void on_ct3LoadTemplateButton_clicked();
 	void updateControlsSlot();
 };
