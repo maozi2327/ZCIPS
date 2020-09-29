@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "conecontinusscan.h"
-#include "../Public/headers/panelimageprocess.h"
+#include "../PanelImageProcess/panelimageprocess.h"
 #include "controllerinterface.h"
 
 ConeContinusScan::ConeContinusScan(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _ctDispose):

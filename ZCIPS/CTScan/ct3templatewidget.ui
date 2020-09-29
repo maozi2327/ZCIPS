@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>CT3TemplateWidget</class>
- <widget class="QWidget" name="CT3TemplateWidget">
+ <widget class="QDialog" name="CT3TemplateWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>CT3TemplateWidget</string>
   </property>
-  <widget class="QListWidget" name="listWidget">
+  <widget class="QListWidget" name="ct3ItemNameListWidget">
    <property name="geometry">
     <rect>
      <x>220</x>
@@ -268,6 +268,9 @@
      <height>130</height>
     </size>
    </property>
+   <property name="sortingEnabled">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QLabel" name="label_8">
    <property name="geometry">
@@ -298,7 +301,7 @@
    <property name="geometry">
     <rect>
      <x>340</x>
-     <y>150</y>
+     <y>200</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -306,18 +309,8 @@
    <property name="text">
     <string>保存</string>
    </property>
-  </widget>
-  <widget class="QPushButton" name="refreshButton">
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>10</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>刷新</string>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QLineEdit" name="ct3LayerPosEdit">
@@ -334,7 +327,7 @@
    <property name="geometry">
     <rect>
      <x>340</x>
-     <y>290</y>
+     <y>270</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -455,7 +448,7 @@
     <string>层间距</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="ct3SpaceNumLineEdit">
+  <widget class="QLineEdit" name="ct3LayerNumLineEdit">
    <property name="geometry">
     <rect>
      <x>90</x>
@@ -511,7 +504,7 @@
   <widget class="QLineEdit" name="templateNameEdit">
    <property name="geometry">
     <rect>
-     <x>100</x>
+     <x>90</x>
      <y>340</y>
      <width>211</width>
      <height>20</height>
@@ -541,6 +534,35 @@
    </property>
    <property name="text">
     <string>配置名</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="addButton">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>60</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>添加</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="deleteButton">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>120</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>删除</string>
    </property>
   </widget>
  </widget>

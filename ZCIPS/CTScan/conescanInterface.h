@@ -3,7 +3,7 @@
 #include <mutex>
 #include "../Public/util/logmacro.h"
 #include "../PanelDll/panel.h"
-#include "../Public/headers/panelimageprocess.h"
+#include "../PanelImageProcess/panelimageprocess.h"
 #include "../Public/headers/commandqueue.h"
 #include "../Public/util/thread.h"
 

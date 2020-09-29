@@ -20,8 +20,8 @@ LineDetScanWidget::LineDetScanWidget(int _rayId, int _lineDetId,
 	{
 		if (scanMode == ScanMode::CT3_SCAN)
 		{
-			auto itr = std::find_if(d_setupData->ct3Data.begin(), d_setupData->ct3Data.end(),
-				[=](CT3Data& _ct3Data)
+			auto itr = std::find_if(d_setupData->ct3Data.cbegin(), d_setupData->ct3Data.cend(),
+				[=](const CT3Data& _ct3Data)
 			{	return _ct3Data.Ray == _rayId && _ct3Data.Det == _lineDetId; });
 
 			initiliseCt3Controls(*itr);
@@ -29,16 +29,16 @@ LineDetScanWidget::LineDetScanWidget(int _rayId, int _lineDetId,
 		}
 		else if (scanMode == ScanMode::DR_SCAN)
 		{
-			auto itr = std::find_if(d_setupData->drScanData.begin(), d_setupData->drScanData.end(),
-				[=](DrScanData& _drData)
+			auto itr = std::find_if(d_setupData->drScanData.cbegin(), d_setupData->drScanData.cend(),
+				[=](const DrScanData& _drData)
 			{	return _drData.Ray == _rayId && _drData.Det == _lineDetId; });
 
 			initiliseDrControls(*itr);
 		}
 		else if (scanMode == ScanMode::CT2_SCAN)
 		{
-			auto itr = std::find_if(d_setupData->ct2Data.begin(), d_setupData->ct2Data.end(),
-				[=](CT2Data& _ct2Data)
+			auto itr = std::find_if(d_setupData->ct2Data.cbegin(), d_setupData->ct2Data.cend(),
+				[=](const CT2Data& _ct2Data)
 			{	return _ct2Data.Ray == _rayId && _ct2Data.Det == _lineDetId; });
 
 			initiliseCt2Controls(*itr);
@@ -136,7 +136,7 @@ void LineDetScanWidget::initiliseControls()
 	ui.scanModeTab->setCurrentWidget(ui.ct3Tab);
 }
 
-void LineDetScanWidget::initiliseCt3Controls(CT3Data& _data)
+void LineDetScanWidget::initiliseCt3Controls(const CT3Data& _data)
 {
 	addItemToMatixVieSample(_data, ui.ct3MatrixComboBox, ui.ct3ViewComboBox,
 		ui.ct3SampleTimeComboBox, d_rayNum, d_detNum);
@@ -146,7 +146,7 @@ void LineDetScanWidget::initiliseCt3Controls(CT3Data& _data)
 	ui.ct3MultiLayerComboBox->setCurrentText(QString::fromLocal8Bit("µ¥²ã"));
 }
 
-void LineDetScanWidget::initiliseCt2Controls(CT2Data& _data)
+void LineDetScanWidget::initiliseCt2Controls(const CT2Data& _data)
 {
 	addItemToMatixVieSample(_data, ui.ct2MatrixComboBox, ui.ct2ViewComboBox,
 		ui.ct2SampleTimeComboBox, d_rayNum, d_detNum);
@@ -155,7 +155,7 @@ void LineDetScanWidget::initiliseCt2Controls(CT2Data& _data)
 	ui.ct2ScanModeComboBox->addItem(QString::fromLocal8Bit("180¶È"));
 }
 
-void LineDetScanWidget::initiliseDrControls(DrScanData& _data)
+void LineDetScanWidget::initiliseDrControls(const DrScanData& _data)
 {
 	addItemToMatixVieSample(_data, ui.drMatrixComboBox, ui.drViewComboBox,
 		ui.drSampleTimeComboBox, d_rayNum, d_detNum);

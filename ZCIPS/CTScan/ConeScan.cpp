@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ConeScan.h"
-#include "../Public/headers/panelimageprocess.h"
+#include "../PanelImageProcess/panelimageprocess.h"
 #include "../Public/headers/setupdata.h"
 #include "controllerinterface.h"
 

@@ -6,7 +6,7 @@
 #include "linedetscanwidget.h"
 #include "conescanwidget.h"
 #include "setupdataparser.h"
-#include "../Public/headers/panelimageprocess.h"
+#include "../PanelImageProcess/panelimageprocess.h"
 #include "../Public/headers/SetupData.h"
 #include "MsgListBoxDialog.h"
 #include "ct3Scan.h"

@@ -11,6 +11,7 @@ class LineDetScanInterface;
 class ControllerInterface;
 class LineDetNetWork;
 class CT3TemplateWidget;
+
 class LineDetScanWidget : public QWidget
 {
 	Q_OBJECT
@@ -39,9 +40,9 @@ private:
 	unsigned short d_detNum;
 	void disableAllControls();
 	void initiliseControls();
-	void initiliseCt3Controls(CT3Data& _data);
-	void initiliseCt2Controls(CT2Data& _data);
-	void initiliseDrControls(DrScanData& _data);
+	void initiliseCt3Controls(const CT3Data& _data);
+	void initiliseCt2Controls(const CT2Data& _data);
+	void initiliseDrControls(const DrScanData& _data);
 	std::map<ScanMode, LineDetScanInterface*> d_scanMap;
 	std::unique_ptr<LineDetScanInterface> d_scan;
 	CT3TemplateWidget* d_ct3TemplateWidget;
