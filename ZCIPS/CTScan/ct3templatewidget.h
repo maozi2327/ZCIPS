@@ -6,6 +6,10 @@
 #include <vector>
 #include <set>
 
+const unsigned char EQUALLAYER = 1;
+const unsigned char MULTILAYER = 0;
+const unsigned int FILEHEAD = 0XAAAAAAA3;
+
 struct Ct3TemplateData
 {
 	QString Name;
@@ -19,7 +23,12 @@ struct Ct3TemplateData
 	std::set<float> LayerPos;
 };
 
+int messageBox(const QString& text, const QString& infoText);
+int messageBoxOkCancel(const QString& text, const QString& infoText);
+int messageBoxOkCancelDiscard(const QString& text, const QString& infoText);
+
 struct CT3Data;
+class ct3AddDialog;
 
 class CT3TemplateWidget : public QDialog
 {
@@ -37,27 +46,22 @@ private:
 	int d_lastNameListRow;
 	bool loadTemplateData();
 	QString d_angleEditText;
-	QString d_layerNumberEditText;
+	Qt::ItemFlags d_listNameItemFlag;
 	std::vector<Ct3TemplateData> d_templateData;
 	std::vector<Ct3TemplateData> d_tempTemplateData;
-	void initiliseCt3Controls(const CT3Data& _data);
 	void saveTemplateDataToFile();
-	void refreshPosListWidget();
-	void saveItem();
 	std::vector<Ct3TemplateData>::iterator d_currentTempDataIter;
+	ct3AddDialog* d_addDialog;
+	const CT3Data& d_ct3Data;
 private slots:
 	void on_deleteButton_clicked();
 	void on_saveButton_clicked();
-	void on_ct3MultiLayerComboBox_currentIndexChanged(const QString& _text);
-	void on_ct3LayerPosEdit_returnd();
-	void on_ct3LayerPosListWidget_itemDoubleClicked(QListWidgetItem* _item);
+	void on_ct3ItemNameListWidget_itemDoubleClicked(QListWidgetItem* _item);
 	void on_ct3ItemNameListWidget_currentRowChanged(int _currentRow);
-	void on_ct3ItemNameListWidget_itemDoubleClicked(QListWidgetItem * _item);
-	void on_ct3MatrixComboBox_currentIndexChanged(const QString& _text);
-	void on_ct3ViewComboBox_currentIndexChanged(const QString& _text);
-	void on_ct3SampleTimeComboBox_currentIndexChanged(const QString& _text);
-public slots:
-	bool eventFilter(QObject* _object, QEvent* _event);
+	void on_addButton_clicked();
+	//void on_ct3ItemNameListWidget_itemChanged(QListWidgetItem * _item);
+protected:
+	void closeEvent(QCloseEvent *event) override;
 signals:
 	LOGSIGNAL
 };
