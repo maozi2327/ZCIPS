@@ -53,6 +53,7 @@ private:
 	std::vector<Ct3TemplateData>::iterator d_currentTempDataIter;
 	ct3AddDialog* d_addDialog;
 	const CT3Data& d_ct3Data;
+	void refresh(int _row);
 private slots:
 	void on_deleteButton_clicked();
 	void on_saveButton_clicked();

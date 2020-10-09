@@ -13,17 +13,22 @@ bool operator==(const Ct3TemplateData& t1, const Ct3TemplateData& t2)
 		t1.SampleTime == t2.SampleTime &&
 		t1.Orientation == t2.Orientation;
 
-	bool flag2;
+	if (flag1)
+	{
+		bool flag2;
 
-	if (t1.MutilayerOrEqualLayer == EQUALLAYER)
-		flag2 =
-		t1.ecqualLayerNumber == t2.ecqualLayerNumber &&
-		t1.layerSpace == t2.layerSpace &&
-		t1.LayerPos == t2.LayerPos;
-	else if (t1.MutilayerOrEqualLayer == EQUALLAYER)
-		flag2 = t1.LayerPos == t2.LayerPos;
+		if (t1.MutilayerOrEqualLayer == EQUALLAYER)
+			flag2 =
+			t1.ecqualLayerNumber == t2.ecqualLayerNumber &&
+			t1.layerSpace == t2.layerSpace &&
+			t1.LayerPos == t2.LayerPos;
+		else if (t1.MutilayerOrEqualLayer == MULTILAYER)
+			flag2 = t1.LayerPos == t2.LayerPos;
 
-	return flag1 && flag2;
+		return flag2;
+	}
+
+	return false;
 }
 
 int messageBox(const QString& text, const QString& infoText)
@@ -57,18 +62,18 @@ CT3TemplateWidget::CT3TemplateWidget(const CT3Data& _ct3Data, QWidget *parent)
 	: QDialog(parent), d_ct3Data(_ct3Data)
 {
 	ui.setupUi(this);
-	ui.ct3MultiLayerComboBox->setEnabled(false);
-	ui.ct3LayerPosListWidget->setEnabled(false);
-	ui.ct3LayerSpaceLineEdit->setEnabled(false);
-	ui.ct3LayerNumLineEdit->setEnabled(false);
-	ui.ct3LayerPosEdit->setEnabled(false);
-	ui.ct3MatrixComboBox->setEnabled(false);
-	ui.ct3ViewComboBox->setEnabled(false);
-	ui.ct3SampleTimeComboBox->setEnabled(false);
-	ui.ct3AngleLineEdit->setEnabled(false);
-	loadTemplateData();
+	//ui.ct3MultiLayerLabel->setEnabled(false);
+	//ui.ct3LayerPosListWidget->setEnabled(false);
+	//ui.ct3LayerSpaceLabel->setEnabled(false);
+	//ui.ct3LayerNumLabel->setEnabled(false);
+	//ui.ct3LayerPosEdit->setEnabled(false);
+	//ui.ct3MatrixLabel->setEnabled(false);
+	//ui.ct3ViewLabel->setEnabled(false);
+	//ui.ct3SampleTimeLabel->setEnabled(false);
+	//ui.ct3AngleLabel->setEnabled(false);
 	QString str;
 	d_templateFileName = str.sprintf("%d_%d_ct3Template", _ct3Data.Ray, _ct3Data.Det);
+	loadTemplateData(); 
 	d_saved = true;
 }
 
@@ -220,31 +225,43 @@ void CT3TemplateWidget::on_deleteButton_clicked()
 	d_tempTemplateData.erase(d_tempTemplateData.begin() + row);
 }
 
+void CT3TemplateWidget::refresh(int _row)
+{
+	ui.ct3ItemNameListWidget->clear();
+	
+	for (auto& item : d_tempTemplateData)
+		ui.ct3ItemNameListWidget->addItem(item.Name);
+
+	if (d_tempTemplateData.size() != 0) {
+		on_ct3ItemNameListWidget_currentRowChanged(_row);
+		d_currentTempDataIter = d_tempTemplateData.begin() + _row;
+	}
+}
+
 void CT3TemplateWidget::on_saveButton_clicked()
 {
-	if (d_currentTempDataIter->MutilayerOrEqualLayer == MULTILAYER)
-	{
-		if (d_currentTempDataIter->LayerPos.size() == 0)
-		{
-			messageBox(QString::fromLocal8Bit("参数不完整"),
-				QString::fromLocal8Bit("请输入正确参数"));
-			ui.ct3ItemNameListWidget->setCurrentRow(d_lastNameListRow);
-			return;
-		}
-	}
-	else if (d_currentTempDataIter->MutilayerOrEqualLayer == EQUALLAYER)
-	{
-		if (d_currentTempDataIter->LayerPos.size() == 0 |
-			d_currentTempDataIter->ecqualLayerNumber == 0 |
-			d_currentTempDataIter->layerSpace == 0)
-		{
-			messageBox(QString::fromLocal8Bit("参数不完整"),
-				QString::fromLocal8Bit("请输入正确参数"));
-			ui.ct3ItemNameListWidget->setCurrentRow(d_lastNameListRow);
-			return;
-		}
-	}
-
+	//if (d_currentTempDataIter->MutilayerOrEqualLayer == MULTILAYER)
+	//{
+	//	if (d_currentTempDataIter->LayerPos.size() == 0)
+	//	{
+	//		messageBox(QString::fromLocal8Bit("参数不完整"),
+	//			QString::fromLocal8Bit("请输入正确参数"));
+	//		ui.ct3ItemNameListWidget->setCurrentRow(d_lastNameListRow);
+	//		return;
+	//	}
+	//}
+	//else if (d_currentTempDataIter->MutilayerOrEqualLayer == EQUALLAYER)
+	//{
+	//	if (d_currentTempDataIter->LayerPos.size() == 0 |
+	//		d_currentTempDataIter->ecqualLayerNumber == 0 |
+	//		d_currentTempDataIter->layerSpace == 0)
+	//	{
+	//		messageBox(QString::fromLocal8Bit("参数不完整"),
+	//			QString::fromLocal8Bit("请输入正确参数"));
+	//		ui.ct3ItemNameListWidget->setCurrentRow(d_lastNameListRow);
+	//		return;
+	//	}
+	//}
 	saveTemplateDataToFile();
 }
 
@@ -252,12 +269,17 @@ void CT3TemplateWidget::on_ct3ItemNameListWidget_itemDoubleClicked(QListWidgetIt
 {
 	auto row = ui.ct3ItemNameListWidget->row(_item);
 	ct3AddModifyDialog* dlg = new ct3AddModifyDialog(d_tempTemplateData, d_tempTemplateData.begin() + row, d_ct3Data, this);
-	dlg->show();
+	
+	if (dlg->exec() == QDialog::Accepted)
+	{
+		_item->setText(d_tempTemplateData[row].Name);
+		on_ct3ItemNameListWidget_currentRowChanged(row);
+	}
 }
 
 void CT3TemplateWidget::on_ct3ItemNameListWidget_currentRowChanged(int _currentRow)
 {
-	if (d_tempTemplateData.size() == 0)
+	if (d_tempTemplateData.size() == 0 || _currentRow < 0)
 		return;
 	
 	d_lastNameListRow = _currentRow;
@@ -265,7 +287,8 @@ void CT3TemplateWidget::on_ct3ItemNameListWidget_currentRowChanged(int _currentR
 
 	if (dataItem.MutilayerOrEqualLayer == MULTILAYER)
 	{
-		ui.ct3MultiLayerComboBox->setCurrentText(QString::fromLocal8Bit("多层不等间距"));
+		ui.ct3MultiLayerLabel->setText(QString::fromLocal8Bit("多层不等间距"));
+		ui.ct3LayerPosListWidget->show();
 		ui.ct3LayerPosListWidget->clear();
 
 		for (auto pos : dataItem.LayerPos)
@@ -273,19 +296,38 @@ void CT3TemplateWidget::on_ct3ItemNameListWidget_currentRowChanged(int _currentR
 			QListWidgetItem* item = new QListWidgetItem(QString::number(pos, 'f', 2));
 			ui.ct3LayerPosListWidget->addItem(item);
 		}
+
+		ui.ct3LayerSpaceLabel->hide();
+		ui.ct3LayerNumValueLabel->hide();
+		ui.ct3LayerPosValueLabel->hide();
+		ui.ct3LayerSpaceLabel->hide();
+		ui.ct3SpaceNumLabel->hide();
+		ui.ct3LayerSpaceLabel->hide();
+		ui.ct3LayerSpaceValueLabel->hide();
+		ui.ct3LayerSpaceLabel->hide();
+		ui.label_8->setText(QString::fromLocal8Bit("断层位置"));
 	}
 	else if (dataItem.MutilayerOrEqualLayer == EQUALLAYER)
 	{
-		ui.ct3MultiLayerComboBox->setCurrentText(QString::fromLocal8Bit("多层等间距"));
-		ui.ct3LayerSpaceLineEdit->setText(QString::number(dataItem.layerSpace, 'f', 2));
-		ui.ct3LayerNumLineEdit->setText(QString::number(dataItem.ecqualLayerNumber));
-		ui.ct3LayerPosEdit->setText(QString::number(*dataItem.LayerPos.begin()));
+		ui.ct3LayerSpaceLabel->show();
+		ui.ct3LayerNumValueLabel->show();
+		ui.ct3LayerPosValueLabel->show();
+		ui.ct3LayerSpaceLabel->show();
+		ui.ct3SpaceNumLabel->show();
+		ui.ct3LayerSpaceLabel->show();
+		ui.ct3LayerSpaceValueLabel->show();
+		ui.ct3LayerPosListWidget->hide();
+		ui.label_8->setText(QString::fromLocal8Bit("首层位置"));
+		ui.ct3MultiLayerLabel->setText(QString::fromLocal8Bit("多层等间距"));
+		ui.ct3LayerSpaceValueLabel->setText(QString::number(dataItem.layerSpace, 'f', 2));
+		ui.ct3LayerNumValueLabel->setText(QString::number(dataItem.ecqualLayerNumber));
+		ui.ct3LayerPosValueLabel->setText(QString::number(*dataItem.LayerPos.begin()));
 	}
 
-	ui.ct3MatrixComboBox->setCurrentText(QString::number(dataItem.Matrix));
-	ui.ct3ViewComboBox->setCurrentText(QString::number(dataItem.View));
-	ui.ct3SampleTimeComboBox->setCurrentText(QString::number(dataItem.SampleTime));
-	ui.ct3AngleLineEdit->setText(QString::number(dataItem.Orientation, 'f', 2));
+	ui.ct3MatrixLabel->setText(QString::number(dataItem.Matrix));
+	ui.ct3ViewLabel->setText(QString::number(dataItem.View));
+	ui.ct3SampleTimeLabel->setText(QString::number(dataItem.SampleTime));
+	ui.ct3AngleLabel->setText(QString::number(dataItem.Orientation, 'f', 2));
 }
 //void CT3TemplateWidget::on_ct3ItemNameListWidget_itemChanged(QListWidgetItem * _item)
 //{
@@ -338,5 +380,7 @@ void CT3TemplateWidget::closeEvent(QCloseEvent * event)
 void CT3TemplateWidget::on_addButton_clicked()
 {
 	ct3AddModifyDialog* dlg = new ct3AddModifyDialog(d_tempTemplateData, d_tempTemplateData.end(), d_ct3Data, this);
-	dlg->show();
+	
+	if(dlg->exec() == QDialog::Accepted);
+		refresh(d_tempTemplateData.size() - 1);
 }

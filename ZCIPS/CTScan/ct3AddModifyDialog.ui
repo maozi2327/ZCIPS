@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>355</width>
-    <height>300</height>
+    <width>367</width>
+    <height>266</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,7 +43,7 @@
     <rect>
      <x>102</x>
      <y>18</y>
-     <width>71</width>
+     <width>81</width>
      <height>20</height>
     </rect>
    </property>
@@ -57,8 +57,8 @@
   <widget class="QListWidget" name="ct3LayerPosListWidget">
    <property name="geometry">
     <rect>
-     <x>240</x>
-     <y>100</y>
+     <x>260</x>
+     <y>20</y>
      <width>100</width>
      <height>130</height>
     </rect>
@@ -82,7 +82,7 @@
     </size>
    </property>
    <property name="sortingEnabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QLabel" name="label_53">
@@ -147,8 +147,8 @@
   <widget class="QLabel" name="label_8">
    <property name="geometry">
     <rect>
-     <x>270</x>
-     <y>13</y>
+     <x>200</x>
+     <y>20</y>
      <width>54</width>
      <height>16</height>
     </rect>
@@ -225,9 +225,9 @@
   <widget class="QLineEdit" name="ct3LayerPosEdit">
    <property name="geometry">
     <rect>
-     <x>270</x>
-     <y>40</y>
-     <width>51</width>
+     <x>260</x>
+     <y>20</y>
+     <width>101</width>
      <height>20</height>
     </rect>
    </property>
@@ -366,8 +366,8 @@
   <widget class="QLineEdit" name="ct3AngleLineEdit">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>20</y>
+     <x>100</x>
+     <y>150</y>
      <width>80</width>
      <height>20</height>
     </rect>
@@ -509,8 +509,8 @@
   <widget class="QPushButton" name="okButton">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>260</y>
+     <x>40</x>
+     <y>230</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -518,21 +518,27 @@
    <property name="text">
     <string>确定</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
    <property name="default">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="cancelButton">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>260</y>
+     <x>260</x>
+     <y>230</y>
      <width>75</width>
      <height>23</height>
     </rect>
    </property>
    <property name="text">
     <string>取消</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>
