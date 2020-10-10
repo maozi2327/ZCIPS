@@ -7,11 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>367</width>
-    <height>266</height>
+    <height>280</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>ct3AddModifyDialog</string>
+  </property>
+  <property name="whatsThis">
+   <string/>
   </property>
   <widget class="QLabel" name="label_9">
    <property name="geometry">
@@ -58,7 +61,7 @@
    <property name="geometry">
     <rect>
      <x>260</x>
-     <y>20</y>
+     <y>60</y>
      <width>100</width>
      <height>130</height>
     </rect>
@@ -512,7 +515,7 @@
      <x>40</x>
      <y>230</y>
      <width>75</width>
-     <height>23</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -531,7 +534,7 @@
      <x>260</x>
      <y>230</y>
      <width>75</width>
-     <height>23</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">

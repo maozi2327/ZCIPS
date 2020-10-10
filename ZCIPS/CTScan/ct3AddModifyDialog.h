@@ -4,6 +4,7 @@
 #include "ui_ct3AddModifyDialog.h"
 #include "../Public/util/logmacro.h"
 #include <memory>
+#include <set>
 struct Ct3TemplateData;
 struct CT3Data;
 
@@ -25,7 +26,10 @@ private:
 	std::unique_ptr<Ct3TemplateData> d_tempItem;
 	QString d_angleEditText;
 	void refreshPosListWidget();
-
+	bool save();
+	bool d_modified;
+	bool d_widgetInitilised;
+	std::set<float> d_layerPos;
 private slots:
 	void on_ct3MatrixComboBox_currentIndexChanged(const QString& _text);
 	void on_ct3ViewComboBox_currentIndexChanged(const QString& _text);
@@ -35,11 +39,14 @@ private slots:
 	void on_ct3LayerPosEdit_returnPressed();
 	void on_ct3LayerPosListWidget_itemDoubleClicked(QListWidgetItem * _item);
 	void on_ct3MultiLayerComboBox_currentIndexChanged(const QString& _text);
+	void on_templateNameEdit_textEdited(const QString& _text);
 	void on_ct3AngleLineEdit_textEdited(const QString& _text);
 	void on_ct3LayerSpaceLineEdit_textEdited(const QString& _text);
 	void on_ct3LayerNumLineEdit_textEdited(const QString& _text);
 public slots:
-	bool eventFilter(QObject* _object, QEvent* _event);
+
+protected:
+	void closeEvent(QCloseEvent * event);
 signals:
 	LOGSIGNAL
 };

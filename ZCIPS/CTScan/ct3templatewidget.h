@@ -19,9 +19,10 @@ struct Ct3TemplateData
 	unsigned int SampleTime;
 	float Orientation;
 	unsigned int ecqualLayerNumber;  //只用作等层距扫描计数
-	unsigned int layerSpace;
+	float layerSpace;
 	std::set<float> LayerPos;
 };
+bool operator==(const Ct3TemplateData& t1, const Ct3TemplateData& t2);
 
 int messageBox(const QString& text, const QString& infoText);
 int messageBoxOkCancel(const QString& text, const QString& infoText);
@@ -43,13 +44,14 @@ private:
 	unsigned short d_rayNum;
 	unsigned short d_detNum;
 	bool d_saved;
+	bool d_modified;
 	int d_lastNameListRow;
 	bool loadTemplateData();
 	QString d_angleEditText;
 	Qt::ItemFlags d_listNameItemFlag;
 	std::vector<Ct3TemplateData> d_templateData;
 	std::vector<Ct3TemplateData> d_tempTemplateData;
-	void saveTemplateDataToFile();
+	bool saveTemplateDataToFile();
 	std::vector<Ct3TemplateData>::iterator d_currentTempDataIter;
 	ct3AddDialog* d_addDialog;
 	const CT3Data& d_ct3Data;

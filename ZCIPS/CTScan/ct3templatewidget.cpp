@@ -54,27 +54,17 @@ int messageBoxOkCancelDiscard(const QString& text, const QString& infoText)
 	QMessageBox msgBox;
 	msgBox.setText(text);
 	msgBox.setInformativeText(infoText);
-	msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel | QMessageBox::Discard);
+	msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Discard);
 	return msgBox.exec();
 }
 
 CT3TemplateWidget::CT3TemplateWidget(const CT3Data& _ct3Data, QWidget *parent)
-	: QDialog(parent), d_ct3Data(_ct3Data)
+	: QDialog(parent), d_ct3Data(_ct3Data), d_modified(false)
 {
 	ui.setupUi(this);
-	//ui.ct3MultiLayerLabel->setEnabled(false);
-	//ui.ct3LayerPosListWidget->setEnabled(false);
-	//ui.ct3LayerSpaceLabel->setEnabled(false);
-	//ui.ct3LayerNumLabel->setEnabled(false);
-	//ui.ct3LayerPosEdit->setEnabled(false);
-	//ui.ct3MatrixLabel->setEnabled(false);
-	//ui.ct3ViewLabel->setEnabled(false);
-	//ui.ct3SampleTimeLabel->setEnabled(false);
-	//ui.ct3AngleLabel->setEnabled(false);
 	QString str;
 	d_templateFileName = str.sprintf("%d_%d_ct3Template", _ct3Data.Ray, _ct3Data.Det);
 	loadTemplateData(); 
-	d_saved = true;
 }
 
 CT3TemplateWidget::~CT3TemplateWidget()
@@ -161,7 +151,7 @@ bool CT3TemplateWidget::loadTemplateData()
 	return true;
 }
 
-void CT3TemplateWidget::saveTemplateDataToFile()
+bool CT3TemplateWidget::saveTemplateDataToFile()
 {
 	size_t fileSize = sizeof(unsigned int) * 2;
 	std::vector<std::pair<char*, size_t>> dataVec;
@@ -204,9 +194,11 @@ void CT3TemplateWidget::saveTemplateDataToFile()
 
 	if (!file.open(QIODevice::WriteOnly))
 	{
-		LOG_ERROR("打开三代CT配置失败：" + d_templateFileName);
 		free(fileMem);
-		return;
+		LOG_ERROR("打开三代CT配置文件失败：" + d_templateFileName);
+		messageBox(QString::fromLocal8Bit("打开三代CT配置文件失败：！"), 
+			QString::fromLocal8Bit("保存失败！"));
+		return false;
 	}
 
 	file.write((char*)(fileMem), fileSize);
@@ -214,7 +206,8 @@ void CT3TemplateWidget::saveTemplateDataToFile()
 	file.flush();
 	file.close();
 	d_templateData = d_tempTemplateData;
-	d_saved = true;
+	d_modified = false;
+	return true;
 }
 
 void CT3TemplateWidget::on_deleteButton_clicked()
@@ -240,38 +233,19 @@ void CT3TemplateWidget::refresh(int _row)
 
 void CT3TemplateWidget::on_saveButton_clicked()
 {
-	//if (d_currentTempDataIter->MutilayerOrEqualLayer == MULTILAYER)
-	//{
-	//	if (d_currentTempDataIter->LayerPos.size() == 0)
-	//	{
-	//		messageBox(QString::fromLocal8Bit("参数不完整"),
-	//			QString::fromLocal8Bit("请输入正确参数"));
-	//		ui.ct3ItemNameListWidget->setCurrentRow(d_lastNameListRow);
-	//		return;
-	//	}
-	//}
-	//else if (d_currentTempDataIter->MutilayerOrEqualLayer == EQUALLAYER)
-	//{
-	//	if (d_currentTempDataIter->LayerPos.size() == 0 |
-	//		d_currentTempDataIter->ecqualLayerNumber == 0 |
-	//		d_currentTempDataIter->layerSpace == 0)
-	//	{
-	//		messageBox(QString::fromLocal8Bit("参数不完整"),
-	//			QString::fromLocal8Bit("请输入正确参数"));
-	//		ui.ct3ItemNameListWidget->setCurrentRow(d_lastNameListRow);
-	//		return;
-	//	}
-	//}
 	saveTemplateDataToFile();
+	close();
 }
 
 void CT3TemplateWidget::on_ct3ItemNameListWidget_itemDoubleClicked(QListWidgetItem * _item)
 {
 	auto row = ui.ct3ItemNameListWidget->row(_item);
 	ct3AddModifyDialog* dlg = new ct3AddModifyDialog(d_tempTemplateData, d_tempTemplateData.begin() + row, d_ct3Data, this);
-	
-	if (dlg->exec() == QDialog::Accepted)
+	auto ret = dlg->exec();
+
+	if (ret == QDialog::Accepted)
 	{
+		d_modified = true;
 		_item->setText(d_tempTemplateData[row].Name);
 		on_ct3ItemNameListWidget_currentRowChanged(row);
 	}
@@ -329,32 +303,10 @@ void CT3TemplateWidget::on_ct3ItemNameListWidget_currentRowChanged(int _currentR
 	ui.ct3SampleTimeLabel->setText(QString::number(dataItem.SampleTime));
 	ui.ct3AngleLabel->setText(QString::number(dataItem.Orientation, 'f', 2));
 }
-//void CT3TemplateWidget::on_ct3ItemNameListWidget_itemChanged(QListWidgetItem * _item)
-//{
-//	//首先在列表添加项目，然后保存到配置向量中，最后从向量读出数据保存到文件
-//	QString itemName = ui.templateNameEdit->text();
-////	if (itemName.size() == 0)
-//	{
-//		LOG_ERROR("配置项命名不能为空：" + d_templateFileName);
-//		return;
-//	}
-////	auto itr = std::find_if(d_tempTemplateData.begin(), d_tempTemplateData.end(),
-//		[&itemName](Ct3TemplateData& item) { return item.Name == itemName; });
-//
-//	if (itr != d_tempTemplateData.end())
-//	{
-//		LOG_INFO("已存在同名配置项！");
-//		return;
-//	}
-////	Ct3TemplateData item;
-//	item.Name = itemName;
-//	d_tempTemplateData.push_back(item);
-//	d_currentTempDataIter = d_tempTemplateData.end() - 1;
-//}
 
 void CT3TemplateWidget::closeEvent(QCloseEvent * event)
 {
-	if (d_templateData != d_tempTemplateData)
+	if (d_modified)
 	{
 		int ret = messageBoxOkCancelDiscard(QString::fromLocal8Bit("配置已经更改！"),
 			QString::fromLocal8Bit("是否保存配置"));
@@ -381,6 +333,9 @@ void CT3TemplateWidget::on_addButton_clicked()
 {
 	ct3AddModifyDialog* dlg = new ct3AddModifyDialog(d_tempTemplateData, d_tempTemplateData.end(), d_ct3Data, this);
 	
-	if(dlg->exec() == QDialog::Accepted);
+	if (dlg->exec() == QDialog::Accepted) 
+	{
+		d_modified = true;
 		refresh(d_tempTemplateData.size() - 1);
+	}
 }

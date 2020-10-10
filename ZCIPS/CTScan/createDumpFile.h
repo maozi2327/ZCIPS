@@ -86,6 +86,46 @@ BOOL PreventSetUnhandledExceptionFilter()
 	return bRet;
 }
 
+void DisableSetUnhandledExceptionFilter()
+
+{
+
+	void *addr = (void*)GetProcAddress(LoadLibrary(_T("kernel32.dll")),
+
+		"SetUnhandledExceptionFilter");
+
+	if (addr)
+
+	{
+
+		unsigned char code[16];
+
+		int size = 0;
+
+		code[size++] = 0x33;
+
+		code[size++] = 0xC0;
+
+		code[size++] = 0xC2;
+
+		code[size++] = 0x04;
+
+		code[size++] = 0x00;
+
+
+
+		DWORD dwOldFlag, dwTempFlag;
+
+		VirtualProtect(addr, size, PAGE_READWRITE, &dwOldFlag);
+
+		WriteProcessMemory(GetCurrentProcess(), addr, code, size, NULL);
+
+		VirtualProtect(addr, size, dwOldFlag, &dwTempFlag);
+
+	}
+
+}
+
 LONG WINAPI UnhandledExceptionFilterEx(struct _EXCEPTION_POINTERS *pException)
 {
 	SYSTEMTIME syt;
@@ -112,5 +152,6 @@ LONG WINAPI UnhandledExceptionFilterEx(struct _EXCEPTION_POINTERS *pException)
 void RunCrashHandler()
 {
 	SetUnhandledExceptionFilter(UnhandledExceptionFilterEx);
-	PreventSetUnhandledExceptionFilter();
+	//DisableSetUnhandledExceptionFilter();
+	//PreventSetUnhandledExceptionFilter();
 }

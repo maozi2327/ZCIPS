@@ -6,9 +6,10 @@
 ct3AddModifyDialog::ct3AddModifyDialog(std::vector<Ct3TemplateData>& _tempData, 
 	std::vector<Ct3TemplateData>::iterator _itr, const CT3Data& _ct3Data, QWidget *parent)
 	: QDialog(parent), d_itr(_itr), d_tempData(_tempData), d_tempItem(new Ct3TemplateData)
+	, d_modified(false), d_widgetInitilised(false)
 {
 	ui.setupUi(this); 	
-	initiliseCt3Controls(_ct3Data);	
+	initiliseCt3Controls(_ct3Data);
 
 	if (d_itr != _tempData.end())
 	{
@@ -39,11 +40,10 @@ ct3AddModifyDialog::ct3AddModifyDialog(std::vector<Ct3TemplateData>& _tempData,
 		ui.ct3ViewComboBox->setCurrentText(QString::number(d_tempItem->View));
 		ui.ct3SampleTimeComboBox->setCurrentText(QString::number(d_tempItem->SampleTime));
 		ui.ct3AngleLineEdit->setText(QString::number(d_tempItem->Orientation, 'f', 2));
+		d_layerPos = d_itr->LayerPos;
 	}
-		
-	//ui.ct3LayerNumLineEdit->installEventFilter(this);
-	//ui.ct3LayerSpaceLineEdit->installEventFilter(this);
-	//ui.ct3AngleLineEdit->installEventFilter(this);
+
+	d_widgetInitilised = true;
 }
 
 ct3AddModifyDialog::~ct3AddModifyDialog()
@@ -74,84 +74,47 @@ void ct3AddModifyDialog::initiliseCt3Controls(const CT3Data & _data)
 
 void ct3AddModifyDialog::on_ct3MatrixComboBox_currentIndexChanged(const QString & _text)
 {
-	d_tempItem->Matrix = ui.ct3MatrixComboBox->currentText().toInt();
+	if(d_widgetInitilised)
+		d_modified = true;
 }
 
 void ct3AddModifyDialog::on_ct3ViewComboBox_currentIndexChanged(const QString & _text)
 {
-	d_tempItem->View = ui.ct3ViewComboBox->currentText().toInt();
+	if (d_widgetInitilised)
+		d_modified = true;
 }
 
 void ct3AddModifyDialog::on_ct3SampleTimeComboBox_currentIndexChanged(const QString & _text)
 {
-	d_tempItem->SampleTime = ui.ct3SampleTimeComboBox->currentText().toInt();
-}
-
-bool ct3AddModifyDialog::eventFilter(QObject* _object, QEvent* _event)
-{
-	if (_object == ui.ct3AngleLineEdit | _object == ui.ct3LayerSpaceLineEdit | _object == ui.ct3LayerNumLineEdit)
-	{
-		auto edit = static_cast<QLineEdit*>(_object);
-
-		if (_event->type() == QEvent::FocusIn)
-			d_angleEditText = edit->text();
-		else if (_event->type() == QEvent::FocusOut)
-		{
-			auto text = edit->text();
-			bool succeed = false;
-			auto value = text.toFloat(&succeed);
-
-			if (!succeed)
-			{
-				int ret = messageBox(QString::fromLocal8Bit("输入类型错误！"), QString::fromLocal8Bit("请重新输入"));
-				edit->setText(d_angleEditText);
-				edit->selectAll();
-				return true;
-			}
-
-			if (_object == ui.ct3AngleLineEdit)
-				;// d_currentTempDataIter->Orientation = value;
-			else if (_object == ui.ct3LayerNumLineEdit)
-			{
-				if (value > 500)
-				{
-					int ret = messageBox(QString::fromLocal8Bit("输入分层数量超限！"), QString::fromLocal8Bit("请重新输入！"));
-					ui.ct3LayerNumLineEdit->selectAll();
-					return true;
-				}
-			}
-			else if (_object == ui.ct3LayerSpaceLineEdit)
-			{
-				if (value < 0.000001)
-				{
-					int ret = messageBox(QString::fromLocal8Bit("输入断层间距大小错误！"), QString::fromLocal8Bit("请重新输入！"));
-					ui.ct3LayerSpaceLineEdit->selectAll();
-					return true;
-				}
-			}
-		}
-
-		return true;
-	}
-	//else if (_object = ui.ct3ItemNameListWidget)
-	//{
-	//	if (_event->type() == QEvent::KeyPress)
-	//	{
-	//		QKeyEvent* e1 = static_cast<QKeyEvent*>(_event);
-	//		if (e1->key() == Qt::Key_Return)
-	//		{
-	//			auto fl = ui.ct3ItemNameListWidget->currentItem()->flags();
-	//			if ( fl & Qt::ItemIsEditable);
-	//				return true;
-	//		}
-	//	}
-	//	return QWidget::eventFilter(_object, _event);
-	//}
-	else
-		return QWidget::eventFilter(_object, _event);
+	if (d_widgetInitilised)
+		d_modified = true;
 }
 
 void ct3AddModifyDialog::on_okButton_clicked()
+{
+	if (save())
+		accept();
+	else
+		return;
+}
+
+void ct3AddModifyDialog::on_cancelButton_clicked()
+{
+	reject();
+}
+
+void ct3AddModifyDialog::refreshPosListWidget()
+{
+	ui.ct3LayerPosListWidget->clear();
+
+	for (auto pos : d_layerPos)
+	{
+		QListWidgetItem* item = new QListWidgetItem(QString::number(pos, 'f', 2));
+		ui.ct3LayerPosListWidget->addItem(item);
+	}
+}
+
+bool ct3AddModifyDialog::save()
 {
 	QString itemName = ui.templateNameEdit->text();
 
@@ -159,7 +122,7 @@ void ct3AddModifyDialog::on_okButton_clicked()
 	{
 		messageBox(QString::fromLocal8Bit("配置名不能为空"),
 			QString::fromLocal8Bit("请输入配置名"));
-		return;
+		return false;
 	}
 
 	auto itr = std::find_if(d_tempData.begin(), d_itr,
@@ -176,7 +139,7 @@ void ct3AddModifyDialog::on_okButton_clicked()
 			{
 				messageBox(QString::fromLocal8Bit("已存在同名项"),
 					QString::fromLocal8Bit("请输入正确的配置名"));
-				return;
+				return false;
 			}
 		}
 	}
@@ -184,7 +147,7 @@ void ct3AddModifyDialog::on_okButton_clicked()
 	{
 		messageBox(QString::fromLocal8Bit("已存在同名项"),
 			QString::fromLocal8Bit("请输入正确的配置名"));
-		return;
+		return false;
 	}
 
 	if (ui.ct3MultiLayerComboBox->currentText() == QString::fromLocal8Bit("多层不等间距"))
@@ -193,20 +156,37 @@ void ct3AddModifyDialog::on_okButton_clicked()
 		{
 			messageBox(QString::fromLocal8Bit("参数不完整"),
 				QString::fromLocal8Bit("请输入断层坐标"));
-			return;
+			return false;
 		}
+
+		d_tempItem->MutilayerOrEqualLayer = MULTILAYER;
+		d_tempItem->LayerPos = d_layerPos;
 	}
 	else if (ui.ct3MultiLayerComboBox->currentText() == QString::fromLocal8Bit("多层等间距"))
 	{
-		if (ui.ct3LayerPosEdit->text().size() ==0 |
+		if (ui.ct3LayerPosEdit->text().size() == 0 |
 			ui.ct3LayerNumLineEdit->text().size() == 0 |
 			ui.ct3LayerSpaceLineEdit->text().size() == 0)
 		{
 			messageBox(QString::fromLocal8Bit("参数不完整"),
 				QString::fromLocal8Bit("请输入缺少的参数"));
-			return;
+			return false;
 		}
 
+		if (ui.ct3LayerNumLineEdit->text().toInt() > 500)
+		{
+			int ret = messageBox(QString::fromLocal8Bit("输入分层数量超限！"), QString::fromLocal8Bit("请重新输入！"));
+			ui.ct3LayerNumLineEdit->selectAll();
+			return false;
+		}
+		else if (ui.ct3LayerSpaceLineEdit->text().toFloat() < 0.01)
+		{
+			int ret = messageBox(QString::fromLocal8Bit("输入断层间距大小错误！"), QString::fromLocal8Bit("请重新输入！"));
+			ui.ct3LayerSpaceLineEdit->selectAll();
+			return false;
+		}
+
+		d_tempItem->MutilayerOrEqualLayer = EQUALLAYER;
 		d_tempItem->LayerPos.insert(ui.ct3LayerPosEdit->text().toFloat());
 		d_tempItem->ecqualLayerNumber = ui.ct3LayerNumLineEdit->text().toFloat();
 		d_tempItem->layerSpace = ui.ct3LayerSpaceLineEdit->text().toFloat();
@@ -223,30 +203,11 @@ void ct3AddModifyDialog::on_okButton_clicked()
 	else
 		*d_itr = *d_tempItem;
 
-	accept();
-}
-
-void ct3AddModifyDialog::on_cancelButton_clicked()
-{
-	reject();
-}
-
-void ct3AddModifyDialog::refreshPosListWidget()
-{
-	ui.ct3LayerPosListWidget->clear();
-
-	for (auto pos : d_tempItem->LayerPos)
-	{
-		QListWidgetItem* item = new QListWidgetItem(QString::number(pos, 'f', 2));
-		ui.ct3LayerPosListWidget->addItem(item);
-	}
+	return true;
 }
 
 void ct3AddModifyDialog::on_ct3LayerPosEdit_returnPressed()
 {
-	if (d_tempItem->MutilayerOrEqualLayer == EQUALLAYER)
-		return;
-
 	QString valueText = ui.ct3LayerPosEdit->text();
 	bool succeed = false;
 	auto pos = valueText.toFloat(&succeed);
@@ -258,12 +219,13 @@ void ct3AddModifyDialog::on_ct3LayerPosEdit_returnPressed()
 	}
 	
 	ui.ct3LayerPosEdit->selectAll();
-	auto it = std::find_if(d_tempItem->LayerPos.begin(), d_tempItem->LayerPos.end(),
+	auto it = std::find_if(d_layerPos.begin(), d_layerPos.end(),
 		[pos](float value) { return std::abs(value - pos) < 0.01; });
 
-	if (it == d_tempItem->LayerPos.end())
+	if (it == d_layerPos.end())
 	{
-		d_tempItem->LayerPos.insert(pos);
+		d_modified = true;
+		d_layerPos.insert(pos);
 		refreshPosListWidget();
 	}
 	else
@@ -277,10 +239,11 @@ void ct3AddModifyDialog::on_ct3LayerPosEdit_returnPressed()
 void ct3AddModifyDialog::on_ct3LayerPosListWidget_itemDoubleClicked(QListWidgetItem * _item)
 {
 	float pos = _item->text().toFloat();
-	auto it = std::find_if(d_tempItem->LayerPos.begin(), d_tempItem->LayerPos.end(),
+	auto it = std::find_if(d_layerPos.begin(), d_layerPos.end(),
 		[pos](float value) { return std::abs(value - pos) < 0.01; });
-	d_tempItem->LayerPos.erase(it);
+	d_layerPos.erase(it);
 	refreshPosListWidget();
+	d_modified = true;
 }
 
 void ct3AddModifyDialog::on_ct3MultiLayerComboBox_currentIndexChanged(const QString& _text)
@@ -291,11 +254,9 @@ void ct3AddModifyDialog::on_ct3MultiLayerComboBox_currentIndexChanged(const QStr
 		ui.ct3LayerNumLineEdit->show();
 		ui.ct3SpaceNumLabel->show();
 		ui.ct3LayerSpaceLabel->show();
+		ui.ct3LayerPosListWidget->hide();
 		ui.label_8->setText(QString::fromLocal8Bit("首层位置"));
-		ui.ct3LayerPosListWidget->setEnabled(false);
-		ui.ct3LayerPosListWidget->clear();
-		d_tempItem->MutilayerOrEqualLayer = EQUALLAYER;
-
+		refreshPosListWidget();
 	}
 	else if (_text == QString::fromLocal8Bit("多层不等间距"))
 	{
@@ -303,12 +264,18 @@ void ct3AddModifyDialog::on_ct3MultiLayerComboBox_currentIndexChanged(const QStr
 		ui.ct3LayerNumLineEdit->hide();
 		ui.ct3SpaceNumLabel->hide();
 		ui.ct3LayerSpaceLabel->hide();
+		ui.ct3LayerPosListWidget->show();
 		ui.label_8->setText(QString::fromLocal8Bit("断层位置"));
-		ui.ct3LayerPosListWidget->setEnabled(true);
-		d_tempItem->MutilayerOrEqualLayer = MULTILAYER;
 	}
+
+	if(d_widgetInitilised)
+		d_modified = true;
 }
 
+void ct3AddModifyDialog::on_templateNameEdit_textEdited(const QString& _text)
+{
+	d_modified = true;
+}
 void ct3AddModifyDialog::on_ct3AngleLineEdit_textEdited(const QString& _text)
 {
 	bool succeed = false;
@@ -320,6 +287,8 @@ void ct3AddModifyDialog::on_ct3AngleLineEdit_textEdited(const QString& _text)
 		messageBox(QString::fromLocal8Bit("格式错误"), QString::fromLocal8Bit("请输入正确的数据"));
 		return;
 	}
+
+	d_modified = true;
 }
 
 bool isInterger(const QString& _text)
@@ -334,12 +303,17 @@ bool isInterger(const QString& _text)
 
 void ct3AddModifyDialog::on_ct3LayerSpaceLineEdit_textEdited(const QString& _text)
 {
-	if(!isInterger(_text))
+	bool succeed = false;
+	auto pos = _text.toFloat(&succeed);
+
+	if (!succeed)
 	{
 		ui.ct3LayerSpaceLineEdit->clear();
 		messageBox(QString::fromLocal8Bit("格式错误"), QString::fromLocal8Bit("请输入正确的数据"));
 		return;
 	}
+
+	d_modified = true;
 }
 void ct3AddModifyDialog::on_ct3LayerNumLineEdit_textEdited(const QString& _text)
 {
@@ -349,4 +323,41 @@ void ct3AddModifyDialog::on_ct3LayerNumLineEdit_textEdited(const QString& _text)
 		messageBox(QString::fromLocal8Bit("格式错误"), QString::fromLocal8Bit("请输入正确的数据"));
 		return;
 	}
+
+	d_modified = true;
+}
+
+void ct3AddModifyDialog::closeEvent(QCloseEvent * event)
+{
+	if (d_modified)
+	{
+		int ret = messageBoxOkCancelDiscard(QString::fromLocal8Bit("数据已经变化"),
+			QString::fromLocal8Bit("是否保存？"));
+
+		switch (ret)
+		{
+		case QMessageBox::Save:
+
+			if (save())
+			{
+				event->accept();
+				accept();
+			}
+			else
+				event->ignore();;
+
+			break;
+		case QMessageBox::Discard:
+			event->accept();	
+			reject();
+			break;
+		case QMessageBox::Cancel:
+			event->ignore();
+			return;
+		default:
+			break;
+		}
+	}
+	else
+		event->accept();
 }
