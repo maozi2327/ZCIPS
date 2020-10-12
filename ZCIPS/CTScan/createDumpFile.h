@@ -153,5 +153,5 @@ void RunCrashHandler()
 {
 	SetUnhandledExceptionFilter(UnhandledExceptionFilterEx);
 	//DisableSetUnhandledExceptionFilter();
-	//PreventSetUnhandledExceptionFilter();
+	PreventSetUnhandledExceptionFilter();
 }

@@ -223,6 +223,9 @@ void ct3AddModifyDialog::on_ct3LayerPosEdit_returnPressed()
 		[pos](float value) { return std::abs(value - pos) < 0.01; });
 
 	if (it == d_layerPos.end())
+
+
+
 	{
 		d_modified = true;
 		d_layerPos.insert(pos);

@@ -143,7 +143,8 @@ bool CT3TemplateWidget::loadTemplateData()
 	file.flush();
 	file.close();
 
-	if (itemNumber != 0) {
+	if (itemNumber != 0) 
+	{
 		ui.ct3ItemNameListWidget->setCurrentRow(0);
 		d_currentTempDataIter = d_tempTemplateData.begin();
 	}
