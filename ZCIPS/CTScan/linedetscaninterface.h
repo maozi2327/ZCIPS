@@ -35,6 +35,7 @@ protected:
 	float d_layer;
 	float d_angle;
 	int d_matrix;
+	int d_allGraduationSample;
 	float d_view;
 	int d_sampleTime;
 	int d_channelNum;
@@ -61,7 +62,9 @@ public:
 	LineDetScanInterface(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork, 
 		const SetupData* _setupData, int _lineDetIndex);
 	virtual ~LineDetScanInterface();
-	void setFileName(QString& _fileName, QString& _orgPth, QString& _filePth) { d_fileName = _fileName; };
+	void setFileName(const QString& _fileName) { d_fileName = _fileName; };
+	void setFilePath(const QString& _filePath) { d_filePath = _filePath; };
+	void setOrgPath(const QString& _orgPath) { d_orgPath = _orgPath; };
 	virtual bool beginScan() = 0;
 	virtual void stopScan() = 0;
 };

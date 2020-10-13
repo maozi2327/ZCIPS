@@ -6,22 +6,20 @@ CTScanWidget::CTScanWidget(QWidget* _upWidget, QWidget* _middleWidget, QWidget* 
 	, d_scanWidget(nullptr), d_upWidget(_upWidget), d_middleWidget(_middleWidget), d_downWidget(_downWidget)
 {
 	ui.setupUi(this);
-	QGridLayout* layoutAcc = new QGridLayout(ui.acceleratorContainerwidget);
-	layoutAcc->addWidget(d_upWidget, 0, 0);
-	///layoutAcc->setMargin(0);
-	layoutAcc->setContentsMargins(0, 0, 0, 0);
-	d_upWidget->setContentsMargins(0, 0, 0, 0);
+	//QGridLayout* layoutAcc = new QGridLayout(ui.acceleratorContainerwidget);
+	//layoutAcc->addWidget(d_upWidget, 0, 0);
+	//layoutAcc->setContentsMargins(0, 0, 0, 0);
+	//d_upWidget->setContentsMargins(0, 0, 0, 0);
 	QVBoxLayout* layout = new QVBoxLayout;
-	layout->addWidget(d_middleWidget, 0, 0);
-	
+	layout->addWidget(d_middleWidget, 0, 0);	
 	QSpacerItem* vSpacer = new QSpacerItem(0, 0, QSizePolicy::Maximum, QSizePolicy::Expanding);
 	layout->addItem(vSpacer);
 	ui.scanTable->setLayout(layout);
-	//添加layout使位于中间
-	QGridLayout* layout1 = new QGridLayout;
-	layout1->addWidget(d_downWidget, 0, 0);
-	layout1->setMargin(0);
-	ui.motorControlGroupBox->setLayout(layout1);
+	////添加layout使位于中间
+	//QGridLayout* layout1 = new QGridLayout;
+	//layout1->addWidget(d_downWidget, 0, 0);
+	//layout1->setMargin(0);
+	//ui.motorControlGroupBox->setLayout(layout1);
 
 	d_layout = new QGridLayout;
 	d_layout->addWidget(this, 0, 0);

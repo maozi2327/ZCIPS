@@ -31,7 +31,7 @@ ct3AddModifyDialog::ct3AddModifyDialog(std::vector<Ct3TemplateData>& _tempData,
 		{
 			ui.ct3MultiLayerComboBox->setCurrentText(QString::fromLocal8Bit("多层等间距"));
 			ui.ct3LayerSpaceLineEdit->setText(QString::number(d_tempItem->layerSpace, 'f', 2));
-			ui.ct3LayerNumLineEdit->setText(QString::number(d_tempItem->ecqualLayerNumber));
+			ui.ct3LayerNumLineEdit->setText(QString::number(d_tempItem->LayerNumber));
 			ui.ct3LayerPosEdit->setText(QString::number(*d_tempItem->LayerPos.begin()));
 		}
 
@@ -42,7 +42,12 @@ ct3AddModifyDialog::ct3AddModifyDialog(std::vector<Ct3TemplateData>& _tempData,
 		ui.ct3AngleLineEdit->setText(QString::number(d_tempItem->Orientation, 'f', 2));
 		d_layerPos = d_itr->LayerPos;
 	}
-
+	else
+	{
+		ui.templateNameEdit->setText(QString::fromLocal8Bit("新建配置"));
+		ui.ct3AngleLineEdit->setText(QString::number(0.0, 'f', 2));
+	}
+		
 	d_widgetInitilised = true;
 }
 
@@ -159,6 +164,7 @@ bool ct3AddModifyDialog::save()
 			return false;
 		}
 
+		d_tempItem->LayerNumber = ui.ct3LayerPosListWidget->count();
 		d_tempItem->MutilayerOrEqualLayer = MULTILAYER;
 		d_tempItem->LayerPos = d_layerPos;
 	}
@@ -188,7 +194,7 @@ bool ct3AddModifyDialog::save()
 
 		d_tempItem->MutilayerOrEqualLayer = EQUALLAYER;
 		d_tempItem->LayerPos.insert(ui.ct3LayerPosEdit->text().toFloat());
-		d_tempItem->ecqualLayerNumber = ui.ct3LayerNumLineEdit->text().toFloat();
+		d_tempItem->LayerNumber = ui.ct3LayerNumLineEdit->text().toFloat();
 		d_tempItem->layerSpace = ui.ct3LayerSpaceLineEdit->text().toFloat();
 	}
 

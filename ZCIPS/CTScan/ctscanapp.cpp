@@ -25,7 +25,7 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	, d_workDir(QCoreApplication::applicationDirPath())
 	, d_acceleratorWidget(new AcceleratorWidget())
 {
-	RunCrashHandler();
+	//RunCrashHandler();
 	QString time = QDateTime::currentDateTime().time().toString();
 	auto i = time.length();
 
@@ -35,7 +35,6 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 
 	QString logFileFullName = d_workDir + "/log/" +
 		QDateTime::currentDateTime().date().toString(Qt::ISODate) + '/' + time + ".txt";
-	d_msg->accept();
 	d_msg = new MsgListBoxDialog(logFileFullName);
 	connect(this, &CTScanApp::infoMsgSignal, this, &CTScanApp::infoMsgSlot);
 	connect(this, &CTScanApp::errorMsgSignal, this, &CTScanApp::errorMsgSlot);

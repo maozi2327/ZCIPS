@@ -35,7 +35,7 @@ bool LineDetAirTune::setGenerialFileHeader()
 		d_setupData->lineDetData[d_lineDetIndex].NumberOfSystemHorizontalDetector;
 	d_ictHeader.ScanParameter.InterpolationFlag = 0;
 	d_ictHeader.ScanParameter.NumberOfInterpolation = 1;
-	d_ictHeader.ScanParameter.NumberOfGraduation = TUNE_PROJECTIONS;
+	d_allGraduationSample = d_ictHeader.ScanParameter.NumberOfGraduation = TUNE_PROJECTIONS;
 	d_ictHeader.ScanParameter.DelaminationMode = 0;
 	d_ictHeader.ScanParameter.TotalLayers = 1;
 	return false;
@@ -59,25 +59,36 @@ void LineDetAirTune::sendCmdToControl()
 
 void LineDetAirTune::scanThread()
 {
-	while (d_deadThreadRun)
+	if (d_lineDetNetWork->startExtTrigAcquire())
 	{
-		emit(signalGraduationCount(d_lineDetNetWork->getGraduationCount()));
+		static std::chrono::steady_clock::time_point last_time;
+		last_time = d_start_time = std::chrono::steady_clock::now();
+		setGenerialFileHeader();
+		sendCmdToControl();
+		d_lineDetNetWork->clearRowList();
+		std::this_thread::sleep_for(std::chrono::seconds(3));
 
-		if (d_controller->readSaveStatus())
+		while (d_deadThreadRun)
 		{
-			saveFile();
-			stopScan();
-			break;
-		}
+			emit(signalGraduationCount(100 * d_lineDetNetWork->getGraduationCount() / d_allGraduationSample));
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			if (d_controller->readSaveStatus())
+			{
+				saveFile();
+				break;
+			}
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
 	}
+	else
+		;
 }
 
 void LineDetAirTune::saveFile()
 {
 	saveOrgFile(d_lineDetNetWork->getRowList());
-	d_lineDetImageProcess->createBkgDat(d_fileName, d_installDirectory);
+	d_lineDetImageProcess->createAirDat(d_fileName, d_installDirectory);
 }
 
 
@@ -87,7 +98,17 @@ bool LineDetAirTune::checkScanAble()
 	return false;
 }
 
-bool LineDetAirTune::startScan()
+bool LineDetAirTune::canScan()
+{
+	return false;
+}
+
+void LineDetAirTune::stopScan()
+{
+	LineDetScanInterface::stopScan();
+}
+
+bool LineDetAirTune::beginScan()
 {
 	if (!checkScanAble())
 		return false;
@@ -97,9 +118,4 @@ bool LineDetAirTune::startScan()
 	d_scanThread.reset(new Thread(std::bind(&LineDetAirTune::scanThread, this), std::ref(d_deadThreadRun)));
 	d_scanThread->detach();
 	return true;
-}
-
-void LineDetAirTune::stopScan()
-{
-	LineDetScanInterface::stopScan();
 }

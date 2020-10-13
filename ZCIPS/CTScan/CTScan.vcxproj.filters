@@ -159,6 +159,15 @@
     <ClCompile Include="ct3AddModifyDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="linedetairdisposedialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\util\messagebox.cpp">
+      <Filter>public\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="addmodifyairdisposedialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\lib\tinyxml2.h">
@@ -254,6 +263,9 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\util\messagebox.h">
+      <Filter>public\utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="..\Public\util\serialportutil.h">
@@ -313,6 +325,12 @@
     <QtMoc Include="floatacceleratordialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="linedetairdisposedialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="addmodifyairdisposedialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="conescanwidget.ui">
@@ -337,6 +355,12 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="ct3AddModifyDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="linedetairdisposedialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="addmodifyairdisposedialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

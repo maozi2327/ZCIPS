@@ -19,7 +19,7 @@ bool operator==(const Ct3TemplateData& t1, const Ct3TemplateData& t2)
 
 		if (t1.MutilayerOrEqualLayer == EQUALLAYER)
 			flag2 =
-			t1.ecqualLayerNumber == t2.ecqualLayerNumber &&
+			t1.LayerNumber == t2.LayerNumber &&
 			t1.layerSpace == t2.layerSpace &&
 			t1.LayerPos == t2.LayerPos;
 		else if (t1.MutilayerOrEqualLayer == MULTILAYER)
@@ -30,32 +30,9 @@ bool operator==(const Ct3TemplateData& t1, const Ct3TemplateData& t2)
 
 	return false;
 }
-
-int messageBox(const QString& text, const QString& infoText)
+bool operator<(const Ct3TemplateData& t1, const Ct3TemplateData& t2)
 {
-	QMessageBox msgBox;
-	msgBox.setText(text);
-	msgBox.setInformativeText(infoText);
-	msgBox.setStandardButtons(QMessageBox::Ok);
-	return msgBox.exec();
-}
-
-int messageBoxOkCancel(const QString& text, const QString& infoText)
-{
-	QMessageBox msgBox;
-	msgBox.setText(text);
-	msgBox.setInformativeText(infoText);
-	msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-	return msgBox.exec();
-}
-
-int messageBoxOkCancelDiscard(const QString& text, const QString& infoText)
-{
-	QMessageBox msgBox;
-	msgBox.setText(text);
-	msgBox.setInformativeText(infoText);
-	msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Discard);
-	return msgBox.exec();
+	return t1.Name < t2.Name;
 }
 
 CT3TemplateWidget::CT3TemplateWidget(const CT3Data& _ct3Data, QWidget *parent)
@@ -81,6 +58,7 @@ struct HeadData
 	unsigned int SampleTime;
 	float Orientation;
 	unsigned int LayerNumber;
+	float layerSpace;
 	float LayerPos[];
 };
 
@@ -105,6 +83,7 @@ bool CT3TemplateWidget::loadTemplateData()
 	if(fileHead != FILEHEAD)
 	{
 		LOG_ERROR("三代CT配置文件格式错误：" + d_templateFileName);
+		file.close();
 		return false;
 	}
 
@@ -114,6 +93,7 @@ bool CT3TemplateWidget::loadTemplateData()
 	if(itemNumber > 500)
 	{
 		LOG_ERROR("三代CT配置文件配置项数量错误：" + d_templateFileName);
+		file.close();
 		return false;
 	}
 
@@ -127,10 +107,17 @@ bool CT3TemplateWidget::loadTemplateData()
 		ui.ct3ItemNameListWidget->addItem(listItem);
 		memcpy(&itemData.MutilayerOrEqualLayer,
 			&data.MutilayerOrEqualLayer,
-			(char*)(&data.LayerNumber) - (char*)(&data.MutilayerOrEqualLayer));
+			(char*)(&data.LayerPos) - (char*)(&data.MutilayerOrEqualLayer));
 
-		for (int i = 0; i != data.LayerNumber; ++i)
-		{	
+		if(itemData.MutilayerOrEqualLayer == MULTILAYER)
+			for (int i = 0; i != data.LayerNumber; ++i)
+			{	
+				float pos;
+				file.read((char*)(&pos), sizeof(float));
+				itemData.LayerPos.insert(pos);
+			}
+		else if (itemData.MutilayerOrEqualLayer == EQUALLAYER)
+		{
 			float pos;
 			file.read((char*)(&pos), sizeof(float));
 			itemData.LayerPos.insert(pos);
@@ -140,7 +127,6 @@ bool CT3TemplateWidget::loadTemplateData()
 	}
 
 	d_templateData = d_tempTemplateData;
-	file.flush();
 	file.close();
 
 	if (itemNumber != 0) 
@@ -154,6 +140,21 @@ bool CT3TemplateWidget::loadTemplateData()
 
 bool CT3TemplateWidget::saveTemplateDataToFile()
 {
+	if (!QFile::exists(d_templateFileName))
+		LOG_INFO("不存在配置文件：" + d_templateFileName + "，已经自动创建配置文件");
+
+	QFile file;
+	file.setFileName(d_templateFileName);
+
+	if (!file.open(QIODevice::WriteOnly))
+	{
+		LOG_ERROR("打开三代CT配置文件失败：" + d_templateFileName);
+		messageBox(QString::fromLocal8Bit("打开三代CT配置文件失败：！"),
+			QString::fromLocal8Bit("保存失败！"));
+		return false;
+	}
+
+	std::sort(d_tempTemplateData.begin(), d_tempTemplateData.end());
 	size_t fileSize = sizeof(unsigned int) * 2;
 	std::vector<std::pair<char*, size_t>> dataVec;
 
@@ -168,7 +169,7 @@ bool CT3TemplateWidget::saveTemplateDataToFile()
 		data->Name[rawByteName.size()] = '\0';
 		memcpy(&data->MutilayerOrEqualLayer,
 			&item.MutilayerOrEqualLayer,
-			(char*)(&data->LayerNumber) - (char*)(&data->MutilayerOrEqualLayer));
+			(char*)(&data->LayerPos) - (char*)(&data->MutilayerOrEqualLayer));
 		std::copy(item.LayerPos.begin(), item.LayerPos.end(), data->LayerPos);
 		fileSize += dataSize;
 		dataVec.push_back({ (char*)data, dataSize });
@@ -185,21 +186,6 @@ bool CT3TemplateWidget::saveTemplateDataToFile()
 	{
 		memmove(fileDataHead + pos, item.first, item.second);
 		pos += item.second;
-	}
-
-	if (!QFile::exists(d_templateFileName))
-		LOG_INFO("不存在配置文件：" + d_templateFileName + "，已经自动创建配置文件");
-
-	QFile file;
-	file.setFileName(d_templateFileName);
-
-	if (!file.open(QIODevice::WriteOnly))
-	{
-		free(fileMem);
-		LOG_ERROR("打开三代CT配置文件失败：" + d_templateFileName);
-		messageBox(QString::fromLocal8Bit("打开三代CT配置文件失败：！"), 
-			QString::fromLocal8Bit("保存失败！"));
-		return false;
 	}
 
 	file.write((char*)(fileMem), fileSize);
@@ -295,7 +281,7 @@ void CT3TemplateWidget::on_ct3ItemNameListWidget_currentRowChanged(int _currentR
 		ui.label_8->setText(QString::fromLocal8Bit("首层位置"));
 		ui.ct3MultiLayerLabel->setText(QString::fromLocal8Bit("多层等间距"));
 		ui.ct3LayerSpaceValueLabel->setText(QString::number(dataItem.layerSpace, 'f', 2));
-		ui.ct3LayerNumValueLabel->setText(QString::number(dataItem.ecqualLayerNumber));
+		ui.ct3LayerNumValueLabel->setText(QString::number(dataItem.LayerNumber));
 		ui.ct3LayerPosValueLabel->setText(QString::number(*dataItem.LayerPos.begin()));
 	}
 

@@ -214,7 +214,6 @@ void SimotionController::setConnectdSts()
 
 //55  AA  5A    TP          BL           DW             VS
 //  包头(3B)  分类码(1B) 包长(2B)    n字节参数字      校验和(1B)
-
 void SimotionController::sendToControl(int _cmd, char * _data, int _size, bool _consist)
 {
 	fillInCmdStructAndFillCmdList(_cmd, _data, _size, _consist);

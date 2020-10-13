@@ -44,22 +44,11 @@ void CT3Scan::scanThread()
 {
 	if (d_lineDetNetWork->startExtTrigAcquire())
 	{
-		int graduation = loadTempFile();
-
-		if (graduation == -1)
-		{
-
-			return;
-		}
-		else
-		{
-
-		}
-
 		static std::chrono::steady_clock::time_point last_time;
 		last_time = d_start_time = std::chrono::steady_clock::now();
 		setGenerialFileHeader();
 		sendCmdToControl();
+		d_lineDetNetWork->clearRowList();
 		std::this_thread::sleep_for(std::chrono::seconds(3));
 
 		while (d_deadThreadRun)
@@ -74,7 +63,7 @@ void CT3Scan::scanThread()
 				last_time = now;
 			}
 
-			emit(signalGraduationCount(d_lineDetNetWork->getGraduationCount()));
+			emit(signalGraduationCount(100 * d_lineDetNetWork->getGraduationCount() / d_allGraduationSample));
 
 			if (d_controller->readSaveStatus())
 			{
@@ -194,6 +183,8 @@ bool CT3Scan::setGenerialFileHeader()
 	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
 	d_ictHeader.ScanParameter.NumberOfInterpolation = 
 		(float)d_matrix / d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector + 1;
+
+	d_allGraduationSample = d_ictHeader.ScanParameter.NumberOfInterpolation * d_matrix;
 	int N = d_ictHeader.ScanParameter.NumberOfSystemHorizontalDetector;
 	float d = PI * d_ictHeader.ScanParameter.HorizontalSectorAngle / (180 * (N - 1));
 	d *= d_ictHeader.ScanParameter.SourceDetectorDistance;

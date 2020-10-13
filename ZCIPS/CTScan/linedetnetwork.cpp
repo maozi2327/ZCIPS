@@ -360,7 +360,6 @@ int LineDetNetWork::CollectUsefulData(char * _buff, int _size)
 		unsigned long* item = new unsigned long[d_channelNum + 2];
 		int smIndex = 0;
 
-
 		for (int smIndex = 0; smIndex != d_smallBoardNum; ++smIndex)
 		{
 			memmove(_buff + 2 * sizeof(unsigned int) + smIndex * smallBD	//下面第一个数据是数据长度

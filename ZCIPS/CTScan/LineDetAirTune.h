@@ -9,11 +9,12 @@ protected:
 	virtual void scanThread();
 	virtual void sendCmdToControl();
 	virtual bool checkScanAble();
+	virtual bool canScan();
 public:
 	LineDetAirTune(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWor,
 		const SetupData* _setupData, int _lineDetIndex);
 	~LineDetAirTune();
-	virtual bool startScan();
-	virtual void stopScan();
+	virtual void stopScan(); 
+	virtual bool beginScan();
 };
 

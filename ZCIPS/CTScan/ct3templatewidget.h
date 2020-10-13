@@ -3,6 +3,7 @@
 #include <QDialog>
 #include "ui_ct3templatewidget.h"
 #include "../Public/util/logmacro.h"
+#include "../Public/util/messagebox.h"
 #include <vector>
 #include <set>
 
@@ -18,15 +19,13 @@ struct Ct3TemplateData
 	unsigned int View;
 	unsigned int SampleTime;
 	float Orientation;
-	unsigned int ecqualLayerNumber;  //只用作等层距扫描计数
+	unsigned int LayerNumber;  //只用作等层距扫描计数
 	float layerSpace;
 	std::set<float> LayerPos;
 };
 bool operator==(const Ct3TemplateData& t1, const Ct3TemplateData& t2);
+bool operator<(const Ct3TemplateData& t1, const Ct3TemplateData& t2);
 
-int messageBox(const QString& text, const QString& infoText);
-int messageBoxOkCancel(const QString& text, const QString& infoText);
-int messageBoxOkCancelDiscard(const QString& text, const QString& infoText);
 
 struct CT3Data;
 class ct3AddDialog;

@@ -11,6 +11,7 @@ class LineDetScanInterface;
 class ControllerInterface;
 class LineDetNetWork;
 class CT3TemplateWidget;
+class LineDetAirDisposeDialog;
 
 class LineDetScanWidget : public QWidget
 {
@@ -19,16 +20,16 @@ class LineDetScanWidget : public QWidget
 public:
 	LineDetScanWidget(int _rayId, int _lineDetId, const	std::vector<ScanMode>& _scanMode, SetupData* _setupData, 
 		LineDetNetWork* _lineDetNetWork, ControllerInterface* _controller, QWidget *parent = Q_NULLPTR);
-
 	~LineDetScanWidget();
-
 	void onNetworkStsChanged(bool _netWorkSts);
+
 protected:
 #ifndef QT_NO_CONTEXTMENU
 	void contextMenuEvent(QContextMenuEvent *event) override;
 
 	//void keyPressEvent(QKeyEvent * _event);
 #endif // QT_NO_CONTEXTMENU
+
 private:
 	Ui::LineDetScanWidget ui;
 	QAction *showMotorTableAction;
@@ -45,7 +46,9 @@ private:
 	void initiliseDrControls(const DrScanData& _data);
 	std::map<ScanMode, LineDetScanInterface*> d_scanMap;
 	std::unique_ptr<LineDetScanInterface> d_scan;
-	CT3TemplateWidget* d_ct3TemplateWidget;
+	CT3Data d_ct3Data;
+	LineDetAirDisposeDialog* d_airDisposeDialog;
+
 private slots:
 	void showMotorTable();
 	void on_Ct3StartButton_clicked();
@@ -54,5 +57,7 @@ private slots:
 	void on_ct3LayerPosLineEdit_returnd();
 	void on_stopButton_clicked();
 	void on_ct3LoadTemplateButton_clicked();
+	void on_airTuneButton_clicked();
 	void updateControlsSlot();
+	void updateCT3Progresser(int _progress);
 };

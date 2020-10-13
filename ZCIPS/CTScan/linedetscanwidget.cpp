@@ -5,6 +5,7 @@
 #include "../Public/headers/setupData.h"
 #include "ct3scan.h"
 #include "ct3templatewidget.h"
+#include "linedetairdisposedialog.h"
 
 LineDetScanWidget::LineDetScanWidget(int _rayId, int _lineDetId, 
 	const std::vector<ScanMode>& _scanMode, SetupData* _setupData, 
@@ -25,7 +26,7 @@ LineDetScanWidget::LineDetScanWidget(int _rayId, int _lineDetId,
 			{	return _ct3Data.Ray == _rayId && _ct3Data.Det == _lineDetId; });
 
 			initiliseCt3Controls(*itr);
-			d_ct3TemplateWidget = new CT3TemplateWidget(*itr, this);
+			d_ct3Data = *itr;
 		}
 		else if (scanMode == ScanMode::DR_SCAN)
 		{
@@ -114,24 +115,6 @@ void addItemToMatixVieSample(T& _data, QComboBox* _matrix, QComboBox* _view, QCo
 
 void LineDetScanWidget::initiliseControls()
 {
-	//addItemToMatixVieSample(d_setupData->ct2Data, ui.ct2MatrixComboBox, ui.ct2ViewComboBox,
-	//	ui.ct2SampleTimeComboBox, d_rayNum, d_detNum);
-	//addItemToMatixVieSample(d_setupData->ct3Data, ui.ct3MatrixComboBox, ui.ct3ViewComboBox, 
-	//	ui.ct3SampleTimeComboBox, d_rayNum, d_detNum);
-	//addItemToMatixVieSample(d_setupData->drScanData, ui.drMatrixComboBox, ui.drViewComboBox, 
-	//	ui.drSampleTimeComboBox, d_rayNum, d_detNum);
-	//QString str;
-	//ui.ct2MultiLayerComboBox->addItem(str.fromLocal8Bit("当前层"));
-	//ui.ct2MultiLayerComboBox->addItem(str.fromLocal8Bit("等间距"));
-	//ui.ct2MultiLayerComboBox->addItem(str.fromLocal8Bit("多层"));
-	//ui.ct2ScanModeComboBox->addItem(str.fromLocal8Bit("360度"));
-	//ui.ct2ScanModeComboBox->addItem(str.fromLocal8Bit("360度间隔"));
-	//ui.ct2ScanModeComboBox->addItem(str.fromLocal8Bit("180度"));
-	//ui.ct3MultiLayerComboBox->addItem(str.fromLocal8Bit("单层"));
-	//ui.ct3MultiLayerComboBox->addItem(str.fromLocal8Bit("等间距"));
-	//ui.ct3MultiLayerComboBox->addItem(str.fromLocal8Bit("多层"));
-	//ui.drRatioComboBox->addItem(str.fromLocal8Bit("等比例"));
-	//ui.drRatioComboBox->addItem(str.fromLocal8Bit("不等比例"));
 	ui.ct3LayerPosListWidget->setSortingEnabled(true);
 	ui.scanModeTab->setCurrentWidget(ui.ct3Tab);
 }
@@ -163,6 +146,9 @@ void LineDetScanWidget::initiliseDrControls(const DrScanData& _data)
 	ui.drRatioComboBox->addItem(QString::fromLocal8Bit("不等比例"));
 }
 
+
+//不判断是否能进行扫描，自动判断设备状态使能和禁止扫描按钮，
+//只要按钮有效则都可以进行扫描
 void LineDetScanWidget::on_Ct3StartButton_clicked()
 {
 	float layer;
@@ -182,6 +168,7 @@ void LineDetScanWidget::on_Ct3StartButton_clicked()
 		->setScanParameter(layer, matrix, view, sampleTime, angle))
 		return;
 
+	connect(d_scan.get(), &CT3Scan::signalGraduationCount, this, &LineDetScanWidget::updateCT3Progresser);
 	d_scan->beginScan();
 }
 
@@ -240,7 +227,15 @@ void LineDetScanWidget::on_stopButton_clicked()
 
 void LineDetScanWidget::on_ct3LoadTemplateButton_clicked()
 {
-	d_ct3TemplateWidget->show();
+	CT3TemplateWidget ct3TemplateWidget(d_ct3Data, this);
+	ct3TemplateWidget.exec();
+}
+
+void LineDetScanWidget::on_airTuneButton_clicked()
+{
+	d_airDisposeDialog = LineDetAirDisposeDialog::getInstance(d_controller, d_lineDetNetWork, d_setupData,
+		d_rayNum, d_detNum, QString(""), this);
+	d_airDisposeDialog->show();
 }
 
 void LineDetScanWidget::updateControlsSlot()
@@ -278,6 +273,11 @@ void LineDetScanWidget::updateControlsSlot()
 	}
 	else
 		ui.Ct3StartButton->setStyleSheet("");
+}
+
+void LineDetScanWidget::updateCT3Progresser(int _progress)
+{
+	ui.Ct3ScanNowProgressBar->setValue(_progress);
 }
 
 void LineDetScanWidget::showMotorTable()
