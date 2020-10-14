@@ -168,6 +168,9 @@
     <ClCompile Include="addmodifyairdisposedialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="scantemplate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\lib\tinyxml2.h">
@@ -265,6 +268,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\util\messagebox.h">
       <Filter>public\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="scantemplate.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

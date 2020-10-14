@@ -163,6 +163,7 @@
     <ClCompile Include="motorwidget.cpp" />
     <ClCompile Include="msglistboxdialog.cpp" />
     <ClCompile Include="addmodifyairdisposedialog.cpp" />
+    <ClCompile Include="scantemplate.cpp" />
     <ClCompile Include="setupdataparser.cpp" />
     <ClCompile Include="simotioncontroller.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -314,6 +315,7 @@
       <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
     </QtMoc>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="scantemplate.h" />
     <ClInclude Include="simotioncontroller.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>

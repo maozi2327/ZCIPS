@@ -3,45 +3,17 @@
 #include "../Public/headers/SetupData.h"
 #include "ct3AddModifyDialog.h"
 
-bool operator==(const Ct3TemplateData& t1, const Ct3TemplateData& t2)
-{
-	bool flag1 =
-		t1.Name == t2.Name &&
-		t1.MutilayerOrEqualLayer == t2.MutilayerOrEqualLayer &&
-		t1.Matrix == t2.Matrix &&
-		t1.View == t2.View &&
-		t1.SampleTime == t2.SampleTime &&
-		t1.Orientation == t2.Orientation;
 
-	if (flag1)
-	{
-		bool flag2;
-
-		if (t1.MutilayerOrEqualLayer == EQUALLAYER)
-			flag2 =
-			t1.LayerNumber == t2.LayerNumber &&
-			t1.layerSpace == t2.layerSpace &&
-			t1.LayerPos == t2.LayerPos;
-		else if (t1.MutilayerOrEqualLayer == MULTILAYER)
-			flag2 = t1.LayerPos == t2.LayerPos;
-
-		return flag2;
-	}
-
-	return false;
-}
-bool operator<(const Ct3TemplateData& t1, const Ct3TemplateData& t2)
-{
-	return t1.Name < t2.Name;
-}
-
-CT3TemplateWidget::CT3TemplateWidget(const CT3Data& _ct3Data, QWidget *parent)
-	: QDialog(parent), d_ct3Data(_ct3Data), d_modified(false)
+CT3TemplateWidget::CT3TemplateWidget(const CT3Data& _ct3Data, Ct3TemplateData& _templateData, QWidget *parent)
+	: QDialog(parent), d_ct3Data(_ct3Data), d_templateDataUseItem(_templateData), d_modified(false)
 {
 	ui.setupUi(this);
 	QString str;
 	d_templateFileName = str.sprintf("%d_%d_ct3Template", _ct3Data.Ray, _ct3Data.Det);
 	loadTemplateData(); 
+	ui.ct3ItemNameListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(ui.ct3ItemNameListWidget, &QListWidget::customContextMenuRequested,
+		this, &CT3TemplateWidget::listNameContextMenuSlot);
 }
 
 CT3TemplateWidget::~CT3TemplateWidget()
@@ -64,7 +36,6 @@ struct HeadData
 
 bool CT3TemplateWidget::loadTemplateData()
 {
-	d_currentTempDataIter = d_tempTemplateData.end();
 	QFile file;
 	file.setFileName(d_templateFileName);
 
@@ -130,10 +101,7 @@ bool CT3TemplateWidget::loadTemplateData()
 	file.close();
 
 	if (itemNumber != 0) 
-	{
 		ui.ct3ItemNameListWidget->setCurrentRow(0);
-		d_currentTempDataIter = d_tempTemplateData.begin();
-	}
 		
 	return true;
 }
@@ -197,14 +165,6 @@ bool CT3TemplateWidget::saveTemplateDataToFile()
 	return true;
 }
 
-void CT3TemplateWidget::on_deleteButton_clicked()
-{
-	int row = ui.ct3ItemNameListWidget->currentRow();
-	QListWidgetItem* item = ui.ct3ItemNameListWidget->takeItem(row);
-	delete item;
-	d_tempTemplateData.erase(d_tempTemplateData.begin() + row);
-}
-
 void CT3TemplateWidget::refresh(int _row)
 {
 	ui.ct3ItemNameListWidget->clear();
@@ -212,10 +172,8 @@ void CT3TemplateWidget::refresh(int _row)
 	for (auto& item : d_tempTemplateData)
 		ui.ct3ItemNameListWidget->addItem(item.Name);
 
-	if (d_tempTemplateData.size() != 0) {
+	if (d_tempTemplateData.size() != 0) 
 		on_ct3ItemNameListWidget_currentRowChanged(_row);
-		d_currentTempDataIter = d_tempTemplateData.begin() + _row;
-	}
 }
 
 void CT3TemplateWidget::on_saveButton_clicked()
@@ -301,8 +259,14 @@ void CT3TemplateWidget::closeEvent(QCloseEvent * event)
 		switch (ret)
 		{
 		case QMessageBox::Save:
-			saveTemplateDataToFile();
-			event->accept();
+
+			if (saveTemplateDataToFile())
+				event->accept();
+			else
+			{
+				event->ignore();
+				return;
+			}
 			break;
 		case QMessageBox::Discard:
 			event->accept();
@@ -314,6 +278,8 @@ void CT3TemplateWidget::closeEvent(QCloseEvent * event)
 			break;
 		}
 	}
+	else
+		event->accept();
 }
 
 void CT3TemplateWidget::on_addButton_clicked()
@@ -325,4 +291,34 @@ void CT3TemplateWidget::on_addButton_clicked()
 		d_modified = true;
 		refresh(d_tempTemplateData.size() - 1);
 	}
+}
+
+void CT3TemplateWidget::on_useButton_clicked()
+{
+	if (d_modified)
+	{
+		messageBox(QString::fromLocal8Bit("未保存更改！"), QString::fromLocal8Bit("请先保存"));
+		return;
+	}
+
+	d_templateDataUseItem = *(d_tempTemplateData.begin() + ui.ct3ItemNameListWidget->currentRow());
+	emit useItemSignal();
+}
+
+void CT3TemplateWidget::listNameContextMenuSlot(const QPoint& _point)
+{
+	auto deleteAct = new QAction(QString::fromLocal8Bit("删除"), this);
+	connect(deleteAct, &QAction::triggered, this, &CT3TemplateWidget::deleteListNameItemSlot);
+	QMenu menu;
+	menu.addAction(deleteAct);
+	menu.exec(ui.ct3ItemNameListWidget->mapToGlobal(_point));
+}
+
+void CT3TemplateWidget::deleteListNameItemSlot()
+{
+	int row = ui.ct3ItemNameListWidget->currentRow();
+	QListWidgetItem* item = ui.ct3ItemNameListWidget->takeItem(row);
+	delete item;
+	d_tempTemplateData.erase(d_tempTemplateData.begin() + row);
+	d_modified = true;
 }

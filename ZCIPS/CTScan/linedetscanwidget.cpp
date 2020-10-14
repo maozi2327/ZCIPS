@@ -6,6 +6,7 @@
 #include "ct3scan.h"
 #include "ct3templatewidget.h"
 #include "linedetairdisposedialog.h"
+#include "scantemplate.h"
 
 LineDetScanWidget::LineDetScanWidget(int _rayId, int _lineDetId, 
 	const std::vector<ScanMode>& _scanMode, SetupData* _setupData, 
@@ -123,10 +124,8 @@ void LineDetScanWidget::initiliseCt3Controls(const CT3Data& _data)
 {
 	addItemToMatixVieSample(_data, ui.ct3MatrixComboBox, ui.ct3ViewComboBox,
 		ui.ct3SampleTimeComboBox, d_rayNum, d_detNum);
-	ui.ct3MultiLayerComboBox->addItem(QString::fromLocal8Bit("单层"));
 	ui.ct3MultiLayerComboBox->addItem(QString::fromLocal8Bit("多层等间距"));
 	ui.ct3MultiLayerComboBox->addItem(QString::fromLocal8Bit("多层不等间距"));
-	ui.ct3MultiLayerComboBox->setCurrentText(QString::fromLocal8Bit("单层"));
 }
 
 void LineDetScanWidget::initiliseCt2Controls(const CT2Data& _data)
@@ -145,7 +144,28 @@ void LineDetScanWidget::initiliseDrControls(const DrScanData& _data)
 	ui.drRatioComboBox->addItem(QString::fromLocal8Bit("等比例"));
 	ui.drRatioComboBox->addItem(QString::fromLocal8Bit("不等比例"));
 }
-
+void LineDetScanWidget::switchCt3MultilayerEquallayerShowHide(unsigned char _mode)
+{
+	if (_mode == MULTILAYER)
+	{
+		ui.ct3LayerPosListWidget->show();
+		ui.ct3LayerSpaceLabel->hide();
+		ui.ct3LayerSpaceLineEdit->hide();
+		ui.ct3LayerNumLabel->hide();
+		ui.ct3LayerNumLineEdit->hide();
+		ui.ct3LayerPosListWidget->show();
+		ui.label_8->setText(QString::fromLocal8Bit("断层位置"));
+	}
+	else if (_mode == EQUALLAYER)
+	{
+		ui.ct3LayerSpaceLabel->show();
+		ui.ct3LayerSpaceLineEdit->show();
+		ui.ct3LayerNumLabel->show();
+		ui.ct3LayerNumLineEdit->show();
+		ui.ct3LayerPosListWidget->hide();
+		ui.label_8->setText(QString::fromLocal8Bit("首层位置"));
+	}
+}
 
 //不判断是否能进行扫描，自动判断设备状态使能和禁止扫描按钮，
 //只要按钮有效则都可以进行扫描
@@ -179,30 +199,10 @@ void LineDetScanWidget::on_saveDirButton_clicked()
 
 void LineDetScanWidget::on_ct3MultiLayerComboBox_currentIndexChanged(const QString& _text)
 {
-	if (_text == QString::fromLocal8Bit("单层"))
-	{
-		ui.ct3LayerPosLineEdit->show();
-		ui.ct3LayerSpaceLineEdit->hide();
-		ui.ct3SpaceNumLineEdit->hide();
-		ui.ct3SpaceNumLabel->hide();
-		ui.ct3LayerSpaceLabel->hide();
-	}
-	else if (_text == QString::fromLocal8Bit("多层等间距"))
-	{
-		ui.ct3LayerPosLineEdit->show();
-		ui.ct3LayerSpaceLineEdit->show();
-		ui.ct3SpaceNumLineEdit->show();
-		ui.ct3SpaceNumLabel->show();
-		ui.ct3LayerSpaceLabel->show();
-	}
+	if (_text == QString::fromLocal8Bit("多层等间距"))
+		switchCt3MultilayerEquallayerShowHide(MULTILAYER);
 	else if (_text == QString::fromLocal8Bit("多层不等间距"))
-	{
-		ui.ct3LayerPosLineEdit->show();
-		ui.ct3LayerSpaceLineEdit->hide();
-		ui.ct3SpaceNumLineEdit->hide();
-		ui.ct3SpaceNumLabel->hide();
-		ui.ct3LayerSpaceLabel->hide();
-	}
+		switchCt3MultilayerEquallayerShowHide(EQUALLAYER);
 }
 
 void LineDetScanWidget::on_ct3LayerPosLineEdit_returnd()
@@ -227,14 +227,17 @@ void LineDetScanWidget::on_stopButton_clicked()
 
 void LineDetScanWidget::on_ct3LoadTemplateButton_clicked()
 {
-	CT3TemplateWidget ct3TemplateWidget(d_ct3Data, this);
-	ct3TemplateWidget.exec();
+	d_ct3TemplateWidget = new CT3TemplateWidget(d_ct3Data, d_ct3TemplateDataItem, this);
+	connect(d_ct3TemplateWidget, &CT3TemplateWidget::useItemSignal,
+		this, &LineDetScanWidget::useCt3ItemSlot);
+	d_ct3TemplateWidget->show();
 }
 
 void LineDetScanWidget::on_airTuneButton_clicked()
 {
 	d_airDisposeDialog = LineDetAirDisposeDialog::getInstance(d_controller, d_lineDetNetWork, d_setupData,
 		d_rayNum, d_detNum, QString(""), this);
+	connect(this, &LineDetScanWidget::readyToScanSignal, d_airDisposeDialog, &LineDetAirDisposeDialog::updateScanButtonSlot);
 	d_airDisposeDialog->show();
 }
 
@@ -273,6 +276,8 @@ void LineDetScanWidget::updateControlsSlot()
 	}
 	else
 		ui.Ct3StartButton->setStyleSheet("");
+
+	emit readyToScanSignal(readyToScan);
 }
 
 void LineDetScanWidget::updateCT3Progresser(int _progress)
@@ -283,4 +288,31 @@ void LineDetScanWidget::updateCT3Progresser(int _progress)
 void LineDetScanWidget::showMotorTable()
 {
 	
+}
+
+void LineDetScanWidget::useCt3ItemSlot()
+{
+	if (d_ct3TemplateDataItem.MutilayerOrEqualLayer == MULTILAYER)
+	{
+		switchCt3MultilayerEquallayerShowHide(MULTILAYER);
+		ui.ct3LayerPosListWidget->clear();
+
+		for (auto pos : d_ct3TemplateDataItem.LayerPos)
+		{
+			QListWidgetItem* item = new QListWidgetItem(QString::number(pos, 'f', 2));
+			ui.ct3LayerPosListWidget->addItem(item);
+		}
+	}
+	else if (d_ct3TemplateDataItem.MutilayerOrEqualLayer == EQUALLAYER)
+	{
+		switchCt3MultilayerEquallayerShowHide(EQUALLAYER);
+		ui.ct3LayerSpaceLineEdit->setText(QString::number(d_ct3TemplateDataItem.layerSpace, 'f', 2));
+		ui.ct3LayerNumLineEdit->setText(QString::number(d_ct3TemplateDataItem.LayerNumber));
+		ui.ct3LayerPosLineEdit->setText(QString::number(*d_ct3TemplateDataItem.LayerPos.begin()));
+	}
+
+	ui.ct3MatrixComboBox->setCurrentText(QString::number(d_ct3TemplateDataItem.Matrix));
+	ui.ct3ViewComboBox->setCurrentText(QString::number(d_ct3TemplateDataItem.View));
+	ui.ct3SampleTimeComboBox->setCurrentText(QString::number(d_ct3TemplateDataItem.SampleTime));
+	ui.ct3AngleLineEdit->setText(QString::number(d_ct3TemplateDataItem.Orientation, 'f', 2));
 }

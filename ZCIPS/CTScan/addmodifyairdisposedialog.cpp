@@ -4,17 +4,20 @@
 #include "linedetairdisposedialog.h"
 #include "../Public/util/messagebox.h"
 
+AddModifyAirDisposeDialog* AddModifyAirDisposeDialog::d_ref = nullptr;
+
 AddModifyAirDisposeDialog::AddModifyAirDisposeDialog(LineDetScanInterface* _airScan, std::vector<AirTemplateData>& _airTemplateData, 
 	std::vector<AirTemplateData>::iterator _itr, QWidget *parent)
 	: d_airScan(_airScan), d_airTemplateData(_airTemplateData), d_itr(_itr), QDialog(parent)
 {
 	ui.setupUi(this);
+	setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
 AddModifyAirDisposeDialog::~AddModifyAirDisposeDialog()
 {
+	d_ref = nullptr;
 }
-
 
 void AddModifyAirDisposeDialog::on_startButton_clicked()
 {
@@ -43,4 +46,9 @@ void AddModifyAirDisposeDialog::on_stopButton_clicked()
 void AddModifyAirDisposeDialog::updateScanButtonSlot(bool _sts)
 {
 	ui.startButton->setEnabled(_sts);
+}
+
+void AddModifyAirDisposeDialog::closeEvent(QCloseEvent* _event)
+{
+
 }

@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include "../Public/headers/setupdata.h"
+#include "scantemplate.h"
 
 struct CT3Data;
 class LineDetScanInterface;
@@ -44,11 +45,13 @@ private:
 	void initiliseCt3Controls(const CT3Data& _data);
 	void initiliseCt2Controls(const CT2Data& _data);
 	void initiliseDrControls(const DrScanData& _data);
+	void switchCt3MultilayerEquallayerShowHide(unsigned char _mode);
 	std::map<ScanMode, LineDetScanInterface*> d_scanMap;
 	std::unique_ptr<LineDetScanInterface> d_scan;
 	CT3Data d_ct3Data;
 	LineDetAirDisposeDialog* d_airDisposeDialog;
-
+	CT3TemplateWidget* d_ct3TemplateWidget;
+	Ct3TemplateData d_ct3TemplateDataItem;
 private slots:
 	void showMotorTable();
 	void on_Ct3StartButton_clicked();
@@ -60,4 +63,8 @@ private slots:
 	void on_airTuneButton_clicked();
 	void updateControlsSlot();
 	void updateCT3Progresser(int _progress);
+	void useCt3ItemSlot();
+
+signals:
+	void readyToScanSignal(bool _sts);
 };

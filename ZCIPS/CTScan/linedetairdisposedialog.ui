@@ -70,30 +70,30 @@
     </rect>
    </property>
    <property name="text">
-    <string>确定</string>
+    <string>保存</string>
    </property>
    <property name="autoDefault">
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="deleteButton">
+  <widget class="QPushButton" name="useButton">
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>110</y>
+     <y>120</y>
      <width>75</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>删除</string>
+    <string>使用</string>
    </property>
   </widget>
   <widget class="QLabel" name="ct3MultiLayerLabel">
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>36</y>
+     <y>30</y>
      <width>80</width>
      <height>20</height>
     </rect>
@@ -124,7 +124,7 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>36</y>
+     <y>30</y>
      <width>54</width>
      <height>20</height>
     </rect>
@@ -218,6 +218,62 @@
    </property>
    <property name="text">
     <string>取消</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="ct3LayerThickness">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>90</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>80</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>80</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>90</y>
+     <width>54</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>54</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>54</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>层厚</string>
    </property>
   </widget>
  </widget>

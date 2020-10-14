@@ -293,7 +293,7 @@
             </widget>
            </item>
            <item row="8" column="1">
-            <widget class="QLineEdit" name="ct3SpaceNumLineEdit">
+            <widget class="QLineEdit" name="ct3LayerNumLineEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -438,7 +438,7 @@
             </widget>
            </item>
            <item row="8" column="0">
-            <widget class="QLabel" name="ct3SpaceNumLabel">
+            <widget class="QLabel" name="ct3LayerNumLabel">
              <property name="minimumSize">
               <size>
                <width>54</width>
@@ -538,25 +538,6 @@
            </property>
            <property name="text">
             <string>加载模板</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="ct3SaveTemplateButton">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>保存模板</string>
            </property>
           </widget>
          </item>
@@ -1061,25 +1042,6 @@
            </property>
            <property name="text">
             <string>加载模板</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="drSaveTemplateButton">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>保存模板</string>
            </property>
           </widget>
          </item>
@@ -1632,26 +1594,7 @@
             </size>
            </property>
            <property name="text">
-            <string>模板</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="ct2SaveTemplateButton">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>保存模板</string>
+            <string>加载模板</string>
            </property>
           </widget>
          </item>

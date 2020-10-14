@@ -12,9 +12,10 @@ class AddModifyAirDisposeDialog : public QDialog
 {
 	Q_OBJECT
 
-public:
+private:
 	AddModifyAirDisposeDialog(LineDetScanInterface* _airScan, std::vector<AirTemplateData>& _airTemplateData,
 		std::vector<AirTemplateData>::iterator _itr, QWidget *parent = Q_NULLPTR);
+public:
 	~AddModifyAirDisposeDialog();
 
 private:
@@ -28,4 +29,20 @@ private slots:
 
 public slots:
 	void updateScanButtonSlot(bool _sts);
+
+private:
+	static AddModifyAirDisposeDialog* d_ref;
+
+protected:
+	virtual void closeEvent(QCloseEvent*_event) override;
+
+public:
+	static AddModifyAirDisposeDialog* loadInstance(LineDetScanInterface* _airScan, std::vector<AirTemplateData>& _airTemplateData,
+		std::vector<AirTemplateData>::iterator _itr, QWidget *parent = Q_NULLPTR)
+	{
+		if (d_ref == nullptr)
+			d_ref = new AddModifyAirDisposeDialog(_airScan, _airTemplateData, _itr);
+
+		return d_ref;
+	}
 };
