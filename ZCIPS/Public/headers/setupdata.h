@@ -299,7 +299,7 @@ struct LineDetData
 };
 struct PanDetData
 {
-	char	ID;
+	char ID;
 	char PandetType[32];
 	short horizontalPixels;
 	short verticalPixels;
@@ -401,6 +401,13 @@ struct SetupData
 	unsigned short nUnderCtrlerPort;								//控制客户端端口地址
 	float	CurSOD;													//焦点到旋转中心距离(当前旋转中心径向位置)(mm)
 	float	CurSDD;													//焦点到中心探测器距离(当前探测器径向位置)(mm)
+};
+
+struct ConfigData
+{
+	QString OrgPath;
+	QString CTPath;
+	QString DrPath;
 };
 
 #define	RTBUF_LEN	256						//定义接收/发送缓冲区长度

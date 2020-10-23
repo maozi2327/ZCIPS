@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CT3TemplateWidget</class>
- <widget class="QDialog" name="CT3TemplateWidget">
+ <class>CT3TemplateDialog</class>
+ <widget class="QDialog" name="CT3TemplateDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>CT3TemplateWidget</string>
+   <string>CT3TemplateDialog</string>
   </property>
   <widget class="QListWidget" name="ct3ItemNameListWidget">
    <property name="geometry">

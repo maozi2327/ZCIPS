@@ -35,5 +35,5 @@ public:
 class PANELDLL_EXPORT PanelFactory
 {
 public:
-	static std::unique_ptr<Panel> getPanel();
+	static std::unique_ptr<Panel> getPanel(int _type);
 };

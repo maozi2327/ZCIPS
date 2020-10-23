@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "ct3AddModifyDialog.h"
+#include "Ct3AddModifyDialog.h"
 #include "../Public/headers/SetupData.h"
-#include "ct3templatewidget.h"
+#include "CT3TemplateDialog.h"
 
-ct3AddModifyDialog::ct3AddModifyDialog(std::vector<Ct3TemplateData>& _tempData, 
+Ct3AddModifyDialog::Ct3AddModifyDialog(std::vector<Ct3TemplateData>& _tempData, 
 	std::vector<Ct3TemplateData>::iterator _itr, const CT3Data& _ct3Data, QWidget *parent)
 	: QDialog(parent), d_itr(_itr), d_tempData(_tempData), d_tempItem(new Ct3TemplateData)
 	, d_modified(false), d_widgetInitilised(false)
@@ -51,7 +51,7 @@ ct3AddModifyDialog::ct3AddModifyDialog(std::vector<Ct3TemplateData>& _tempData,
 	d_widgetInitilised = true;
 }
 
-ct3AddModifyDialog::~ct3AddModifyDialog()
+Ct3AddModifyDialog::~Ct3AddModifyDialog()
 {
 
 }
@@ -69,7 +69,7 @@ void addItemToMatixVieSample(T& _data, QComboBox* _matrix, QComboBox* _view, QCo
 		_sampleTime->addItem(QString::number(value));
 }
 
-void ct3AddModifyDialog::initiliseCt3Controls(const CT3Data & _data)
+void Ct3AddModifyDialog::initiliseCt3Controls(const CT3Data & _data)
 {
 	addItemToMatixVieSample(_data, ui.ct3MatrixComboBox, ui.ct3ViewComboBox,
 		ui.ct3SampleTimeComboBox);
@@ -77,25 +77,25 @@ void ct3AddModifyDialog::initiliseCt3Controls(const CT3Data & _data)
 	ui.ct3MultiLayerComboBox->addItem(QString::fromLocal8Bit("多层不等间距"));
 }
 
-void ct3AddModifyDialog::on_ct3MatrixComboBox_currentIndexChanged(const QString & _text)
+void Ct3AddModifyDialog::on_ct3MatrixComboBox_currentIndexChanged(const QString & _text)
 {
 	if(d_widgetInitilised)
 		d_modified = true;
 }
 
-void ct3AddModifyDialog::on_ct3ViewComboBox_currentIndexChanged(const QString & _text)
+void Ct3AddModifyDialog::on_ct3ViewComboBox_currentIndexChanged(const QString & _text)
 {
 	if (d_widgetInitilised)
 		d_modified = true;
 }
 
-void ct3AddModifyDialog::on_ct3SampleTimeComboBox_currentIndexChanged(const QString & _text)
+void Ct3AddModifyDialog::on_ct3SampleTimeComboBox_currentIndexChanged(const QString & _text)
 {
 	if (d_widgetInitilised)
 		d_modified = true;
 }
 
-void ct3AddModifyDialog::on_okButton_clicked()
+void Ct3AddModifyDialog::on_okButton_clicked()
 {
 	if (save())
 		accept();
@@ -103,12 +103,12 @@ void ct3AddModifyDialog::on_okButton_clicked()
 		return;
 }
 
-void ct3AddModifyDialog::on_cancelButton_clicked()
+void Ct3AddModifyDialog::on_cancelButton_clicked()
 {
 	reject();
 }
 
-void ct3AddModifyDialog::refreshPosListWidget()
+void Ct3AddModifyDialog::refreshPosListWidget()
 {
 	ui.ct3LayerPosListWidget->clear();
 
@@ -119,7 +119,7 @@ void ct3AddModifyDialog::refreshPosListWidget()
 	}
 }
 
-bool ct3AddModifyDialog::save()
+bool Ct3AddModifyDialog::save()
 {
 	QString itemName = ui.templateNameEdit->text();
 
@@ -212,7 +212,7 @@ bool ct3AddModifyDialog::save()
 	return true;
 }
 
-void ct3AddModifyDialog::on_ct3LayerPosEdit_returnPressed()
+void Ct3AddModifyDialog::on_ct3LayerPosEdit_returnPressed()
 {
 	QString valueText = ui.ct3LayerPosEdit->text();
 	bool succeed = false;
@@ -229,9 +229,6 @@ void ct3AddModifyDialog::on_ct3LayerPosEdit_returnPressed()
 		[pos](float value) { return std::abs(value - pos) < 0.01; });
 
 	if (it == d_layerPos.end())
-
-
-
 	{
 		d_modified = true;
 		d_layerPos.insert(pos);
@@ -245,7 +242,7 @@ void ct3AddModifyDialog::on_ct3LayerPosEdit_returnPressed()
 	}
 }
 
-void ct3AddModifyDialog::on_ct3LayerPosListWidget_itemDoubleClicked(QListWidgetItem * _item)
+void Ct3AddModifyDialog::on_ct3LayerPosListWidget_itemDoubleClicked(QListWidgetItem * _item)
 {
 	float pos = _item->text().toFloat();
 	auto it = std::find_if(d_layerPos.begin(), d_layerPos.end(),
@@ -255,7 +252,7 @@ void ct3AddModifyDialog::on_ct3LayerPosListWidget_itemDoubleClicked(QListWidgetI
 	d_modified = true;
 }
 
-void ct3AddModifyDialog::on_ct3MultiLayerComboBox_currentIndexChanged(const QString& _text)
+void Ct3AddModifyDialog::on_ct3MultiLayerComboBox_currentIndexChanged(const QString& _text)
 {
 	if (_text == QString::fromLocal8Bit("多层等间距"))
 	{
@@ -281,11 +278,11 @@ void ct3AddModifyDialog::on_ct3MultiLayerComboBox_currentIndexChanged(const QStr
 		d_modified = true;
 }
 
-void ct3AddModifyDialog::on_templateNameEdit_textEdited(const QString& _text)
+void Ct3AddModifyDialog::on_templateNameEdit_textEdited(const QString& _text)
 {
 	d_modified = true;
 }
-void ct3AddModifyDialog::on_ct3AngleLineEdit_textEdited(const QString& _text)
+void Ct3AddModifyDialog::on_ct3AngleLineEdit_textEdited(const QString& _text)
 {
 	bool succeed = false;
 	auto pos = _text.toFloat(&succeed);
@@ -310,7 +307,7 @@ bool isInterger(const QString& _text)
 	return true;
 }
 
-void ct3AddModifyDialog::on_ct3LayerSpaceLineEdit_textEdited(const QString& _text)
+void Ct3AddModifyDialog::on_ct3LayerSpaceLineEdit_textEdited(const QString& _text)
 {
 	bool succeed = false;
 	auto pos = _text.toFloat(&succeed);
@@ -324,7 +321,7 @@ void ct3AddModifyDialog::on_ct3LayerSpaceLineEdit_textEdited(const QString& _tex
 
 	d_modified = true;
 }
-void ct3AddModifyDialog::on_ct3LayerNumLineEdit_textEdited(const QString& _text)
+void Ct3AddModifyDialog::on_ct3LayerNumLineEdit_textEdited(const QString& _text)
 {
 	if (!isInterger(_text))
 	{
@@ -336,7 +333,7 @@ void ct3AddModifyDialog::on_ct3LayerNumLineEdit_textEdited(const QString& _text)
 	d_modified = true;
 }
 
-void ct3AddModifyDialog::closeEvent(QCloseEvent * event)
+void Ct3AddModifyDialog::closeEvent(QCloseEvent * event)
 {
 	if (d_modified)
 	{

@@ -178,12 +178,10 @@
   <ItemGroup>
     <ClCompile Include="..\Public\util\logmacro.cpp" />
     <ClCompile Include="panel.cpp" />
-    <ClCompile Include="PanelInterface.cpp" />
     <ClCompile Include="PESiPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="panelHeaders.h" />
-    <ClInclude Include="PanelInterface.h" />
     <QtMoc Include="panel.h" />
     <ClInclude Include="paneldll_global.h" />
     <ClInclude Include="PESiPanel.h" />

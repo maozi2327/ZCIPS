@@ -1,8 +1,9 @@
 #include "PESiPanel.h"
+#pragma comment(lib, "./public/lib/xisl.lib")
 
 #define ACQ_SNAP 8
 #define SAFE_DELETE(PTR) if(PTR != 0){ free(PTR); PTR = 0; }
-PESiPanel* ptrPESiPanel;
+static PESiPanel* ptrPESiPanel;
 
 //TODO_DJ：BinMode初始化
 PESiPanel::PESiPanel() : d_binModeName(
@@ -14,6 +15,7 @@ PESiPanel::PESiPanel() : d_binModeName(
 	Panel()
 {
 	ptrPESiPanel = this;
+	initialise();
 }
 
 PESiPanel::~PESiPanel()
@@ -49,7 +51,6 @@ bool PESiPanel::initialise()
 			LOG_ERROR("%s失败！错误码%d", "Acquisition_GetNextSensor", iRet);
 			return false;
 		}
-			
 	} 
 	while (Pos != 0);
 	
@@ -149,7 +150,7 @@ void PESiPanel::OnEndPESiDetFrameCallback(HACQDESC hAcqDesc)
 			Acquisition_SetFrameSync(hAcqDesc);
 	}
 }
-void CALLBACK PESiPanel::OnEndPESiDetAcqCallback(HACQDESC hAcqDesc)
+void PESiPanel::OnEndPESiDetAcqCallback(HACQDESC hAcqDesc)
 {
 
 }
@@ -272,7 +273,6 @@ bool PESiPanel::beginAcquire(unsigned short d_quantity)
 	}
 	
 	//分配采集内存,设置缓冲区
-
 	if (d_frameSize != d_PESiDetBufferSize)
 	{
 		if (pPESiDetAcqBuffer != 0)
@@ -317,6 +317,7 @@ bool PESiPanel::beginAcquire(unsigned short d_quantity)
 
 	return true;
 }
+
 void PESiPanel::stopAcquire()
 {
 	Acquisition_Abort(hPESiAcqDesc);

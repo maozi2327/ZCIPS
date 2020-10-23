@@ -5,9 +5,11 @@
 #include "linedetimageprocess.h"
 #include "../Public/util/thread.h"
 #include "controllerinterface.h"
+#include "filedb.h"
 #include <algorithm>
 
 ICT_HEADER23 LineDetScanInterface::d_ictHeader;
+
 LineDetScanInterface::LineDetScanInterface(ControllerInterface * _controller, LineDetNetWork* _lineDetNetWork,
 	const SetupData* _setupData, int _lineDetIndex)
 	: d_controller(_controller), d_lineDetNetWork(_lineDetNetWork), d_setupData(_setupData)
@@ -27,18 +29,17 @@ void LineDetScanInterface::stopScan()
 	d_scanThread->stopThread();
 }
 
-void LineDetScanInterface::saveOrgFile(LineDetList* _List)
+void LineDetScanInterface::saveOrgFile(LineDetList* _List, const QString& _fileName)
 {
 	QString fileFullName(d_orgPath + d_fileName);
 	d_ictHeader.DataFormat.TotalLines = d_lineDetNetWork->getListItemNum();
-	auto ret = d_lineDetImageProcess->saveOrgFile(fileFullName, &d_ictHeader, _List, 1);
+	auto ret = d_lineDetImageProcess->saveOrgFile(_fileName, &d_ictHeader, _List, 1);
 }
 
 bool LineDetScanInterface::setGenerialFileHeader()
 {
-	d_ictHeader.MainVersion = MainVersion23;							//定义数据文件头主版本号
+	d_ictHeader.MainVersion = MainVersion23;						//定义数据文件头主版本号
 	d_ictHeader.SubVersion = SubVersion23;							//定义数据文件头次版本号
-
 	d_ictHeader.DataFormat.DataType = LONGDATA;						//数据类型: 长整型
 	d_ictHeader.DataFormat.appendColAtRow = 2;						//每行附加数据个数
 	strcpy_s(d_ictHeader.SystemParameter.ModelOfCT, d_setupData->szDeviceModel);//CT设备型号

@@ -1,15 +1,24 @@
 #pragma once
 #include "../Public/lib/CtDispose.h"
+#include <QString>
 
 class LineDetImageProcess
 {
+protected:
+	QString d_filePath;
+	QString d_orgPath;
+	QString d_ctPath;
+	QString d_drPath;
+	QString d_workDirectory;
 public:
-	LineDetImageProcess();
+	LineDetImageProcess(const QString& _workDirectory, const QString& _orgPath
+		, const QString& _ctPath, const QString& _drPath);
 	~LineDetImageProcess();
 
-	int saveOrgFile(QString& _destFile, void *pHeader, void *pListItem, int iPw);
-	int createAirDat(QString& _sourceFile, QString& _installDirectory);
-	int createBkgDat(QString& _sourceFile, QString& _installDirectory);
-	int dispose(QString& _installFolder, QString& _sourceFile, QString& _destFile);
+
+	int saveOrgFile(const QString& _destFile, void *pHeader, void *pListItem, int iPw);
+	int createAirDat(const QString& _sourceFile);
+	int createBkgDat(const QString& _sourceFile);
+	int dispose(const QString& _sourceFile);
 };
 

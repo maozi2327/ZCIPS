@@ -13,7 +13,7 @@ Panel::~Panel()
 {
 
 }
-std::unique_ptr<Panel> PanelFactory::getPanel()
+std::unique_ptr<Panel> PanelFactory::getPanel(int _type)
 {
 	return std::unique_ptr<Panel>(new REALPANEL());
 }

@@ -87,8 +87,8 @@ void LineDetAirTune::scanThread()
 
 void LineDetAirTune::saveFile()
 {
-	saveOrgFile(d_lineDetNetWork->getRowList());
-	d_lineDetImageProcess->createAirDat(d_fileName, d_installDirectory);
+	saveOrgFile(d_lineDetNetWork->getRowList(), d_fileName);
+	d_lineDetImageProcess->createAirDat(d_fileName);
 }
 
 

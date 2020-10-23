@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QDialog>
-#include "ui_ct3templatewidget.h"
+#include "ui_CT3TemplateDialog.h"
 #include "../Public/util/logmacro.h"
 #include "../Public/util/messagebox.h"
 #include <vector>
@@ -11,16 +11,17 @@
 struct CT3Data;
 class ct3AddDialog;
 
-class CT3TemplateWidget : public QDialog
+class CT3TemplateDialog : public QDialog
 {
 	Q_OBJECT
 
+	friend class Ct3TemplateManager;
 public:
-	CT3TemplateWidget(const CT3Data& _ct3Data, Ct3TemplateData& _templateData, QWidget *parent = Q_NULLPTR);
-	~CT3TemplateWidget();
+	CT3TemplateDialog(const CT3Data& _ct3Data, Ct3TemplateData& _templateData, QWidget *parent = Q_NULLPTR);
+	~CT3TemplateDialog();
 
 private:
-	Ui::CT3TemplateWidget ui;
+	Ui::CT3TemplateDialog ui;
 	QString d_templateFileName;
 	unsigned short d_rayNum;
 	unsigned short d_detNum;
@@ -29,7 +30,6 @@ private:
 	int d_lastNameListRow;
 	bool loadTemplateData();
 	QString d_angleEditText;
-	Qt::ItemFlags d_listNameItemFlag;
 	std::vector<Ct3TemplateData> d_templateData;
 	std::vector<Ct3TemplateData> d_tempTemplateData;
 	bool saveTemplateDataToFile();

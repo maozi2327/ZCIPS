@@ -7,7 +7,6 @@ class CT3Scan :
 	public LineDetScanInterface
 {
 private:
-	QString d_destFileName;
 	unsigned int d_correctFlag;
 	static std::chrono::minutes d_intervalForSaveTempFile;
 	unsigned int d_tempFileNum;

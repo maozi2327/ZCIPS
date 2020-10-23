@@ -128,7 +128,7 @@ void LineDetAirDisposeDialog::closeEvent(QCloseEvent* _event)
 	//			accept();
 	//		}
 	//		else
-	//			event->ignore();;
+	//			event->ignore();
 
 	//		break;
 	//	case QMessageBox::Discard:

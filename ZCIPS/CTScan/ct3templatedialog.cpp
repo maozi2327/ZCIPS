@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "ct3templatewidget.h"
+#include "CT3TemplateDialog.h"
 #include "../Public/headers/SetupData.h"
 #include "ct3AddModifyDialog.h"
 
 
-CT3TemplateWidget::CT3TemplateWidget(const CT3Data& _ct3Data, Ct3TemplateData& _templateData, QWidget *parent)
+CT3TemplateDialog::CT3TemplateDialog(const CT3Data& _ct3Data, Ct3TemplateData& _templateData, QWidget *parent)
 	: QDialog(parent), d_ct3Data(_ct3Data), d_templateDataUseItem(_templateData), d_modified(false)
 {
 	ui.setupUi(this);
@@ -13,10 +13,10 @@ CT3TemplateWidget::CT3TemplateWidget(const CT3Data& _ct3Data, Ct3TemplateData& _
 	loadTemplateData(); 
 	ui.ct3ItemNameListWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(ui.ct3ItemNameListWidget, &QListWidget::customContextMenuRequested,
-		this, &CT3TemplateWidget::listNameContextMenuSlot);
+		this, &CT3TemplateDialog::listNameContextMenuSlot);
 }
 
-CT3TemplateWidget::~CT3TemplateWidget()
+CT3TemplateDialog::~CT3TemplateDialog()
 {
 
 }
@@ -34,7 +34,7 @@ struct HeadData
 	float LayerPos[];
 };
 
-bool CT3TemplateWidget::loadTemplateData()
+bool CT3TemplateDialog::loadTemplateData()
 {
 	QFile file;
 	file.setFileName(d_templateFileName);
@@ -106,7 +106,7 @@ bool CT3TemplateWidget::loadTemplateData()
 	return true;
 }
 
-bool CT3TemplateWidget::saveTemplateDataToFile()
+bool CT3TemplateDialog::saveTemplateDataToFile()
 {
 	if (!QFile::exists(d_templateFileName))
 		LOG_INFO("不存在配置文件：" + d_templateFileName + "，已经自动创建配置文件");
@@ -165,7 +165,7 @@ bool CT3TemplateWidget::saveTemplateDataToFile()
 	return true;
 }
 
-void CT3TemplateWidget::refresh(int _row)
+void CT3TemplateDialog::refresh(int _row)
 {
 	ui.ct3ItemNameListWidget->clear();
 	
@@ -176,16 +176,16 @@ void CT3TemplateWidget::refresh(int _row)
 		on_ct3ItemNameListWidget_currentRowChanged(_row);
 }
 
-void CT3TemplateWidget::on_saveButton_clicked()
+void CT3TemplateDialog::on_saveButton_clicked()
 {
 	saveTemplateDataToFile();
 	close();
 }
 
-void CT3TemplateWidget::on_ct3ItemNameListWidget_itemDoubleClicked(QListWidgetItem * _item)
+void CT3TemplateDialog::on_ct3ItemNameListWidget_itemDoubleClicked(QListWidgetItem * _item)
 {
 	auto row = ui.ct3ItemNameListWidget->row(_item);
-	ct3AddModifyDialog* dlg = new ct3AddModifyDialog(d_tempTemplateData, d_tempTemplateData.begin() + row, d_ct3Data, this);
+	Ct3AddModifyDialog* dlg = new Ct3AddModifyDialog(d_tempTemplateData, d_tempTemplateData.begin() + row, d_ct3Data, this);
 	auto ret = dlg->exec();
 
 	if (ret == QDialog::Accepted)
@@ -196,7 +196,7 @@ void CT3TemplateWidget::on_ct3ItemNameListWidget_itemDoubleClicked(QListWidgetIt
 	}
 }
 
-void CT3TemplateWidget::on_ct3ItemNameListWidget_currentRowChanged(int _currentRow)
+void CT3TemplateDialog::on_ct3ItemNameListWidget_currentRowChanged(int _currentRow)
 {
 	if (d_tempTemplateData.size() == 0 || _currentRow < 0)
 		return;
@@ -249,7 +249,7 @@ void CT3TemplateWidget::on_ct3ItemNameListWidget_currentRowChanged(int _currentR
 	ui.ct3AngleLabel->setText(QString::number(dataItem.Orientation, 'f', 2));
 }
 
-void CT3TemplateWidget::closeEvent(QCloseEvent * event)
+void CT3TemplateDialog::closeEvent(QCloseEvent * event)
 {
 	if (d_modified)
 	{
@@ -282,9 +282,9 @@ void CT3TemplateWidget::closeEvent(QCloseEvent * event)
 		event->accept();
 }
 
-void CT3TemplateWidget::on_addButton_clicked()
+void CT3TemplateDialog::on_addButton_clicked()
 {
-	ct3AddModifyDialog* dlg = new ct3AddModifyDialog(d_tempTemplateData, d_tempTemplateData.end(), d_ct3Data, this);
+	Ct3AddModifyDialog* dlg = new Ct3AddModifyDialog(d_tempTemplateData, d_tempTemplateData.end(), d_ct3Data, this);
 	
 	if (dlg->exec() == QDialog::Accepted) 
 	{
@@ -293,7 +293,7 @@ void CT3TemplateWidget::on_addButton_clicked()
 	}
 }
 
-void CT3TemplateWidget::on_useButton_clicked()
+void CT3TemplateDialog::on_useButton_clicked()
 {
 	if (d_modified)
 	{
@@ -305,16 +305,16 @@ void CT3TemplateWidget::on_useButton_clicked()
 	emit useItemSignal();
 }
 
-void CT3TemplateWidget::listNameContextMenuSlot(const QPoint& _point)
+void CT3TemplateDialog::listNameContextMenuSlot(const QPoint& _point)
 {
 	auto deleteAct = new QAction(QString::fromLocal8Bit("删除"), this);
-	connect(deleteAct, &QAction::triggered, this, &CT3TemplateWidget::deleteListNameItemSlot);
+	connect(deleteAct, &QAction::triggered, this, &CT3TemplateDialog::deleteListNameItemSlot);
 	QMenu menu;
 	menu.addAction(deleteAct);
 	menu.exec(ui.ct3ItemNameListWidget->mapToGlobal(_point));
 }
 
-void CT3TemplateWidget::deleteListNameItemSlot()
+void CT3TemplateDialog::deleteListNameItemSlot()
 {
 	int row = ui.ct3ItemNameListWidget->currentRow();
 	QListWidgetItem* item = ui.ct3ItemNameListWidget->takeItem(row);

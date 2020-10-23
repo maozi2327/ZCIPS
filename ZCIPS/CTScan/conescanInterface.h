@@ -38,6 +38,7 @@ protected:
 	std::vector<QString> d_parameterText;
 
 	mutable std::mutex d_hmtxQ;
+	std::atomic<bool> d_imageProcessThreadFlag;
 	std::list<unsigned short*> d_imageList;
 	std::condition_variable d_con;
 	Panel* d_panel;
@@ -66,7 +67,7 @@ public:
 	virtual void setFileName(QString& _fileFolder, QString& _name);
 	virtual void setDisposeFlag(bool _bkgFlag, bool _airFlag, bool _defectFlag, bool _averageFlag);
 	virtual void setGraduation(int _graduation) { d_graduation = _graduation; };
-	virtual bool stopScan() = 0;
+	virtual bool stopScan();
 	virtual bool intialise() = 0;
 	virtual bool beginScan();
 	virtual void getScanProgress(int& _thisRound, int& _allProgress, QString& imagesCollectedAndSpaceOccupied);

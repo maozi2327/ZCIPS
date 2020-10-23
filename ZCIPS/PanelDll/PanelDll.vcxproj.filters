@@ -26,9 +26,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PanelInterface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PESiPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -40,9 +37,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PanelInterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="panelHeaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>

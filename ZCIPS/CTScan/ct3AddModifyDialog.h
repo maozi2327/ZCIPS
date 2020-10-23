@@ -1,22 +1,21 @@
 #pragma once
 
 #include <QDialog>
-#include "ui_ct3AddModifyDialog.h"
+#include "ui_Ct3AddModifyDialog.h"
 #include "../Public/util/logmacro.h"
 #include <memory>
 #include <set>
 struct Ct3TemplateData;
 struct CT3Data;
 
-
-class ct3AddModifyDialog : public QDialog
+class Ct3AddModifyDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	ct3AddModifyDialog(std::vector<Ct3TemplateData>& _tempData,
+	Ct3AddModifyDialog(std::vector<Ct3TemplateData>& _tempData,
 		std::vector<Ct3TemplateData>::iterator _itr, const CT3Data& _ct3Data, QWidget *parent = Q_NULLPTR);
-	~ct3AddModifyDialog();
+	~Ct3AddModifyDialog();
 
 private:
 	Ui::ct3AddModifyDialog ui;

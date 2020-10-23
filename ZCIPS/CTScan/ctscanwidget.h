@@ -13,6 +13,7 @@ public:
 
 	QWidget* getWidget();
 	QLayout* getLayout();
+	void switchLinePanelWidget(QWidget* _widget);
 private slots:
 	void on_ray0LineDet0Button_clicked();
 	void on_ray0PanelDet0Button_clicked();
@@ -27,6 +28,8 @@ private slots:
 signals:
 	void ctScanWidgetClosed();
 	void showMotorButtonSignal();
+	void switchToPanelWidgetSignal(int _rayId, int detId);
+	void switchToLineWidgetSignal(int _rayId, int detId);
 protected:
 #ifndef QT_NO_CONTEXTMENU
 	void contextMenuEvent(QContextMenuEvent *event) override;
@@ -44,6 +47,7 @@ private:
 	QWidget* d_scanWidget;
 	QGridLayout* d_layout;
 	QWidget* d_upWidget;
+	QVBoxLayout* d_middleLayout;
 	QWidget* d_middleWidget;
 	QWidget* d_downWidget;
 };

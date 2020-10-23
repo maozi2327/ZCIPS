@@ -10,6 +10,7 @@
 #include "../Public/headers/setupdata.h"
 #include "../Public/util/logmacro.h"
 #include "simotioncontroller.h"
+#include "filedb.h"
 
 std::chrono::minutes CT3Scan::d_intervalForSaveTempFile = std::chrono::minutes(3);
 
@@ -108,6 +109,7 @@ void CT3Scan::sendCmdToControl()
 
 void CT3Scan::saveFile()
 {
+	//TODO_DJ：断续扫描合成完整文件
 	//std::unique_ptr<RowList> finalList(new RowList);
 
 	//for (auto& tempFile : d_tempFileVec)
@@ -126,18 +128,41 @@ void CT3Scan::saveFile()
 	//}	
 	//
 	//saveOrgFile(finalList.get()->getList());
-	d_orgPath = "d:\\org\\";
-	d_fileName = "1.org";
-	saveOrgFile(d_lineDetNetWork->getRowList());
+	//TODO_DJ：断续扫描合成完整文件
 
-	//QString orgFileName(d_orgPath + d_fileName + ".org");
-	//QString disposedFileName(d_orgPath + d_fileName);
-	//d_lineDetImageProcess->dispose(d_installDirectory, orgFileName, disposedFileName);
+	//从数据库中检索文件当天扫描的文件编号，如果有同名文件就当前最大编号+1，无同名文件就新建编号0000
+	auto number = d_fileDB->getNumber(d_fileName);
+	
+	//加上编号
+	d_fileName += QString('_') + number;
+	saveOrgFile(d_lineDetNetWork->getRowList(), d_fileName);
+
+	OrgRecord orgRecord;
+	orgRecord.path = d_orgPath;
+	orgRecord.fileName = d_fileName;
+	orgRecord.number = number.toInt();
+	orgRecord.type = static_cast<char>(ScanMode::CT3_SCAN);
+	d_fileDB->writeOrgRecord(orgRecord);
+	d_orgPath = d_orgPath + d_fileName + '\\';
+	QString orgFileName(d_orgPath + d_fileName + ".org");
+	d_filePath = d_filePath + d_fileName + '\\';
+	QString disposedFileName(d_filePath + d_fileName);
+
+	//拷贝空气文件到校正参数路径
+	QFile::copy(d_airFile, d_installDirectory + "air.dat");
+	d_lineDetImageProcess->dispose(d_fileName);
+	CT3Record ct3Record;
+	ct3Record.path = d_filePath;
+	ct3Record.fileName = d_fileName;
+	ct3Record.number = orgRecord.number;
+	ct3Record.view = d_viewDiameter;
+	ct3Record.matrix = d_matrix;
+	ct3Record.sampleTime = d_sampleTime;
+	ct3Record.layer = d_layer;
 }
 //TODO_DJ
 //检测线阵采集数据大小是否为虚拟通道数整数倍
 //TODO_DJ
-
 bool CT3Scan::beginScan()
 {	
 	if (canScan())
@@ -204,6 +229,9 @@ bool CT3Scan::canScan()
 	QString str;
 
 	if(!LineDetScanInterface::canScan())
+		return false;
+
+	if (!QFile::exists(d_airFile))
 		return false;
 
 	return true;

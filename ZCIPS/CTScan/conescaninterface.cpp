@@ -21,19 +21,19 @@ bool ConeScanInterface::saveFile(unsigned short * _image)
 	index.sprintf("%4d", d_graduationCount);
 	auto completeOrgFileName = d_fileFolder + d_fileName + "org/" + index;
 
-	//if (d_orgFlag && !d_averageFlag)
-	//	d_imageProcess->saveMultiBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_framesPerGraduation, d_height, d_width);
-	//else if (d_orgFlag && !d_averageFlag)
-	//	d_imageProcess->saveSingleBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_height, d_width);
+	if (d_orgFlag && !d_averageFlag)
+		d_imageProcess->saveMultiBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_framesPerGraduation, d_height, d_width);
+	else if (d_orgFlag && !d_averageFlag)
+		d_imageProcess->saveSingleBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_height, d_width);
 
-	//auto completeImageFileName = d_fileFolder + d_fileName + "ct/" + index;
+	auto completeImageFileName = d_fileFolder + d_fileName + "ct/" + index;
 
-	//if (d_bkgFlag && !d_airFlag && !d_defectFlag)
-	//	d_imageProcess->bkgCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
-	//else if (d_bkgFlag && d_airFlag && !d_defectFlag)
-	//	d_imageProcess->airCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
-	//else if (d_bkgFlag && d_airFlag && d_defectFlag)
-	//	d_imageProcess->defectCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
+	if (d_bkgFlag && !d_airFlag && !d_defectFlag)
+		d_imageProcess->bkgCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
+	else if (d_bkgFlag && d_airFlag && !d_defectFlag)
+		d_imageProcess->airCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
+	else if (d_bkgFlag && d_airFlag && d_defectFlag)
+		d_imageProcess->defectCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
 
 	return false;
 }
@@ -58,7 +58,7 @@ void ConeScanInterface::frameProcessCallback(unsigned short * _image)
 
 void ConeScanInterface::imageProcessThread()
 {
-	while (true)
+	while (d_imageProcessThreadFlag)
 	{
 		unsigned short* imageData = nullptr;
 		{
@@ -231,6 +231,11 @@ void ConeScanInterface::setDisposeFlag(bool _bkgFlag, bool _airFlag,
 	d_averageFlag = _averageFlag;
 }
 
+bool ConeScanInterface::stopScan()
+{
+	d_imageProcessThreadFlag = false;
+}
+
 bool ConeScanInterface::beginScan()
 {
 	if (!canScan())
@@ -246,11 +251,14 @@ bool ConeScanInterface::beginScan()
 		return false;
 
 	sendCmdToController();
-	d_scanThread.reset(new Thread(std::bind(&ConeScanInterface::scanThread, this), std::ref(d_deadThreadRun)));
+	d_scanThread.reset(new Thread(std::bind(&ConeScanInterface::scanThread, this),
+		std::ref(d_deadThreadRun)));
 	d_scanThread->detach();
-	d_imageProcessThread.reset(new Thread(std::bind(&ConeScanInterface::imageProcessThread, this), std::ref(d_deadThreadRun)));
+	d_imageProcessThread.reset(new Thread(std::bind(&ConeScanInterface::imageProcessThread, this)
+		, std::ref(d_deadThreadRun)));
 	d_scanThread->detach();
-	std::function<void(unsigned short *)> frameCallback = std::bind(&ConeScanInterface::frameProcessCallback, this, std::placeholders::_1);
+	std::function<void(unsigned short *)> frameCallback = std::bind(
+		&ConeScanInterface::frameProcessCallback, this, std::placeholders::_1);
 	d_panel->setFrameCallback(frameCallback);
 	d_panel->beginAcquire(0);
 	return true;

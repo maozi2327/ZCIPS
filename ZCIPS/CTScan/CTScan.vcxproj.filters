@@ -153,9 +153,6 @@
     <ClCompile Include="floatacceleratordialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ct3templatewidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ct3AddModifyDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -169,6 +166,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="scantemplate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="filedb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="linedetscanmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ct3templatemanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ct3templatedialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="paneldetscanmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -322,9 +334,6 @@
     <QtMoc Include="setupdataparser.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="ct3templatewidget.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="ct3AddModifyDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -336,6 +345,21 @@
     </QtMoc>
     <QtMoc Include="addmodifyairdisposedialog.h">
       <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="filedb.h">
+      <Filter>public</Filter>
+    </QtMoc>
+    <QtMoc Include="linedetscanmanager.h">
+      <Filter>public</Filter>
+    </QtMoc>
+    <QtMoc Include="ct3templatemanager.h">
+      <Filter>public</Filter>
+    </QtMoc>
+    <QtMoc Include="ct3templatedialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="paneldetscanmanager.h">
+      <Filter>public</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -357,9 +381,6 @@
     <QtUic Include="Acceleratorwidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="ct3templatewidget.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="ct3AddModifyDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
@@ -367,6 +388,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="addmodifyairdisposedialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="ct3templatedialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

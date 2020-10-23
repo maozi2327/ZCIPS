@@ -10,11 +10,11 @@ CTScanWidget::CTScanWidget(QWidget* _upWidget, QWidget* _middleWidget, QWidget* 
 	//layoutAcc->addWidget(d_upWidget, 0, 0);
 	//layoutAcc->setContentsMargins(0, 0, 0, 0);
 	//d_upWidget->setContentsMargins(0, 0, 0, 0);
-	QVBoxLayout* layout = new QVBoxLayout;
-	layout->addWidget(d_middleWidget, 0, 0);	
+	d_middleLayout = new QVBoxLayout;
+	d_middleLayout->addWidget(d_middleWidget, 0, 0);
 	QSpacerItem* vSpacer = new QSpacerItem(0, 0, QSizePolicy::Maximum, QSizePolicy::Expanding);
-	layout->addItem(vSpacer);
-	ui.scanTable->setLayout(layout);
+	d_middleLayout->addItem(vSpacer);
+	ui.scanTable->setLayout(d_middleLayout);
 	////添加layout使位于中间
 	//QGridLayout* layout1 = new QGridLayout;
 	//layout1->addWidget(d_downWidget, 0, 0);
@@ -39,6 +39,20 @@ QWidget * CTScanWidget::getWidget()
 QLayout * CTScanWidget::getLayout()
 {
 	return d_layout;
+}
+
+void CTScanWidget::switchLinePanelWidget(QWidget * _widget)
+{
+	if (d_middleWidget != nullptr && d_middleWidget->isVisible())
+	{
+		d_middleWidget->setParent(nullptr);
+		d_middleLayout->removeWidget(d_middleWidget);
+	}
+
+	d_middleWidget = _widget;
+	d_middleLayout->addWidget(d_middleWidget, 0, 0);
+	//d_middleWidget->setGeometry((QRect(0, 0, 520, 730)));
+	//d_middleWidget->show();
 }
 
 void CTScanWidget::on_ray0LineDet0Button_clicked()
@@ -113,10 +127,12 @@ void CTScanWidget::cut()
 
 void CTScanWidget::copy()
 {
+	emit switchToLineWidgetSignal(0, 0);
 }
 
 void CTScanWidget::paste()
 {
+	emit switchToPanelWidgetSignal(0, 0);
 }
 
 void CTScanWidget::contextMenuEvent(QContextMenuEvent *event)
