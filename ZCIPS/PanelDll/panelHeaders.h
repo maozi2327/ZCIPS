@@ -9,7 +9,7 @@
 enum class SampleMode
 {
 	softTrigger,
-	exTrigger
+	exTrigger = 2
 };
 enum class BinMode
 {

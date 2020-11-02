@@ -33,7 +33,7 @@
 	<PanDetSection>
 		<num>1</num>
 		<PanDetData>
-			<PanelDetID>0</PanelDetID>
+			<ID>0</ID>
 			<PandetType>PE1621</PandetType>
 			<horizontalPixels>2048</horizontalPixels>
 			<verticalPixels>2048</verticalPixels>

@@ -183,6 +183,9 @@
     <ClCompile Include="paneldetscanmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="panelframeshot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\lib\tinyxml2.h">
@@ -346,20 +349,23 @@
     <QtMoc Include="addmodifyairdisposedialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="filedb.h">
-      <Filter>public</Filter>
-    </QtMoc>
-    <QtMoc Include="linedetscanmanager.h">
-      <Filter>public</Filter>
-    </QtMoc>
-    <QtMoc Include="ct3templatemanager.h">
-      <Filter>public</Filter>
-    </QtMoc>
     <QtMoc Include="ct3templatedialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="ct3templatemanager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="filedb.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="linedetscanmanager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
     <QtMoc Include="paneldetscanmanager.h">
-      <Filter>public</Filter>
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="panelframeshot.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

@@ -10,13 +10,41 @@
 class PanelImageProcess::Impl
 {
 public:
+	QString d_orgPath;
+	QString d_ctPath;
+	QString d_drPath;
+	QString d_airPath;
+	QString d_bkgPath;
+	QString d_defectPath;
+	QString d_bkg;
+
 	unsigned short* d_bkgData;
 	unsigned short* d_airData;
 	unsigned short* d_defectData;
 	unsigned short* d_correctedData;
 	float* d_correctedDataFloat;
 	void* d_correctedDataVoid;
-	QString d_bkg;
+
+	~Impl()
+	{
+		if (!d_bkgData)
+			delete[] d_bkgData;
+
+		if (!d_airData)
+			delete[] d_airData;
+
+		if (!d_defectData)
+			delete[] d_defectData;
+
+		if (!d_correctedData)
+			delete[] d_correctedData;
+
+		if (!d_correctedDataFloat)
+			delete[] d_defectData;
+
+		if (!d_correctedData)
+			delete[] d_correctedData;
+	}
 };
 
 PanelImageProcess::PanelImageProcess()
@@ -27,7 +55,6 @@ PanelImageProcess::PanelImageProcess()
 
 PanelImageProcess::~PanelImageProcess()
 {
-
 }
 
 bool PanelImageProcess::loadTiff(const QString & _sourceFile, unsigned short*& _data)
@@ -316,22 +343,35 @@ int PanelImageProcess::dataSplice(const QString & _pathA, const QString & _pathB
 
 bool PanelImageProcess::loadBkgData(const QString& d_bkgFileName)
 {
+	if (d_impl->d_bkgData)
+	{
+		delete[] d_impl->d_bkgData;
+		d_impl->d_bkgData = nullptr;
+	}
 
-	return false;
+	return loadTiff(d_impl->d_bkgPath + d_bkgFileName, d_impl->d_airData);
 }
 
 bool PanelImageProcess::loadAirData(const QString& d_airFileName)
 {
 	if (d_impl->d_airData)
+	{
 		delete[] d_impl->d_airData;
+		d_impl->d_airData = nullptr;
+	}
 
-	loadTiff(d_airFileName, d_impl->d_airData);
-	return false;
+	return loadTiff(d_impl->d_airPath + d_airFileName, d_impl->d_airData);
 }
-bool PanelImageProcess::loadDefectData(const QString& d_bkgFileName)
-{
 
-	return false;
+bool PanelImageProcess::loadDefectData(const QString& d_defectFileName)
+{
+	if (d_impl->d_defectData)
+	{
+		delete[] d_impl->d_defectData;
+		d_impl->d_defectData = nullptr;
+	}
+
+	return loadTiff(d_impl->d_defectPath + d_defectFileName, d_impl->d_defectData);
 }
 
 std::unique_ptr<PanelImageProcess> PanelImageProcessFactory::getPanelImageProcess()

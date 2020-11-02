@@ -64,8 +64,8 @@ public:
 	bool saveSingleBitmapDataToFile(unsigned short* _sourceData, const QString& _destFile, int _line, int _column);
 	int dataSplice(const QString& _pathA, const QString& _pathB, const QString& _pathFinal, int& progress);
 	bool loadBkgData(const QString& d_bkgFileName);
-	bool loadAirData(const QString& d_bkgFileName);
-	bool loadDefectData(const QString& d_bkgFileName);
+	bool loadAirData(const QString& d_airFileName);
+	bool loadDefectData(const QString& d_defectFileName);
 };
 
 class PANELIMAGEPROCESS_EXPORT PanelImageProcessFactory

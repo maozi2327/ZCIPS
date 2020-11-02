@@ -10,11 +10,11 @@ class ConeScanInterface;
 class ControllerInterface;
 class Panel;
 class ConeScanWidget;
+class PanelFrameShot;
 
 class PanelDetScanManager : public QObject
 {
 	Q_OBJECT
-
 
 public:
 	PanelDetScanManager(int _rayId, int _panelDetId, const std::vector<ScanMode>& _scanMode, 
@@ -31,6 +31,7 @@ private:
 	ControllerInterface* d_controller;
 	Panel* d_panel;
 	ConeScanWidget* d_coneScanWidget;
+	std::unique_ptr<PanelFrameShot> d_panelFrameShot;
 	virtual void frameShotCallback(unsigned short* _image);
 
 public:

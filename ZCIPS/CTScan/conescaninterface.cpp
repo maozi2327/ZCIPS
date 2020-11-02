@@ -52,7 +52,9 @@ bool ConeScanInterface::checkMemory()
 void ConeScanInterface::frameProcessCallback(unsigned short * _image)
 {
 	std::lock_guard<std::mutex> lock(d_hmtxQ);
-	d_imageList.push_back(_image);
+	//PanelRawData image(_image, d_frameSize);
+	//d_imageList1.push(image);
+	d_imageList.push(_image);
 	d_con.notify_one();
 }
 
@@ -69,8 +71,7 @@ void ConeScanInterface::imageProcessThread()
 			{
 				if (d_frameCount == 1)
 				{
-					imageData = d_imageList.front();
-					d_imageList.pop_front();
+					d_imageList.pop(imageData);
 				}
 				else
 				{
@@ -79,9 +80,10 @@ void ConeScanInterface::imageProcessThread()
 					
 					while (count++ != d_framesPerGraduation)
 					{
-						memcpy(imageMem + d_frameSize * count, d_imageList.front(), d_frameSize);
-						free(d_imageList.front());
-						d_imageList.pop_front();
+						unsigned short* mem;
+						d_imageList.pop(mem);
+						memcpy(imageMem + d_frameSize * count, mem, d_frameSize);
+						free(mem);
 					}
 					
 					imageData = (unsigned short*)imageMem;
@@ -234,6 +236,7 @@ void ConeScanInterface::setDisposeFlag(bool _bkgFlag, bool _airFlag,
 bool ConeScanInterface::stopScan()
 {
 	d_imageProcessThreadFlag = false;
+	return true;
 }
 
 bool ConeScanInterface::beginScan()
@@ -260,7 +263,7 @@ bool ConeScanInterface::beginScan()
 	std::function<void(unsigned short *)> frameCallback = std::bind(
 		&ConeScanInterface::frameProcessCallback, this, std::placeholders::_1);
 	d_panel->setFrameCallback(frameCallback);
-	d_panel->beginAcquire(0);
+	d_panel->beginAcquire(0, 0);
 	return true;
 }
 

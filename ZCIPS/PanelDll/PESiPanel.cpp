@@ -2,17 +2,21 @@
 #pragma comment(lib, "./public/lib/xisl.lib")
 
 #define ACQ_SNAP 8
-#define SAFE_DELETE(PTR) if(PTR != 0){ free(PTR); PTR = 0; }
+#define SAFE_DELETE(PTR) if(PTR != nullptr){ free(PTR); PTR = nullptr; }
 static PESiPanel* ptrPESiPanel;
 
 //TODO_DJ：BinMode初始化
-PESiPanel::PESiPanel() : d_binModeName(
+PESiPanel::PESiPanel() 
+	: d_binModeName
+	(
 	{{ BinMode::BinMode1, {QString("1x1"), 1}},
 	 { BinMode::BinMode2, {QString("1x1"), 1}},
 	 { BinMode::BinMode3, {QString("1x1"), 1}},
 	 { BinMode::BinMode4, {QString("1x1"), 1}},
-	 { BinMode::BinMode5, {QString("1x1"), 1}}}),
-	Panel()
+	 { BinMode::BinMode5, {QString("1x1"), 1}}}
+	)
+	, Panel()
+	, d_PESiDetBufferSize(0), d_PESiDetAcqBuffer(nullptr), d_frameCount(0)
 {
 	ptrPESiPanel = this;
 	initialise();
@@ -94,7 +98,7 @@ bool PESiPanel::initialise()
 	//获取探测器类型及编号
 	LOG_INFO("channel type : %d  ChannelNr : %d", nChannelType, nChannelNr);
 	
-	switch (nChannelType) 
+	switch (nChannelType)
 	{
 	case HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto:
 		LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto:", nChannelType);
@@ -138,7 +142,7 @@ void PESiPanel::OnEndPESiDetFrameCallback(HACQDESC hAcqDesc)
 	if (d_frameCount == 0)
 		d_copyBuffer = (unsigned char*)malloc(d_frameSize * d_frames);
 
-	memcpy(d_copyBuffer + d_frameSize * d_frameCount++, pPESiDetAcqBuffer, d_frameSize);
+	memcpy(d_copyBuffer + d_frameSize * d_frameCount++, d_PESiDetAcqBuffer, d_frameSize);
 
 	if (d_frameCount == d_frames)
 		d_imageProcCallback((unsigned short*)d_copyBuffer);
@@ -170,13 +174,14 @@ size_t PESiPanel::getFrameSize()
 {
 	return size_t();
 }
-bool PESiPanel::setSampleTime(int _milliseconds)
+bool PESiPanel::setCycleTime(int _milliseconds)
 {
 	unsigned int iRet;
+	d_cycleTime = _milliseconds * 1000;
 
-	if ((iRet = Acquisition_SetCameraMode(hPESiAcqDesc, d_sampleTime)) == HIS_ALL_OK)
+	if ((iRet = Acquisition_SetFrameSyncTimeMode(hPESiAcqDesc, 0, d_cycleTime)) == HIS_ALL_OK)
 	{
-		LOG_INFO("设置曝光时间:%d", d_sampleTime);
+		LOG_INFO("设置延迟时间:%d", d_cycleTime);
 	}
 	else 
 	{
@@ -206,14 +211,16 @@ bool PESiPanel::setBinMode(BinMode _binMode)
 	}
 
 }
-bool PESiPanel::setSampleMode(SampleMode _sampleMode)
+bool PESiPanel::setSampleMode(SampleMode _sampleMode, int _cycleTime)
 {
 	unsigned int iRet;
 	QString errorMsg;
+	d_sampleMode = _sampleMode;
+	
 	//设置探测器为DDD(Date Delivered on Demand)无间隙触发方式
 	if ((iRet = Acquisition_SetCameraTriggerMode(hPESiAcqDesc, 1)) == HIS_ALL_OK)
 	{
-		if ((iRet = Acquisition_SetFrameSyncTimeMode(hPESiAcqDesc, d_sampleTime, d_cycleTime)) == HIS_ALL_OK)
+		if ((iRet = Acquisition_SetFrameSyncTimeMode(hPESiAcqDesc, 0, d_cycleTime)) == HIS_ALL_OK)
 			LOG_INFO("设置延迟时间:%d ms", d_cycleTime);
 		else
 		{
@@ -236,6 +243,10 @@ bool PESiPanel::setSampleMode(SampleMode _sampleMode)
 			return false;
 		}
 
+		if ((iRet = Acquisition_SetFrameSyncMode(hPESiAcqDesc, unsigned long(d_sampleMode))) == HIS_ALL_OK) 
+		{
+			LOG_ERROR("%s失败！错误码%d", "Acquisition_SetTriggerOutSignalOptions", iRet);
+		}
 	}
 	else 
 	{
@@ -260,11 +271,14 @@ bool PESiPanel::setGainFactor(int _gainFactor)
 		return false;
 	}
 }
-//TODO_DJ:如果单次采集分配的内存很大，则在采集完成或者停止采集后清空pPESiDetAcqBuffer
-bool PESiPanel::beginAcquire(unsigned short d_quantity)
+//TODO_DJ:如果单次采集分配的内存很大，则在采集完成或者停止采集后清空d_PESiDetAcqBuffer
+bool PESiPanel::beginAcquire(unsigned short _quantity, int _cycleTime)
 {
 	unsigned int iRet;
 	unsigned long dwDemoParam = ACQ_SNAP;
+	d_frameCount = 0;
+	d_cycleTime = _cycleTime;
+	setSampleMode(SampleMode::softTrigger, _cycleTime);
 
 	if (Acquisition_SetAcqData(hPESiAcqDesc, (void*)&dwDemoParam) != HIS_ALL_OK)
 	{
@@ -272,16 +286,19 @@ bool PESiPanel::beginAcquire(unsigned short d_quantity)
 		return false;
 	}
 	
+	setFrames(_quantity);
+
 	//分配采集内存,设置缓冲区
 	if (d_frameSize != d_PESiDetBufferSize)
 	{
-		if (pPESiDetAcqBuffer != 0)
-			SAFE_DELETE(pPESiDetAcqBuffer);
+		if (d_PESiDetAcqBuffer != nullptr)
+			SAFE_DELETE(d_PESiDetAcqBuffer);
 
-		pPESiDetAcqBuffer = (unsigned short*)malloc(d_frameSize);
+		d_PESiDetAcqBuffer = (unsigned short*)malloc(d_frameSize);
+		d_PESiDetBufferSize = d_frameSize;
 	}
 	
-	iRet = Acquisition_DefineDestBuffers(hPESiAcqDesc, pPESiDetAcqBuffer, d_frames,
+	iRet = Acquisition_DefineDestBuffers(hPESiAcqDesc, d_PESiDetAcqBuffer, d_frames,
 		d_height, d_width);
 
 	if (iRet != HIS_ALL_OK)
@@ -291,6 +308,7 @@ bool PESiPanel::beginAcquire(unsigned short d_quantity)
 	}
 	
 	unsigned int bHisSeqFlag;
+	d_PESiContinusSingleMode = PESICON_SINGLE_MODE::Single;
 	
 	if (d_PESiContinusSingleMode == PESICON_SINGLE_MODE::Continus)
 		bHisSeqFlag = HIS_SEQ_CONTINUOUS;

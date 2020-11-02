@@ -3,13 +3,15 @@
 #include "conescanwidget.h"
 #include "conescan.h"
 #include "../PanelDll/panel.h"
+#include "panelframeshot.h"
 
 PanelDetScanManager::PanelDetScanManager(int _rayId, int _panelDetId, const std::vector<ScanMode>& _scanMode
 	, SetupData* _setupData, Panel* _panel, ControllerInterface* _controller
 	, QWidget *widgetParent, QObject *objectParent)
 	: QObject(objectParent)
 	, d_rayNum(_rayId), d_detNum(_panelDetId), d_panel(_panel), d_controller(_controller)
-	, d_setupData(_setupData), d_coneScanWidget(new ConeScanWidget(widgetParent))
+	, d_setupData(_setupData), d_coneScanWidget(new ConeScanWidget(_panel, widgetParent))
+	, d_panelFrameShot(new PanelFrameShot(_panel, nullptr))
 {
 	for (auto& scanMode : _scanMode)
 	{
@@ -35,6 +37,8 @@ PanelDetScanManager::PanelDetScanManager(int _rayId, int _panelDetId, const std:
 
 	connect(d_coneScanWidget, &ConeScanWidget::coneScanBeginSignal,
 		this, &PanelDetScanManager::coneScanBeginSlot);
+	connect(d_coneScanWidget, &ConeScanWidget::frameShotSignal,
+		this, &PanelDetScanManager::frameShotSlot);
 }
 
 PanelDetScanManager::~PanelDetScanManager()
@@ -58,6 +62,7 @@ void PanelDetScanManager::coneScanBeginSlot()
 	d_scan->setDisposeFlag(d_coneScanWidget->ui.bkgTuneCheckBox->isChecked(), 
 		d_coneScanWidget->ui.airTuneCheckBox->isChecked(),
 		d_coneScanWidget->ui.defectTuneCheckBox->isChecked(), true);
+	d_scan->sendCmdToController();
 }
 
 void PanelDetScanManager::scanProgressUpdatedSlot()
@@ -72,9 +77,7 @@ void PanelDetScanManager::scanProgressUpdatedSlot()
 
 void PanelDetScanManager::frameShotSlot()
 {
-	std::function<void(unsigned short*)> callBack = std::bind(
-		&PanelDetScanManager::frameShotCallback, this, std::placeholders::_1);
-	d_panel->setFrameCallback(callBack);
-	auto frames = d_coneScanWidget->ui.singleShotFramesComboBox->currentText().toInt();
-	d_panel->beginAcquire(frames);
+	auto frames = d_coneScanWidget->ui.singleShotFramesSpinBox->text().toInt();
+	auto cycleTime = d_coneScanWidget->ui.cycleTimeEdit->text().toInt();
+	d_panelFrameShot->beginAcquire(frames, cycleTime);
 }

@@ -57,5 +57,4 @@ public:
         while(d_queue.size() != 0)
             d_queue.pop();
     }
-
 };

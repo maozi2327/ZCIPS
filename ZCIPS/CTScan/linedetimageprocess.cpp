@@ -42,3 +42,13 @@ int LineDetImageProcess::dispose(const QString& _sourceFile)
 
 	return 0;// fDataDispose(installFolder.data(), sourceFileName.data(), destFileName.data(), nullptr, setupWord);
 }
+
+int LineDetImageProcess::ct3Dispose(const QString & _sourceFile)
+{
+	return 0;
+}
+
+int LineDetImageProcess::drDispose(const QString & _sourceFile)
+{
+	return 0;
+}

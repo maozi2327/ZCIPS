@@ -5,7 +5,6 @@
 class LineDetImageProcess
 {
 protected:
-	QString d_filePath;
 	QString d_orgPath;
 	QString d_ctPath;
 	QString d_drPath;
@@ -20,5 +19,7 @@ public:
 	int createAirDat(const QString& _sourceFile);
 	int createBkgDat(const QString& _sourceFile);
 	int dispose(const QString& _sourceFile);
+	int ct3Dispose(const QString& _sourceFile);
+	int drDispose(const QString& _sourceFile);
 };
 

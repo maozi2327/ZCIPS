@@ -7,6 +7,55 @@
 #include "../Public/headers/commandqueue.h"
 #include "../Public/util/thread.h"
 
+class PanelRawData
+{
+private:
+	int* d_useCount;
+	unsigned short* d_rawData;
+	int d_size;
+
+public:
+	PanelRawData(unsigned short* d_image, int _size)
+		: d_rawData(d_image), d_size(_size), d_useCount(new int(1))
+	{
+	};
+
+	PanelRawData(const PanelRawData& _in) 
+		: d_rawData(_in.d_rawData), d_size(_in.d_size), d_useCount(_in.d_useCount)
+	{
+		++*d_useCount;
+	};
+
+	PanelRawData& operator=(const PanelRawData& _in)
+	{
+		++*_in.d_useCount;
+
+		if (--*d_useCount == 0)
+		{
+			if (d_rawData)
+			{
+				delete[] d_rawData;
+				d_rawData = nullptr;
+			}
+		}
+
+		d_size = _in.d_size;
+		d_rawData = _in.d_rawData;
+		d_useCount = _in.d_useCount;
+		return* this;
+	};
+
+	~PanelRawData()
+	{
+		if(--*d_useCount == 0)
+			if (d_rawData)
+			{
+				delete[] d_rawData;
+				d_rawData = nullptr;
+			}
+	};
+};
+
 class ControllerInterface;
 class ConeScanInterface : public QObject
 {
@@ -36,11 +85,13 @@ protected:
 	size_t d_frameSize;
 	float d_orientInc;
 	std::vector<QString> d_parameterText;
+	TheQueue<PanelRawData> d_imageList1;
 
-	mutable std::mutex d_hmtxQ;
 	std::atomic<bool> d_imageProcessThreadFlag;
-	std::list<unsigned short*> d_imageList;
+	TheQueue<unsigned short*> d_imageList;
 	std::condition_variable d_con;
+	mutable std::mutex d_hmtxQ;
+
 	Panel* d_panel;
 	ControllerInterface* d_controller;
 	PanelImageProcess* d_imageProcess;
