@@ -142,10 +142,13 @@ void PESiPanel::OnEndPESiDetFrameCallback(HACQDESC hAcqDesc)
 	if (d_frameCount == 0)
 		d_copyBuffer = (unsigned char*)malloc(d_frameSize * d_frames);
 
-	memcpy(d_copyBuffer + d_frameSize * d_frameCount++, d_PESiDetAcqBuffer, d_frameSize);
+	memcpy(d_copyBuffer + d_frameSize * d_frameCount, d_PESiDetAcqBuffer + d_frameSize * d_frameCount, d_frameSize);
 
-	if (d_frameCount == d_frames)
+	if (++d_frameCount == d_frames)
+	{
 		d_imageProcCallback((unsigned short*)d_copyBuffer);
+		d_frameCount = 0;
+	}
 
 	if (d_sampleMode == SampleMode::softTrigger)
 	{
@@ -272,68 +275,19 @@ bool PESiPanel::setGainFactor(int _gainFactor)
 	}
 }
 //TODO_DJ:如果单次采集分配的内存很大，则在采集完成或者停止采集后清空d_PESiDetAcqBuffer
-bool PESiPanel::beginAcquire(unsigned short _quantity, int _cycleTime)
+bool PESiPanel::beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames, int _cycleTime)
 {
-	unsigned int iRet;
-	unsigned long dwDemoParam = ACQ_SNAP;
-	d_frameCount = 0;
-	d_cycleTime = _cycleTime;
 	setSampleMode(SampleMode::softTrigger, _cycleTime);
-
-	if (Acquisition_SetAcqData(hPESiAcqDesc, (void*)&dwDemoParam) != HIS_ALL_OK)
-	{
-		LOG_INFO("Acquisition_SetAcqData 失败！");
-		return false;
-	}
-	
-	setFrames(_quantity);
-
-	//分配采集内存,设置缓冲区
-	if (d_frameSize != d_PESiDetBufferSize)
-	{
-		if (d_PESiDetAcqBuffer != nullptr)
-			SAFE_DELETE(d_PESiDetAcqBuffer);
-
-		d_PESiDetAcqBuffer = (unsigned short*)malloc(d_frameSize);
-		d_PESiDetBufferSize = d_frameSize;
-	}
-	
-	iRet = Acquisition_DefineDestBuffers(hPESiAcqDesc, d_PESiDetAcqBuffer, d_frames,
-		d_height, d_width);
-
-	if (iRet != HIS_ALL_OK)
-	{
-		LOG_ERROR("%s失败！错误码%d", "Acquisition_DefineDestBuffers", iRet);
-		return false;
-	}
-	
-	unsigned int bHisSeqFlag;
+	setFrameCallback(_imageProcessCallBack);
 	d_PESiContinusSingleMode = PESICON_SINGLE_MODE::Single;
-	
-	if (d_PESiContinusSingleMode == PESICON_SINGLE_MODE::Continus)
-		bHisSeqFlag = HIS_SEQ_CONTINUOUS;
-	else if (d_PESiContinusSingleMode == PESICON_SINGLE_MODE::Single)
-		bHisSeqFlag = HIS_SEQ_ONE_BUFFER;
+	return beginAcquire(SampleMode::softTrigger, _cycleTime, _frames);
+}
 
-	iRet = Acquisition_Acquire_Image(hPESiAcqDesc, d_frames, 0, bHisSeqFlag, 0, 0, 0);
-	
-	if (iRet != HIS_ALL_OK)
-	{
-		LOG_ERROR("%s失败！错误码%d", "Acquisition_Acquire_Image", iRet);
-		return false;
-	}
-
-	if (d_sampleMode == SampleMode::softTrigger) {
-		iRet = Acquisition_SetFrameSync(hPESiAcqDesc);
-		
-		if (iRet != HIS_ALL_OK)
-		{
-			LOG_ERROR("%s失败！错误码%d", "Acquisition_SetFrameSync", iRet);
-			return false;
-		}
-	}
-
-	return true;
+bool PESiPanel::beginExTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime)
+{
+	setFrameCallback(_imageProcessCallBack);
+	d_PESiContinusSingleMode = PESICON_SINGLE_MODE::Single;
+	return beginAcquire(SampleMode::exTrigger, _cycleTime, 1);
 }
 
 void PESiPanel::stopAcquire()
@@ -354,6 +308,10 @@ void PESiPanel::setFrameCallback(std::function<void(unsigned short*)> _imageProc
 {
 	d_imageProcCallback = _imageProcessCallBack;
 }
+int PESiPanel::caculateExTriggerSampleTime(int _cycleTime)
+{
+	return _cycleTime + d_exTriggerTimeMargin;
+}
 bool PESiPanel::getPanelSize(int& _width, int& _height)
 {
 	_width = d_width;
@@ -365,5 +323,68 @@ bool PESiPanel::setPanelSize(int _width, int _height)
 {
 	d_width = _width;
 	d_height = _height;
+	return true;
+}
+
+bool PESiPanel::beginAcquire(SampleMode _sampleMode, int _cycleTime, int _frames)
+{
+	unsigned int iRet;
+	unsigned long dwDemoParam = ACQ_SNAP;
+	d_frameCount = 0;
+	d_cycleTime = _cycleTime;
+	setSampleMode(_sampleMode, _cycleTime);
+
+	if (Acquisition_SetAcqData(hPESiAcqDesc, (void*)&dwDemoParam) != HIS_ALL_OK)
+	{
+		LOG_INFO("Acquisition_SetAcqData 失败！");
+		return false;
+	}
+
+	setFrames(_frames);
+
+	//分配采集内存,设置缓冲区
+	if (d_frameSize != d_PESiDetBufferSize)
+	{
+		if (d_PESiDetAcqBuffer != nullptr)
+			SAFE_DELETE(d_PESiDetAcqBuffer);
+
+		d_PESiDetAcqBuffer = (unsigned char*)malloc(d_frameSize);
+		d_PESiDetBufferSize = d_frameSize;
+	}
+
+	iRet = Acquisition_DefineDestBuffers(hPESiAcqDesc, (unsigned short*)d_PESiDetAcqBuffer, d_frames,
+		d_height, d_width);
+
+	if (iRet != HIS_ALL_OK)
+	{
+		LOG_ERROR("%s失败！错误码%d", "Acquisition_DefineDestBuffers", iRet);
+		return false;
+	}
+
+	unsigned int bHisSeqFlag;
+
+//	if (d_PESiContinusSingleMode == PESICON_SINGLE_MODE::Continus)
+	bHisSeqFlag = HIS_SEQ_CONTINUOUS;
+	//else if (d_PESiContinusSingleMode == PESICON_SINGLE_MODE::Single)
+	//	bHisSeqFlag = HIS_SEQ_ONE_BUFFER;
+
+	iRet = Acquisition_Acquire_Image(hPESiAcqDesc, d_frames, 0, bHisSeqFlag, 0, 0, 0);
+
+	if (iRet != HIS_ALL_OK)
+	{
+		LOG_ERROR("%s失败！错误码%d", "Acquisition_Acquire_Image", iRet);
+		return false;
+	}
+
+	if (d_sampleMode == SampleMode::softTrigger) {
+		iRet = Acquisition_SetFrameSync(hPESiAcqDesc);
+
+		if (iRet != HIS_ALL_OK)
+		{
+			LOG_ERROR("%s失败！错误码%d", "Acquisition_SetFrameSync", iRet);
+			return false;
+		}
+	}
+
 	return true;
 }

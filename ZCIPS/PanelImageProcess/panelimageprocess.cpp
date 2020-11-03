@@ -4,8 +4,10 @@
 #include "../Public/headers/tiffio.h"
 #include <algorithm>
 #include <QFileInfo>
+#include "../Public/headers/FreeImage.h"
 #pragma comment(lib, "./public/lib/MicroDataCorrectionDll.lib")
 #pragma comment(lib, "./public/lib/tiff.lib")
+#pragma comment(lib, "./public/lib/FreeImage.lib")
 
 class PanelImageProcess::Impl
 {
@@ -330,7 +332,25 @@ bool PanelImageProcess::saveMultiBitmapDataToFile(unsigned short * _sourceData, 
 
 bool PanelImageProcess::saveSingleBitmapDataToFile(unsigned short * _sourceData, const QString& _destFile, int _line, int _column)
 {
-	return false;
+	FIBITMAP *FIBmpSingle = NULL;
+	//分配内存
+	unsigned short *pusTIFFData;
+	FREE_IMAGE_TYPE FIType = FIT_UINT16;
+	FREE_IMAGE_FORMAT FIFormat = FIF_TIFF;
+	FIBmpSingle = FreeImage_AllocateT(FIType, _line, _column, 1);
+	//获取数据指针
+	pusTIFFData = (unsigned short *)FreeImage_GetBits(FIBmpSingle);
+	memcpy((void *)pusTIFFData, (const void *)_sourceData, _line * _column * sizeof(unsigned short));
+	char name[100] = "c:/org/";
+	static int count = 0;
+	char reName[100] = "";
+	_itoa(count++, reName, 10);
+	strcat(name, reName);
+	strcat(name, ".tif");
+	FreeImage_Save(FIFormat, FIBmpSingle, name, TIFF_NONE);
+	//释放内存
+	FreeImage_Unload(FIBmpSingle);
+	return true;
 }
 
 int PanelImageProcess::dataSplice(const QString & _pathA, const QString & _pathB, const QString& _pathFinal, int& progress)

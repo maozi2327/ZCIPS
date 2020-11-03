@@ -28,10 +28,15 @@ bool ConeScan::stopScan()
 
 void ConeScan::scanThread()
 {
-	while (d_scanThread)
+	while (d_deadThreadRun)
 	{
 		if (d_graduationCount >= d_graduation)
-			d_scanThread->stopThread();
+		{
+			d_panel->stopAcquire();
+			break;
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 }
 
@@ -58,11 +63,11 @@ void ConeScan::sendCmdToController()
 	cmdData.stsBit.s.currentLayer = 1;
 	cmdData.stsBit.s.coneHelix = 0;
 	cmdData.projectionAmount = d_framesPerGraduation * d_graduation;
-	cmdData.sampleTime = d_sampleTime;
+	cmdData.sampleTime = d_posTime;
 	cmdData.orientInc = d_orientInc;
 	cmdData.circleAmount = 1;
 	cmdData.centerOffset = 0;
-	cmdData.firstLayerOffset = 0;
+	cmdData.firstLayerOffset = 400;
 	cmdData.helixSpace = 0;
 	cmdData.b180Scan = 0;
 	cmdData.centerOffset = 0;

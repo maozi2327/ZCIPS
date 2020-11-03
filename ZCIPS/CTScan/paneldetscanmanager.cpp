@@ -2,6 +2,7 @@
 #include "paneldetscanmanager.h"
 #include "conescanwidget.h"
 #include "conescan.h"
+#include "controllerinterface.h"
 #include "../PanelDll/panel.h"
 #include "panelframeshot.h"
 
@@ -39,6 +40,8 @@ PanelDetScanManager::PanelDetScanManager(int _rayId, int _panelDetId, const std:
 		this, &PanelDetScanManager::coneScanBeginSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::frameShotSignal,
 		this, &PanelDetScanManager::frameShotSlot);
+	connect(d_coneScanWidget, &ConeScanWidget::stopControllerSignal,
+		this, &PanelDetScanManager::stopControllerSlot);
 }
 
 PanelDetScanManager::~PanelDetScanManager()
@@ -56,13 +59,14 @@ QWidget * PanelDetScanManager::getWidget()
 	return d_coneScanWidget;
 }
 
-void PanelDetScanManager::coneScanBeginSlot()
-{
+void PanelDetScanManager::coneScanBeginSlot(int _graduation, int _framesPerGraduation, int _cycleTime, float _orientInc)
+{	//TODO_DJ：reset的时候线程挂了
 	d_scan.reset(new ConeScan(d_panel, d_controller, d_panelImageProcess.get()));
 	d_scan->setDisposeFlag(d_coneScanWidget->ui.bkgTuneCheckBox->isChecked(), 
 		d_coneScanWidget->ui.airTuneCheckBox->isChecked(),
 		d_coneScanWidget->ui.defectTuneCheckBox->isChecked(), true);
-	d_scan->sendCmdToController();
+	auto graduationTime = d_panel->caculateExTriggerSampleTime(_cycleTime);
+	d_scan->beginScan(_graduation, _framesPerGraduation, graduationTime, _cycleTime, _orientInc);
 }
 
 void PanelDetScanManager::scanProgressUpdatedSlot()
@@ -80,4 +84,9 @@ void PanelDetScanManager::frameShotSlot()
 	auto frames = d_coneScanWidget->ui.singleShotFramesSpinBox->text().toInt();
 	auto cycleTime = d_coneScanWidget->ui.cycleTimeEdit->text().toInt();
 	d_panelFrameShot->beginAcquire(frames, cycleTime);
+}
+
+void PanelDetScanManager::stopControllerSlot()
+{
+	d_controller->stopAll();
 }

@@ -5,9 +5,9 @@
 #include "../../Public/util/functions.h"
 ConeScanInterface::ConeScanInterface(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _imageProcess):
 	d_panel(_panel), d_controller(_controller), d_imageProcess(_imageProcess),
-	d_imageProcessSleep(300)
+	d_imageProcessSleep(300), d_graduationCount(0)
 {
-	
+	d_panel->getPanelSize(d_width, d_height);
 }
 
 ConeScanInterface::~ConeScanInterface()
@@ -18,22 +18,25 @@ ConeScanInterface::~ConeScanInterface()
 bool ConeScanInterface::saveFile(unsigned short * _image)
 {
 	QString index;
-	index.sprintf("%4d", d_graduationCount);
+	index.sprintf("%4d", int(d_graduationCount));
 	auto completeOrgFileName = d_fileFolder + d_fileName + "org/" + index;
+	d_imageProcess->saveSingleBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_height, d_width);
+	free(_image);
 
-	if (d_orgFlag && !d_averageFlag)
-		d_imageProcess->saveMultiBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_framesPerGraduation, d_height, d_width);
-	else if (d_orgFlag && !d_averageFlag)
-		d_imageProcess->saveSingleBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_height, d_width);
 
-	auto completeImageFileName = d_fileFolder + d_fileName + "ct/" + index;
+	//if (d_orgFlag && !d_averageFlag)
+	//	d_imageProcess->saveMultiBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_framesPerGraduation, d_height, d_width);
+	//else if (d_orgFlag && !d_averageFlag)
+	//	d_imageProcess->saveSingleBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_height, d_width);
 
-	if (d_bkgFlag && !d_airFlag && !d_defectFlag)
-		d_imageProcess->bkgCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
-	else if (d_bkgFlag && d_airFlag && !d_defectFlag)
-		d_imageProcess->airCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
-	else if (d_bkgFlag && d_airFlag && d_defectFlag)
-		d_imageProcess->defectCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
+	//auto completeImageFileName = d_fileFolder + d_fileName + "ct/" + index;
+
+	//if (d_bkgFlag && !d_airFlag && !d_defectFlag)
+	//	d_imageProcess->bkgCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
+	//else if (d_bkgFlag && d_airFlag && !d_defectFlag)
+	//	d_imageProcess->airCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
+	//else if (d_bkgFlag && d_airFlag && d_defectFlag)
+	//	d_imageProcess->defectCorrectDataToFile(_image, completeImageFileName + d_fileName, d_height, d_width);
 
 	return false;
 }
@@ -51,48 +54,44 @@ bool ConeScanInterface::checkMemory()
 
 void ConeScanInterface::frameProcessCallback(unsigned short * _image)
 {
-	std::lock_guard<std::mutex> lock(d_hmtxQ);
-	//PanelRawData image(_image, d_frameSize);
-	//d_imageList1.push(image);
 	d_imageList.push(_image);
-	d_con.notify_one();
+	//d_con.notify_one();
 }
 
 void ConeScanInterface::imageProcessThread()
 {
-	while (d_imageProcessThreadFlag)
+	while (d_deadThreadRun)
 	{
 		unsigned short* imageData = nullptr;
-		{
-			std::unique_lock<std::mutex> lock(d_hmtxQ);
-			d_con.wait(lock, [this] { return d_imageList.size() != 0; });
 
-			if (++d_frameCount == d_framesPerGraduation)
-			{
-				if (d_frameCount == 1)
-				{
-					d_imageList.pop(imageData);
-				}
-				else
-				{
-					char* imageMem = (char*)malloc(d_frameSize);
-					int count = 0;
-					
-					while (count++ != d_framesPerGraduation)
-					{
-						unsigned short* mem;
-						d_imageList.pop(mem);
-						memcpy(imageMem + d_frameSize * count, mem, d_frameSize);
-						free(mem);
-					}
-					
-					imageData = (unsigned short*)imageMem;
-				}
-				d_frameCount = 0;
-			}
+		if (d_imageList.pop(imageData))
+		{
+			++d_graduationCount;
+			saveFile(imageData);
 		}
-		++d_graduationCount;
-		saveFile(imageData);
+		//if (++d_frameCount == d_framesPerGraduation)
+		//{
+		//	if (d_frameCount == 1)
+		//	{
+		//		d_imageList.pop(imageData);
+		//	}
+		//	else
+		//	{
+		//		char* imageMem = (char*)malloc(d_frameSize);
+		//		int count = 0;
+		//			
+		//		while (count++ != d_framesPerGraduation)
+		//		{
+		//			unsigned short* mem;
+		//			d_imageList.pop(mem);
+		//			memcpy(imageMem + d_frameSize * count, mem, d_frameSize);
+		//			free(mem);
+		//		}
+		//			
+		//		imageData = (unsigned short*)imageMem;
+		//	}
+		//	d_frameCount = 0;
+		//}
 	}
 }
 
@@ -239,31 +238,34 @@ bool ConeScanInterface::stopScan()
 	return true;
 }
 
-bool ConeScanInterface::beginScan()
+bool ConeScanInterface::beginScan(int _graduation, int _framesPerGraduation, int _posTime, int _cycleTime, float _orientInc)
 {
-	if (!canScan())
-		return false;
+	d_graduationCount = 0;
+	d_graduation = _graduation;
+	d_framesPerGraduation = _framesPerGraduation;
+	d_posTime = _posTime;
+	d_orientInc = _orientInc;
 
-	if(!writeParameterFile())
-		return false;
-	
-	if (!loadBkgData())
-		return false;
+	//if (!canScan())
+	//	return false;
 
-	if (!loadAirData())
-		return false;
+	//if(!writeParameterFile())
+	//	return false;
+	//
+	//if (!loadBkgData())
+	//	return false;
 
+	//if (!loadAirData())
+	//	return false;
+	d_deadThreadRun = true;
 	sendCmdToController();
-	d_scanThread.reset(new Thread(std::bind(&ConeScanInterface::scanThread, this),
-		std::ref(d_deadThreadRun)));
+	d_scanThread.reset(new Thread(std::bind(&ConeScanInterface::scanThread, this), std::ref(d_deadThreadRun)));
 	d_scanThread->detach();
-	d_imageProcessThread.reset(new Thread(std::bind(&ConeScanInterface::imageProcessThread, this)
-		, std::ref(d_deadThreadRun)));
-	d_scanThread->detach();
+	d_imageProcessThread.reset(new Thread(std::bind(&ConeScanInterface::imageProcessThread, this), std::ref(d_deadThreadRun)));
+	d_imageProcessThread->detach();
 	std::function<void(unsigned short *)> frameCallback = std::bind(
 		&ConeScanInterface::frameProcessCallback, this, std::placeholders::_1);
-	d_panel->setFrameCallback(frameCallback);
-	d_panel->beginAcquire(0, 0);
+	d_panel->beginExTriggerAcquire(frameCallback, _cycleTime);
 	return true;
 }
 
@@ -271,6 +273,6 @@ void ConeScanInterface::getScanProgress(int & _thisRound, int & _allProgress, QS
 {
 	_thisRound = 100 * d_graduationCount / d_graduation;
 	_allProgress = 100 * d_graduationCount / d_graduation;
-	imagesCollectedAndSpaceOccupied.sprintf("已经采集%d幅，占用硬盘空间%dm", d_graduationCount,
+	imagesCollectedAndSpaceOccupied.sprintf("已经采集%d幅，占用硬盘空间%dm", int(d_graduationCount),
 		size_t(d_graduation) * d_frameSize * d_framesPerGraduation / (1024 * 1024));
 }

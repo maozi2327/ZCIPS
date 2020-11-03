@@ -77,16 +77,17 @@ protected:
 	int d_height;
 	int d_framesPerGraduation;
 	int d_graduation;
-	int d_graduationCount;
+	std::atomic<int> d_graduationCount;
 	int d_round;
 	int d_imageProcessSleep;
-	int d_sampleTime;
+	int d_posTime;
 	int d_frameCount;
 	size_t d_frameSize;
 	float d_orientInc;
 	std::vector<QString> d_parameterText;
 	TheQueue<PanelRawData> d_imageList1;
 
+	std::atomic<bool> d_deadThreadRun;
 	std::atomic<bool> d_imageProcessThreadFlag;
 	TheQueue<unsigned short*> d_imageList;
 	std::condition_variable d_con;
@@ -98,7 +99,6 @@ protected:
 	virtual void frameProcessCallback(unsigned short* _image);
 	std::unique_ptr<Thread> d_scanThread;
 	virtual void scanThread() = 0;
-	std::atomic<bool> d_deadThreadRun;
 	std::unique_ptr<Thread> d_imageProcessThread;
 	virtual void imageProcessThread();
 	bool d_imageProcessThreadRun;
@@ -117,10 +117,9 @@ public:
 
 	virtual void setFileName(QString& _fileFolder, QString& _name);
 	virtual void setDisposeFlag(bool _bkgFlag, bool _airFlag, bool _defectFlag, bool _averageFlag);
-	virtual void setGraduation(int _graduation) { d_graduation = _graduation; };
 	virtual bool stopScan();
 	virtual bool intialise() = 0;
-	virtual bool beginScan();
+	virtual bool beginScan(int _graduation, int _framesPerGraduation, int _posTime, int _cycleTime, float _orientInc);
 	virtual void getScanProgress(int& _thisRound, int& _allProgress, QString& imagesCollectedAndSpaceOccupied);
 signals:
 	LOGSIGNAL

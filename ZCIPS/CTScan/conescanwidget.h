@@ -28,7 +28,9 @@ private slots:
 	void on_frameShotButton_clicked();
 	void on_gainGroupBox_currentIndexChanged(int _index);
 	void on_cycleTimeEdit_returnPressed();
+	void on_coneScanStopButton_clicked();
 signals:
-	void coneScanBeginSignal();
+	void coneScanBeginSignal(int _graduation, int _framesPerGraduation, int _cycleTime, float _orientInc);
 	void frameShotSignal();
+	void stopControllerSignal();
 };

@@ -25,7 +25,7 @@ void PanelFrameShot::beginAcquire(int _frames, int _cycleTime)
 	std::function<void(unsigned short*)> callBack = std::bind(
 		&PanelFrameShot::frameShotCallback, this, std::placeholders::_1);
 	d_panel->setFrameCallback(callBack);
-	d_panel->beginAcquire(_frames, _cycleTime);
+	d_panel->beginSoftwareTriggerAcquire(callBack, _frames, _cycleTime);
 }
 
 void PanelFrameShot::beginPreview(int _cycleTime)

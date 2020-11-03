@@ -19,7 +19,7 @@ private:
 	std::condition_variable d_ringThreadCond;
 	HACQDESC hPESiAcqDesc;
 	const std::map<BinMode, std::tuple<QString, unsigned short>> d_binModeName;
-	unsigned short* d_PESiDetAcqBuffer;
+	unsigned char* d_PESiDetAcqBuffer;
 	unsigned char* d_copyBuffer;
 	int d_frameCount;
 	size_t d_PESiDetBufferSize;
@@ -32,6 +32,7 @@ protected:
 	int d_frames;
 	int d_cycleTime;
 	int d_sampleTime;
+	const int d_exTriggerTimeMargin = 200;
 	int d_gainFactor;
 	size_t d_frameSize;
 	SampleMode d_sampleMode;
@@ -42,7 +43,8 @@ public:
 	virtual bool setFrames(int _frames);
 	virtual void stopAcquire();
 	virtual bool initialise();
-	virtual bool beginAcquire(unsigned short _quantity, int _cycleTime) override;
+	virtual bool beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames, int _cycleTime) override;
+	virtual bool beginExTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime) override;
 	virtual bool setBinMode(BinMode _binMode);
 	virtual bool setCycleTime(int _milliseconds) override;
 	virtual bool setSampleMode(SampleMode _sampleMode, int _cycleTime) override;
@@ -55,7 +57,11 @@ public:
 	virtual size_t getFrameSize();
 	virtual float getPixelSize();
 	virtual void setFrameCallback(std::function<void(unsigned short*)> _imageProcessCallBack);
+	virtual int caculateExTriggerSampleTime(int _cycleTime);
 	virtual bool getPanelSize(int& _width, int& _height);
 	virtual bool setPanelSize(int _width, int _height);
+
+protected:
+	bool beginAcquire(SampleMode _sampleMode, int _cycleTime, int _frames);
 };
 

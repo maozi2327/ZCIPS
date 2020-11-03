@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>513</height>
+    <height>551</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -329,7 +329,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1" colspan="3">
+       <item row="0" column="1" colspan="2">
         <widget class="QLineEdit" name="coneScanFileNameEdit">
          <property name="minimumSize">
           <size>
@@ -364,7 +364,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1" colspan="3">
+       <item row="1" column="1" colspan="2">
         <spacer name="horizontalSpacer_3">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -409,8 +409,8 @@
          </property>
         </spacer>
        </item>
-       <item row="2" column="2" colspan="2">
-        <widget class="QComboBox" name="coneScanMatrixComboBox">
+       <item row="2" column="2">
+        <widget class="QComboBox" name="coneScanGraduationComboBox">
          <property name="minimumSize">
           <size>
            <width>80</width>
@@ -444,7 +444,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="2" colspan="2">
+       <item row="3" column="2">
         <widget class="QComboBox" name="coneScanframesComboBox">
          <property name="minimumSize">
           <size>
@@ -485,7 +485,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="2" colspan="2">
+       <item row="4" column="2">
         <widget class="QSpinBox" name="coneScanFrameAverageSpinBox">
          <property name="minimumSize">
           <size>
@@ -502,6 +502,28 @@
         </widget>
        </item>
        <item row="5" column="0">
+        <widget class="QLabel" name="coneScanFrameAverageStaticLabel_2">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>起始角度</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QLineEdit" name="orientIncEdit"/>
+       </item>
+       <item row="6" column="0">
         <widget class="QLabel" name="coneScanProgressStaticLabel">
          <property name="minimumSize">
           <size>
@@ -523,7 +545,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0" colspan="4">
+       <item row="7" column="0" colspan="2">
         <widget class="QProgressBar" name="coneScanAllProgressBar">
          <property name="value">
           <number>24</number>
@@ -533,7 +555,7 @@
          </property>
         </widget>
        </item>
-       <item row="7" column="0" colspan="3">
+       <item row="8" column="0" colspan="2">
         <widget class="QPushButton" name="coneScanBeginSampleButton">
          <property name="minimumSize">
           <size>
@@ -552,8 +574,8 @@
          </property>
         </widget>
        </item>
-       <item row="7" column="3">
-        <widget class="QPushButton" name="pushButton_2">
+       <item row="8" column="2">
+        <widget class="QPushButton" name="coneScanStopButton">
          <property name="minimumSize">
           <size>
            <width>50</width>
