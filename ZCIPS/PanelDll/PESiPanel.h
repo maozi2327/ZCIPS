@@ -43,12 +43,12 @@ public:
 	virtual bool setFrames(int _frames);
 	virtual void stopAcquire();
 	virtual bool initialise();
-	virtual bool beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames, int _cycleTime) override;
-	virtual bool beginExTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime) override;
+	virtual bool beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames, int _cycleTime, unsigned short _gainFactor) override;
+	virtual bool beginExTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime, unsigned short _gainFactor) override;
 	virtual bool setBinMode(BinMode _binMode);
 	virtual bool setCycleTime(int _milliseconds) override;
 	virtual bool setSampleMode(SampleMode _sampleMode, int _cycleTime) override;
-	virtual bool setGainFactor(int _gainFactor);
+	virtual bool setGainFactor(unsigned short _gainFactor);
 	virtual void OnEndPESiDetFrameCallback(HACQDESC hAcqDesc);			//声明每帧图像采集回调函数
 	virtual void OnEndPESiDetAcqCallback(HACQDESC hAcqDesc);
 	virtual bool getReady();

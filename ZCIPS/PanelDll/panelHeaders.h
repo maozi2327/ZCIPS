@@ -6,10 +6,12 @@
 #else
 #define REALPANEL PESiPanel
 #endif
-enum class SampleMode
+enum SampleMode
 {
-	softTrigger,
-	exTrigger = 2
+	softTrigger = 1,
+	exTrigger = 2,
+	freeRunning = 4,
+	wrongTrigger = 10
 };
 enum class BinMode
 {

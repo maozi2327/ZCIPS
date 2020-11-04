@@ -12,7 +12,7 @@ PanelDetScanManager::PanelDetScanManager(int _rayId, int _panelDetId, const std:
 	: QObject(objectParent)
 	, d_rayNum(_rayId), d_detNum(_panelDetId), d_panel(_panel), d_controller(_controller)
 	, d_setupData(_setupData), d_coneScanWidget(new ConeScanWidget(_panel, widgetParent))
-	, d_panelFrameShot(new PanelFrameShot(_panel, nullptr))
+	, d_panelFrameShot(new PanelFrameShot(_panel, d_panelImageProcess.get(), nullptr))
 {
 	for (auto& scanMode : _scanMode)
 	{
@@ -59,14 +59,19 @@ QWidget * PanelDetScanManager::getWidget()
 	return d_coneScanWidget;
 }
 
-void PanelDetScanManager::coneScanBeginSlot(int _graduation, int _framesPerGraduation, int _cycleTime, float _orientInc)
+void PanelDetScanManager::coneScanBeginSlot()
 {	//TODO_DJ：reset的时候线程挂了
 	d_scan.reset(new ConeScan(d_panel, d_controller, d_panelImageProcess.get()));
 	d_scan->setDisposeFlag(d_coneScanWidget->ui.bkgTuneCheckBox->isChecked(), 
 		d_coneScanWidget->ui.airTuneCheckBox->isChecked(),
 		d_coneScanWidget->ui.defectTuneCheckBox->isChecked(), true);
-	auto graduationTime = d_panel->caculateExTriggerSampleTime(_cycleTime);
-	d_scan->beginScan(_graduation, _framesPerGraduation, graduationTime, _cycleTime, _orientInc);
+	int cycleTime = d_coneScanWidget->ui.cycleTimeEdit->text().toInt();
+	auto graduationTime = d_panel->caculateExTriggerSampleTime(cycleTime);
+	int graduation = d_coneScanWidget->ui.coneScanGraduationComboBox->currentText().toInt();
+	int framesPerGraduation = d_coneScanWidget->ui.coneScanframesComboBox->currentText().toInt();
+	float oriencInc = d_coneScanWidget->ui.orientIncEdit->text().toFloat();
+	unsigned short gainFactor = d_coneScanWidget->getGainFactor(d_coneScanWidget->ui.gainComboBox->currentText());
+	d_scan->beginScan(graduation, framesPerGraduation, graduationTime, cycleTime, gainFactor, oriencInc);
 }
 
 void PanelDetScanManager::scanProgressUpdatedSlot()
@@ -83,7 +88,8 @@ void PanelDetScanManager::frameShotSlot()
 {
 	auto frames = d_coneScanWidget->ui.singleShotFramesSpinBox->text().toInt();
 	auto cycleTime = d_coneScanWidget->ui.cycleTimeEdit->text().toInt();
-	d_panelFrameShot->beginAcquire(frames, cycleTime);
+	unsigned short gainFactor = d_coneScanWidget->getGainFactor(d_coneScanWidget->ui.gainComboBox->currentText());
+	d_panelFrameShot->beginAcquire(frames, cycleTime, gainFactor);
 }
 
 void PanelDetScanManager::stopControllerSlot()

@@ -105,7 +105,7 @@
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QComboBox" name="gainGroupBox">
+      <widget class="QComboBox" name="gainComboBox">
        <property name="minimumSize">
         <size>
          <width>80</width>

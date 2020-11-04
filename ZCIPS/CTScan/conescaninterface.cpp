@@ -238,7 +238,8 @@ bool ConeScanInterface::stopScan()
 	return true;
 }
 
-bool ConeScanInterface::beginScan(int _graduation, int _framesPerGraduation, int _posTime, int _cycleTime, float _orientInc)
+bool ConeScanInterface::beginScan(int _graduation, int _framesPerGraduation, int _posTime, int _cycleTime,
+	unsigned short _gainFactor, float _orientInc)
 {
 	d_graduationCount = 0;
 	d_graduation = _graduation;
@@ -265,7 +266,7 @@ bool ConeScanInterface::beginScan(int _graduation, int _framesPerGraduation, int
 	d_imageProcessThread->detach();
 	std::function<void(unsigned short *)> frameCallback = std::bind(
 		&ConeScanInterface::frameProcessCallback, this, std::placeholders::_1);
-	d_panel->beginExTriggerAcquire(frameCallback, _cycleTime);
+	d_panel->beginExTriggerAcquire(frameCallback, _cycleTime, _gainFactor);
 	return true;
 }
 

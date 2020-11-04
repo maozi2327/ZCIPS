@@ -16,7 +16,7 @@ PESiPanel::PESiPanel()
 	 { BinMode::BinMode5, {QString("1x1"), 1}}}
 	)
 	, Panel()
-	, d_PESiDetBufferSize(0), d_PESiDetAcqBuffer(nullptr), d_frameCount(0)
+	, d_PESiDetBufferSize(0), d_PESiDetAcqBuffer(nullptr), d_frameCount(0), d_sampleMode(SampleMode::wrongTrigger), d_cycleTime(0), d_gainFactor(10)
 {
 	ptrPESiPanel = this;
 	initialise();
@@ -126,11 +126,24 @@ bool PESiPanel::initialise()
 		LOG_ERROR("%s失败！错误码%d", "Acquisition_GetConfiguration", iRet);
 		return false;
 	}
-	
+
+	d_frameSize = d_width * d_height * sizeof(unsigned short);
+
 	if ((iRet = Acquisition_SetCallbacksAndMessages(hAcqDesc, NULL, 0,
 		0, ::OnEndPESiDetFrameCallback, ::OnEndPESiDetAcqCallback)) != HIS_ALL_OK)		//设置采集回调函数
 	{
 		LOG_ERROR("%s失败！错误码%d", "Acquisition_SetCallbacksAndMessages", iRet);
+		return false;
+	}
+
+
+	if ((iRet = Acquisition_SetCameraTriggerMode(hAcqDesc, 1)) == HIS_ALL_OK)
+	{
+		LOG_INFO("%s失败！错误码%d", "Acquisition_GetConfiguration", iRet);
+	}
+	else
+	{
+		LOG_ERROR("%s失败！错误码%d", "Acquisition_SetCameraTriggerMode", iRet);
 		return false;
 	}
 
@@ -139,16 +152,9 @@ bool PESiPanel::initialise()
 }
 void PESiPanel::OnEndPESiDetFrameCallback(HACQDESC hAcqDesc)
 {
-	if (d_frameCount == 0)
-		d_copyBuffer = (unsigned char*)malloc(d_frameSize * d_frames);
-
-	memcpy(d_copyBuffer + d_frameSize * d_frameCount, d_PESiDetAcqBuffer + d_frameSize * d_frameCount, d_frameSize);
-
-	if (++d_frameCount == d_frames)
-	{
-		d_imageProcCallback((unsigned short*)d_copyBuffer);
-		d_frameCount = 0;
-	}
+	d_copyBuffer = (unsigned char*)malloc(d_frameSize);
+	memcpy(d_copyBuffer, d_PESiDetAcqBuffer + d_frameSize * d_frameCount, d_frameSize);
+	d_imageProcCallback((unsigned short*)d_copyBuffer);
 
 	if (d_sampleMode == SampleMode::softTrigger)
 	{
@@ -156,6 +162,9 @@ void PESiPanel::OnEndPESiDetFrameCallback(HACQDESC hAcqDesc)
 			d_PESiContinusSingleMode == PESICON_SINGLE_MODE::Single && d_frameCount != d_frames)
 			Acquisition_SetFrameSync(hAcqDesc);
 	}
+
+	if (++d_frameCount == d_frames)
+		d_frameCount = 0;
 }
 void PESiPanel::OnEndPESiDetAcqCallback(HACQDESC hAcqDesc)
 {
@@ -216,15 +225,17 @@ bool PESiPanel::setBinMode(BinMode _binMode)
 }
 bool PESiPanel::setSampleMode(SampleMode _sampleMode, int _cycleTime)
 {
+	if (d_sampleMode == _sampleMode && d_cycleTime == _cycleTime)
+		return true;
+
 	unsigned int iRet;
 	QString errorMsg;
-	d_sampleMode = _sampleMode;
 	
 	//设置探测器为DDD(Date Delivered on Demand)无间隙触发方式
 	if ((iRet = Acquisition_SetCameraTriggerMode(hPESiAcqDesc, 1)) == HIS_ALL_OK)
 	{
-		if ((iRet = Acquisition_SetFrameSyncTimeMode(hPESiAcqDesc, 0, d_cycleTime)) == HIS_ALL_OK)
-			LOG_INFO("设置延迟时间:%d ms", d_cycleTime);
+		if ((iRet = Acquisition_SetFrameSyncTimeMode(hPESiAcqDesc, 0, _cycleTime)) == HIS_ALL_OK)
+			LOG_INFO("设置延迟时间:%d ms", _cycleTime);
 		else
 		{
 			LOG_ERROR("%s失败！错误码%d", "Acquisition_SetCameraBinningMode", iRet);
@@ -235,10 +246,11 @@ bool PESiPanel::setSampleMode(SampleMode _sampleMode, int _cycleTime)
 		if ((iRet = Acquisition_SetTriggerOutSignalOptions(hPESiAcqDesc,
 			4 /* 4 - DDD_Pulse*/,
 			0, 0, 0, 0, 0,
-			d_cycleTime,	//延迟时间
+			_cycleTime,	//延迟时间
 			0, 0)) == HIS_ALL_OK)
 		{
-			LOG_INFO("设置TriggerOut延迟:%d ms", d_cycleTime);
+			LOG_INFO("设置TriggerOut延迟:%d ms", _cycleTime);
+			d_cycleTime = _cycleTime;
 		}
 		else 
 		{
@@ -246,9 +258,10 @@ bool PESiPanel::setSampleMode(SampleMode _sampleMode, int _cycleTime)
 			return false;
 		}
 
-		if ((iRet = Acquisition_SetFrameSyncMode(hPESiAcqDesc, unsigned long(d_sampleMode))) == HIS_ALL_OK) 
+		if ((iRet = Acquisition_SetFrameSyncMode(hPESiAcqDesc, unsigned long(_sampleMode))) == HIS_ALL_OK)
 		{
 			LOG_ERROR("%s失败！错误码%d", "Acquisition_SetTriggerOutSignalOptions", iRet);
+			d_sampleMode = _sampleMode;
 		}
 	}
 	else 
@@ -259,13 +272,17 @@ bool PESiPanel::setSampleMode(SampleMode _sampleMode, int _cycleTime)
 
 	return true;
 }
-bool PESiPanel::setGainFactor(int _gainFactor)
+bool PESiPanel::setGainFactor(unsigned short _gainFactor)
 {
-	unsigned int iRet;
-	
-	if ((iRet = Acquisition_SetCameraGain(hPESiAcqDesc, d_gainFactor)) == HIS_ALL_OK)
+	unsigned short iRet;
+
+	if (_gainFactor == d_gainFactor)
+		return true;
+
+	if ((iRet = Acquisition_SetCameraGain(hPESiAcqDesc, _gainFactor)) == HIS_ALL_OK)
 	{
-		LOG_INFO("设置探测增益:%d", d_gainFactor);
+		LOG_INFO("设置探测增益:%d", _gainFactor);
+		d_gainFactor = _gainFactor;
 		return true;
 	}
 	else
@@ -275,15 +292,16 @@ bool PESiPanel::setGainFactor(int _gainFactor)
 	}
 }
 //TODO_DJ:如果单次采集分配的内存很大，则在采集完成或者停止采集后清空d_PESiDetAcqBuffer
-bool PESiPanel::beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames, int _cycleTime)
+bool PESiPanel::beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames, 
+	int _cycleTime, unsigned short _gainFactor)
 {
-	setSampleMode(SampleMode::softTrigger, _cycleTime);
 	setFrameCallback(_imageProcessCallBack);
 	d_PESiContinusSingleMode = PESICON_SINGLE_MODE::Single;
 	return beginAcquire(SampleMode::softTrigger, _cycleTime, _frames);
 }
 
-bool PESiPanel::beginExTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime)
+bool PESiPanel::beginExTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime, 
+	unsigned short _gainFactor)
 {
 	setFrameCallback(_imageProcessCallBack);
 	d_PESiContinusSingleMode = PESICON_SINGLE_MODE::Single;
@@ -292,12 +310,15 @@ bool PESiPanel::beginExTriggerAcquire(std::function<void(unsigned short*)> _imag
 
 void PESiPanel::stopAcquire()
 {
-	Acquisition_Abort(hPESiAcqDesc);
+	if(d_sampleMode == SampleMode::exTrigger)
+		Acquisition_Abort(hPESiAcqDesc);
+
+	Acquisition_SetFrameSyncMode(hPESiAcqDesc, HIS_SYNCMODE_FREE_RUNNING);
+	d_sampleMode = SampleMode::freeRunning;
 }
 bool PESiPanel::setFrames(int _frames)
 {
 	d_frames = _frames;
-	d_frameSize = d_width * d_height * d_frames * sizeof(unsigned short);
 	return true;
 }
 float PESiPanel::getPixelSize()
@@ -331,8 +352,9 @@ bool PESiPanel::beginAcquire(SampleMode _sampleMode, int _cycleTime, int _frames
 	unsigned int iRet;
 	unsigned long dwDemoParam = ACQ_SNAP;
 	d_frameCount = 0;
-	d_cycleTime = _cycleTime;
-	setSampleMode(_sampleMode, _cycleTime);
+
+	if(!setSampleMode(_sampleMode, _cycleTime))
+		return false;
 
 	if (Acquisition_SetAcqData(hPESiAcqDesc, (void*)&dwDemoParam) != HIS_ALL_OK)
 	{
@@ -340,7 +362,7 @@ bool PESiPanel::beginAcquire(SampleMode _sampleMode, int _cycleTime, int _frames
 		return false;
 	}
 
-	setFrames(_frames);
+	d_frames = _frames;
 
 	//分配采集内存,设置缓冲区
 	if (d_frameSize != d_PESiDetBufferSize)
@@ -348,26 +370,31 @@ bool PESiPanel::beginAcquire(SampleMode _sampleMode, int _cycleTime, int _frames
 		if (d_PESiDetAcqBuffer != nullptr)
 			SAFE_DELETE(d_PESiDetAcqBuffer);
 
-		d_PESiDetAcqBuffer = (unsigned char*)malloc(d_frameSize);
+		d_PESiDetAcqBuffer = (unsigned char*)malloc(d_frameSize * d_frames);
 		d_PESiDetBufferSize = d_frameSize;
-	}
-
-	iRet = Acquisition_DefineDestBuffers(hPESiAcqDesc, (unsigned short*)d_PESiDetAcqBuffer, d_frames,
-		d_height, d_width);
-
-	if (iRet != HIS_ALL_OK)
-	{
-		LOG_ERROR("%s失败！错误码%d", "Acquisition_DefineDestBuffers", iRet);
-		return false;
+		iRet = Acquisition_DefineDestBuffers(hPESiAcqDesc, (unsigned short*)d_PESiDetAcqBuffer, _frames,
+			d_height, d_width);
+		
+		if (iRet != HIS_ALL_OK)
+		{
+			LOG_ERROR("%s失败！错误码%d", "Acquisition_DefineDestBuffers", iRet);
+			return false;
+		}
 	}
 
 	unsigned int bHisSeqFlag;
 
-//	if (d_PESiContinusSingleMode == PESICON_SINGLE_MODE::Continus)
-	bHisSeqFlag = HIS_SEQ_CONTINUOUS;
-	//else if (d_PESiContinusSingleMode == PESICON_SINGLE_MODE::Single)
-	//	bHisSeqFlag = HIS_SEQ_ONE_BUFFER;
+	if(_sampleMode == SampleMode::exTrigger)
+		bHisSeqFlag = HIS_SEQ_CONTINUOUS;
+	else if (_sampleMode == SampleMode::softTrigger)
+		bHisSeqFlag = HIS_SEQ_ONE_BUFFER;
 
+	//NOTEPAD
+	//使用HIS_SEQ_CONTINUOUS外触发时脉冲停止会如果不调用
+	//Acquisition_Abort(hPESiAcqDesc)会以不同于采样时间的速度继续采集图像
+	//使用HIS_SEQ_ONE_BUFFER外触发时只能采集一幅图像
+	//NOTEPAD
+	Acquisition_ResetFrameCnt(hPESiAcqDesc);						//帧号清零
 	iRet = Acquisition_Acquire_Image(hPESiAcqDesc, d_frames, 0, bHisSeqFlag, 0, 0, 0);
 
 	if (iRet != HIS_ALL_OK)

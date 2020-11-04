@@ -38,7 +38,7 @@ public:
 	QWidget* getWidget();
 
 private slots:
-	void coneScanBeginSlot(int _graduation, int _framesPerGraduation, int _sampleTime, float _orientInc);
+	void coneScanBeginSlot();
 	void scanProgressUpdatedSlot();
 	void frameShotSlot();
 	void stopControllerSlot();

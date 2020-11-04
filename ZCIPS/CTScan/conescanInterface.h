@@ -119,7 +119,7 @@ public:
 	virtual void setDisposeFlag(bool _bkgFlag, bool _airFlag, bool _defectFlag, bool _averageFlag);
 	virtual bool stopScan();
 	virtual bool intialise() = 0;
-	virtual bool beginScan(int _graduation, int _framesPerGraduation, int _posTime, int _cycleTime, float _orientInc);
+	virtual bool beginScan(int _graduation, int _framesPerGraduation, int _posTime, int _cycleTime, unsigned short _gainFactor, float _orientInc);
 	virtual void getScanProgress(int& _thisRound, int& _allProgress, QString& imagesCollectedAndSpaceOccupied);
 signals:
 	LOGSIGNAL
