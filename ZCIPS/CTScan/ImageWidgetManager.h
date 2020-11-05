@@ -16,5 +16,7 @@ private:
 	QString d_rootDirectory;
 	std::vector<ImageWidget*> d_imageWidgetVec;
 	std::size_t d_frontWidgetIndex;
+	int d_screenWidth;
+	int d_screenHeight;
 };
 

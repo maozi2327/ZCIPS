@@ -21,9 +21,9 @@ ConeScanWidget::~ConeScanWidget()
 
 }
 
-void ConeScanWidget::setConeScanProgress(int _progress, const QString & _msg)
+void ConeScanWidget::setConeScanProgress(float _progress, const QString & _msg)
 {
-	ui.coneScanAllProgressBar->setValue(_progress);
+	ui.coneScanAllProgressBar->setValue(_progress * 100);
 	ui.coneScanProgressStaticLabel->setText(_msg);
 }
 

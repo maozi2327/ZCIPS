@@ -3,6 +3,7 @@
 #include "controllerinterface.h"
 #include "imageprocess.h"
 #include "../../Public/util/functions.h"
+
 ConeScanInterface::ConeScanInterface(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _imageProcess):
 	d_panel(_panel), d_controller(_controller), d_imageProcess(_imageProcess),
 	d_imageProcessSleep(300), d_graduationCount(0)
@@ -21,8 +22,9 @@ bool ConeScanInterface::saveFile(unsigned short * _image)
 	index.sprintf("%4d", int(d_graduationCount));
 	auto completeOrgFileName = d_fileFolder + d_fileName + "org/" + index;
 	d_imageProcess->saveSingleBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_height, d_width);
+	emit imageAcquiredSignal(_image, d_width, d_height);
 	free(_image);
-
+	emit scanProgressSignal(float(d_graduationCount) / (d_graduation * d_framesPerGraduation));
 
 	//if (d_orgFlag && !d_averageFlag)
 	//	d_imageProcess->saveMultiBitmapDataToFile(_image, completeOrgFileName + d_fileName, d_framesPerGraduation, d_height, d_width);

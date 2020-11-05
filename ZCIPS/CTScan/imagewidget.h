@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include "ui_imagewidget.h"
+#include <memory>
 
 class ImageWidgetManager;
 class ImageWidget : public QWidget
@@ -9,16 +10,16 @@ class ImageWidget : public QWidget
 	Q_OBJECT
 
 public:
-	ImageWidget(ImageWidgetManager* _imageWidgetManager, int _desktopWidth, int _windowHeight, QWidget *parent = Q_NULLPTR);
-	ImageWidget(ImageWidgetManager* _imageWidgetManager, int _desktopWidth, int _windowHeight, unsigned char* _buffer,
+	ImageWidget(ImageWidgetManager* _imageWidgetManager, int _screenWidth, int _screenHeight, QWidget *parent = Q_NULLPTR);
+	ImageWidget(ImageWidgetManager* _imageWidgetManager, int _screenWidth, int _screenHeight, unsigned char* _buffer,
 		int _width, int _height, QWidget *parent = Q_NULLPTR);
-	ImageWidget(ImageWidgetManager* _imageWidgetManager, int _desktopWidth, int _windowHeight, QString& _fileName,
+	ImageWidget(ImageWidgetManager* _imageWidgetManager, int _screenWidth, int _screenHeight, QString& _fileName,
 		QWidget *parent = Q_NULLPTR);
+	~ImageWidget();
 
 	bool loadImage(QString& _fileName);
 	bool loadImage(unsigned char* _buffer, int _width, int _height);
-	~ImageWidget();
-	
+	void resizeWidget();
 	void zoomOut();
 	void zoomIn();
 protected:
@@ -27,19 +28,20 @@ protected:
 	void keyPressEvent(QKeyEvent * _event);
 	void mouseMoveEvent(QMouseEvent *event);
 	void zoomImage();
-	void initialLabelAndImageSize();
+	void initialWindowSize();
 private:
 	Ui::ImageWidget ui;
 	ImageWidgetManager* d_manager;
-	QPixmap* d_pixmap;
+	std::unique_ptr<QPixmap> d_pixmap;
 	QPixmap d_zoomedPixMap;
-	QImage* d_image;
+	std::unique_ptr<QImage> d_image;
+	unsigned char* d_imageBuffer;
 	int d_imageWidth;
 	int d_imageHeight;
 	int d_imageScreenWidth;
 	int d_imageScreenHeight;
-	int d_desktopWidth;
-	int d_desktopHeight;
+	int d_screenWidth;
+	int d_screenHeight;
 	int d_initialdesktopWidth;
 	int d_initialWindowHeight;
 	int d_imageTopLeftXOnLabel;

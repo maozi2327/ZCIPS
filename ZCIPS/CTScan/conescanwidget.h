@@ -19,7 +19,7 @@ public:
 
 private:
 	Ui::ConeScanWidget ui;
-	void setConeScanProgress(int _progress, const QString& _msg);
+	void setConeScanProgress(float _progress, const QString& _msg);
 	void initiliseConeScanControls(ConeScanData& _data);
 	void initiliseConeJointRotScanControls(ConeJointRotScanData& _data);
 	unsigned short getGainFactor(const QString& _text);

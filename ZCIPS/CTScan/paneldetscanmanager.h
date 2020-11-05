@@ -11,6 +11,7 @@ class ControllerInterface;
 class Panel;
 class ConeScanWidget;
 class PanelFrameShot;
+class ImageWidgetManager;
 
 class PanelDetScanManager : public QObject
 {
@@ -18,7 +19,7 @@ class PanelDetScanManager : public QObject
 
 public:
 	PanelDetScanManager(int _rayId, int _panelDetId, const std::vector<ScanMode>& _scanMode, 
-		SetupData* _setupData, Panel* _panel, ControllerInterface* _controller,
+		SetupData* _setupData, Panel* _panel, ControllerInterface* _controller, ImageWidgetManager* _imageWidgetManager,
 		QWidget *widgetParent = nullptr, QObject *objectParent = nullptr);
 	~PanelDetScanManager();
 
@@ -31,6 +32,7 @@ private:
 	ControllerInterface* d_controller;
 	Panel* d_panel;
 	ConeScanWidget* d_coneScanWidget;
+	ImageWidgetManager* d_imageWidgetManager;
 	std::unique_ptr<PanelFrameShot> d_panelFrameShot;
 	virtual void frameShotCallback(unsigned short* _image);
 
@@ -42,4 +44,6 @@ private slots:
 	void scanProgressUpdatedSlot();
 	void frameShotSlot();
 	void stopControllerSlot();
+	void scanProgressSlot(float _progress);
+	void showImageSlot(unsigned short* _image, int _width, int _height);
 };

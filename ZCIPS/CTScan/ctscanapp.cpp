@@ -97,7 +97,8 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	for (auto& mode : d_panelDetScanModeMap)
 	{
 		auto manager = new PanelDetScanManager(mode.first.first, mode.first.second,
-			d_panelDetScanModeMap[mode.first], d_setupData.get(), d_panelDetMap[d_setupData->panDetData[mode.first.second].ID].get(), d_controller.get(), nullptr);
+			d_panelDetScanModeMap[mode.first], d_setupData.get(), d_panelDetMap[d_setupData->panDetData[mode.first.second].ID].get(), 
+			d_controller.get(), d_imageWidgetManager.get(), nullptr);
 		d_panelDetScanManagerMap[mode.first] = manager;
 	}
 

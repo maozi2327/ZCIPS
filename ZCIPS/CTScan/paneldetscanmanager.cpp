@@ -5,12 +5,13 @@
 #include "controllerinterface.h"
 #include "../PanelDll/panel.h"
 #include "panelframeshot.h"
+#include "ImageWidgetManager.h"
 
 PanelDetScanManager::PanelDetScanManager(int _rayId, int _panelDetId, const std::vector<ScanMode>& _scanMode
-	, SetupData* _setupData, Panel* _panel, ControllerInterface* _controller
+	, SetupData* _setupData, Panel* _panel, ControllerInterface* _controller, ImageWidgetManager* _imageWidgetManager
 	, QWidget *widgetParent, QObject *objectParent)
 	: QObject(objectParent)
-	, d_rayNum(_rayId), d_detNum(_panelDetId), d_panel(_panel), d_controller(_controller)
+	, d_rayNum(_rayId), d_detNum(_panelDetId), d_panel(_panel), d_controller(_controller), d_imageWidgetManager(_imageWidgetManager)
 	, d_setupData(_setupData), d_coneScanWidget(new ConeScanWidget(_panel, widgetParent))
 	, d_panelFrameShot(new PanelFrameShot(_panel, d_panelImageProcess.get(), nullptr))
 {
@@ -36,12 +37,10 @@ PanelDetScanManager::PanelDetScanManager(int _rayId, int _panelDetId, const std:
 		}
 	}
 
-	connect(d_coneScanWidget, &ConeScanWidget::coneScanBeginSignal,
-		this, &PanelDetScanManager::coneScanBeginSlot);
-	connect(d_coneScanWidget, &ConeScanWidget::frameShotSignal,
-		this, &PanelDetScanManager::frameShotSlot);
-	connect(d_coneScanWidget, &ConeScanWidget::stopControllerSignal,
-		this, &PanelDetScanManager::stopControllerSlot);
+	connect(d_coneScanWidget, &ConeScanWidget::coneScanBeginSignal,	this, &PanelDetScanManager::coneScanBeginSlot);
+	connect(d_coneScanWidget, &ConeScanWidget::frameShotSignal,	this, &PanelDetScanManager::frameShotSlot);
+	connect(d_coneScanWidget, &ConeScanWidget::stopControllerSignal, this, &PanelDetScanManager::stopControllerSlot);
+	connect(d_panelFrameShot.get(), &PanelFrameShot::imageAcquiredSignal, this, &PanelDetScanManager::showImageSlot);
 }
 
 PanelDetScanManager::~PanelDetScanManager()
@@ -71,6 +70,7 @@ void PanelDetScanManager::coneScanBeginSlot()
 	int framesPerGraduation = d_coneScanWidget->ui.coneScanframesComboBox->currentText().toInt();
 	float oriencInc = d_coneScanWidget->ui.orientIncEdit->text().toFloat();
 	unsigned short gainFactor = d_coneScanWidget->getGainFactor(d_coneScanWidget->ui.gainComboBox->currentText());
+	connect(d_scan.get(), &ConeScanInterface::scanProgressSignal, this, &PanelDetScanManager::scanProgressSlot);
 	d_scan->beginScan(graduation, framesPerGraduation, graduationTime, cycleTime, gainFactor, oriencInc);
 }
 
@@ -95,4 +95,14 @@ void PanelDetScanManager::frameShotSlot()
 void PanelDetScanManager::stopControllerSlot()
 {
 	d_controller->stopAll();
+}
+
+void PanelDetScanManager::scanProgressSlot(float _progress)
+{
+	d_coneScanWidget->setConeScanProgress(_progress, QString(""));
+}
+
+void PanelDetScanManager::showImageSlot(unsigned short* _image, int _width, int _height)
+{
+	d_imageWidgetManager->showImageInFrontWindow((unsigned char*)_image, _width, _height);
 }

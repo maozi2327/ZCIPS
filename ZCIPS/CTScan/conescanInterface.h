@@ -122,5 +122,7 @@ public:
 	virtual bool beginScan(int _graduation, int _framesPerGraduation, int _posTime, int _cycleTime, unsigned short _gainFactor, float _orientInc);
 	virtual void getScanProgress(int& _thisRound, int& _allProgress, QString& imagesCollectedAndSpaceOccupied);
 signals:
+	void scanProgressSignal(float _progress);
+	void imageAcquiredSignal(unsigned short* _image, int _width, int _height);
 	LOGSIGNAL
 };

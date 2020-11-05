@@ -23,4 +23,7 @@ private:
 	int d_frameCount;
 	void frameShotCallback(unsigned short* _image);
 	void previewCallback(unsigned short* _image);
+
+signals:
+	void imageAcquiredSignal(unsigned short* _image, int _width, int _height);
 };

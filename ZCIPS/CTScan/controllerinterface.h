@@ -8,6 +8,7 @@ class QTimer;
 class ControllerInterface : public QObject
 {
 	Q_OBJECT
+
 signals:
 	void netWorkStsSginal(bool sts);
 protected:

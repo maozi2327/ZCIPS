@@ -17,7 +17,8 @@ PanelFrameShot::~PanelFrameShot()
 void PanelFrameShot::frameShotCallback(unsigned short * _image)
 {
 	d_imageProcess->saveSingleBitmapDataToFile(_image, QString(""), d_height, d_width);
-	free(_image);
+	emit imageAcquiredSignal(_image, d_width, d_height);
+	//free(_image);
 
 	//NOTEPAD
 	//导致下一次采集程序响应很慢Acquisition_Acquire_Image
