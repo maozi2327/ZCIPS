@@ -33,12 +33,15 @@ void PanelFrameShot::previewCallback(unsigned short * _image)
 
 void PanelFrameShot::beginAcquire(int _frames, int _cycleTime, unsigned short _gainFactor)
 {
-	d_frames = _frames;
-	d_frameCount = 0;
-	std::function<void(unsigned short*)> callBack = std::bind(
-		&PanelFrameShot::frameShotCallback, this, std::placeholders::_1);
-	d_panel->setFrameCallback(callBack);
-	d_panel->beginSoftwareTriggerAcquire(callBack, _frames, _cycleTime, _gainFactor);
+	emit imageAcquiredSignal(nullptr, d_width, d_height);
+	//DEBUG£∫≤‚ ‘ÕºœÒÀı∑≈±ª◊¢ ÕµÙ
+	//d_frames = _frames;
+	//d_frameCount = 0;
+	//std::function<void(unsigned short*)> callBack = std::bind(
+	//	&PanelFrameShot::frameShotCallback, this, std::placeholders::_1);
+	//d_panel->setFrameCallback(callBack);
+	//d_panel->beginSoftwareTriggerAcquire(callBack, _frames, _cycleTime, _gainFactor);
+	//DEBUG£∫≤‚ ‘ÕºœÒÀı∑≈
 }
 
 void PanelFrameShot::beginPreview(int _cycleTime)

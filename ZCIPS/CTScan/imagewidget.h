@@ -19,16 +19,18 @@ public:
 
 	bool loadImage(QString& _fileName);
 	bool loadImage(unsigned char* _buffer, int _width, int _height);
-	void resizeWidget();
-	void zoomOut();
-	void zoomIn();
 protected:
 	virtual void showEvent(QShowEvent* _event);
 	virtual void resizeEvent(QResizeEvent *event);
 	void keyPressEvent(QKeyEvent * _event);
 	void mouseMoveEvent(QMouseEvent *event);
+	void isOnImageLabel(int& _posX, int& _posY);
 	void zoomImage();
 	void initialWindowSize();
+	void resizeAndMoveWidget(int _zoomFactorVariation);
+	void resizeWidget();
+	void zoomOut();
+	void zoomIn();
 private:
 	Ui::ImageWidget ui;
 	ImageWidgetManager* d_manager;

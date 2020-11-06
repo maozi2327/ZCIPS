@@ -26,6 +26,7 @@ QVector<QRgb> ImageWidget::initializeColorTable()
 
 	return colorTable;
 }
+
 ImageWidget::ImageWidget(ImageWidgetManager* _imageWidgetManager, int _screenWidth, int _screenHeight, QWidget *parent)
 	: d_manager(_imageWidgetManager), QWidget(parent), d_screenWidth(_screenWidth), d_screenHeight(_screenHeight)
 {
@@ -47,12 +48,16 @@ ImageWidget::ImageWidget(ImageWidgetManager* _imageWidgetManager, int _screenWid
 ImageWidget::ImageWidget(ImageWidgetManager* _imageWidgetManager, int _screenWidth, int _screenHeight,
 	unsigned char* _buffer, int _width, int _height, QWidget *parent)
 	: d_manager(_imageWidgetManager), QWidget(parent), d_screenWidth(_screenWidth), d_screenHeight(_screenHeight)
-	, d_pixmap(new QPixmap), d_imageWidth(_width), d_imageHeight(_height)
+	, d_pixmap(new QPixmap)//, d_imageWidth(_width), d_imageHeight(_height)
+	, d_imageWidth(2048), d_imageHeight(2048)
 {
 	ui.setupUi(this);
-	d_imageBuffer = (unsigned char*)malloc(_width * _height);
+	//DEBUG：测试图像缩放被注释，面板未连接_width和_height没有值
+	//d_imageBuffer = (unsigned char*)malloc(_width * _height);
+	d_imageBuffer = (unsigned char*)malloc(2048 * 2048);
 	initialWindowSize();
-	loadImage(_buffer, _width, _height);
+	//loadImage(_buffer, _width, _height);
+	loadImage(_buffer, 2048, 2048);
 	setMouseTracking(true);
 	ui.imageLabel->setMouseTracking(true);
 }
@@ -128,23 +133,35 @@ bool ImageWidget::loadImage(unsigned char* _buffer, int _width, int _height)
 	d_image->setColorTable(d_colorTable);
 	d_pixmap->convertFromImage(*d_image);
 	resizeWidget();
+	zoomImage();
 	return true;
 }
 
 void ImageWidget::resizeWidget()
 {
-	d_zoomRatio = d_zoomRecommendRatio * d_zoomRatioFactor / d_initialZoomRatioFactor;
 	int lineWidth = ui.imageLabel->lineWidth() * 2;
 	d_imageScreenWidth = d_pixmap->width() * d_zoomRatio;
 	d_imageScreenHeight = d_pixmap->height() * d_zoomRatio;
 	ui.imageLabel->setFixedSize(d_imageScreenWidth + lineWidth, d_imageScreenHeight + lineWidth);
-	d_imageTopLeftXOnImage = 0;
-	d_imageTopLeftYOnImage = 0;
-	zoomImage();
-	resize(d_imageScreenWidth + lineWidth + ui.folderTree->width() + ui.foldButton->width() +
+	resize(d_imageScreenWidth + lineWidth +
 		ui.horizontalSpacer->minimumSize().width() * 2,
 		d_imageScreenHeight + lineWidth + ui.messageLabel->height() +
 		ui.verticalSpacer->minimumSize().height() * 2);
+}
+
+void ImageWidget::resizeAndMoveWidget(int _zoomFactorVariation)
+{
+	auto widgetLeftTop = pos();
+	resizeWidget();
+	float ratio = float(_zoomFactorVariation) / (d_zoomRatioFactor + _zoomFactorVariation);
+	float ratio1 = float(d_zoomRatioFactor) / (d_zoomRatioFactor + _zoomFactorVariation);
+	move(widgetLeftTop.x() + d_mousePosOnImageLabel.x() * ratio,
+		widgetLeftTop.y() + d_mousePosOnImageLabel.y() * ratio);
+	d_mousePosOnImageLabel.setX(d_mousePosOnImageLabel.x() * ratio1);
+	d_mousePosOnImageLabel.setY(d_mousePosOnImageLabel.y() * ratio1);
+	d_imageLabelRect = ui.imageLabel->geometry();
+	d_mousePos.setX(d_mousePosOnImageLabel.x() + d_imageLabelRect.left());
+	d_mousePos.setY(d_mousePosOnImageLabel.y() + d_imageLabelRect.top());
 }
 
 void ImageWidget::zoomOut()
@@ -152,66 +169,68 @@ void ImageWidget::zoomOut()
 	if (!ui.imageLabel->underMouse())
 		return;
 
-	if (d_zoomRatioFactor >= d_initialZoomRatioFactor)
+	int x = d_mousePos.x();
+	int y = d_mousePos.y();
+	caculateMousePosOnImage(x, y);
+	d_zoomRatioFactor += 1;
+	d_zoomRatio = d_zoomRecommendRatio * d_zoomRatioFactor / d_initialZoomRatioFactor;
+	d_mousePosOnImage.setX(d_mousePosOnImage.x() * d_zoomRatio);
+	d_mousePosOnImage.setY(d_mousePosOnImage.y() * d_zoomRatio);
+
+	if (d_zoomRatioFactor <= d_initialZoomRatioFactor)
 	{
-		int x = d_mousePos.x();
-		int y = d_mousePos.y();
-		caculateMousePosOnImage(x, y);
-		d_zoomRatioFactor += 1;
-		d_zoomRatio = d_zoomRecommendRatio * d_zoomRatioFactor / d_initialZoomRatioFactor;
-		d_mousePosOnImage.setX(d_mousePosOnImage.x() * d_zoomRatio);
-		d_mousePosOnImage.setY(d_mousePosOnImage.y() * d_zoomRatio);
-		d_imageTopLeftXOnImage = d_mousePosOnImage.x() - (d_mousePosOnImageLabel.x() - (ui.imageLabel->width() - d_imageScreenWidth) / 2);
-		d_imageTopLeftYOnImage = d_mousePosOnImage.y() - (d_mousePosOnImageLabel.y() - (ui.imageLabel->height() - d_imageScreenHeight) / 2);
+		d_imageTopLeftXOnImage = 0;
+		d_imageTopLeftYOnImage = 0;
+		resizeAndMoveWidget(-1);
 	}
 	else
 	{
-		int x = d_mousePos.x();
-		int y = d_mousePos.y();
-		caculateMousePosOnImage(x, y);
-		d_zoomRatioFactor += 1;
-		resizeWidget();
-		d_mousePosOnImage.setX(d_mousePosOnImage.x() * d_zoomRatio);
-		d_mousePosOnImage.setY(d_mousePosOnImage.y() * d_zoomRatio);
-		float ratio = float(1) / (d_zoomRatioFactor - 1);
-		move(pos().x() - d_mousePosOnImageLabel.x() * ratio, pos().y() - d_mousePosOnImageLabel.y() * ratio);
+		d_imageTopLeftXOnImage = d_mousePosOnImage.x() - 
+			(d_mousePosOnImageLabel.x() - (ui.imageLabel->width() - d_imageScreenWidth) / 2);
+		d_imageTopLeftYOnImage = d_mousePosOnImage.y() - 
+			(d_mousePosOnImageLabel.y() - (ui.imageLabel->height() - d_imageScreenHeight) / 2);
 	}
-
+		
 	zoomImage();
 }
+
 void ImageWidget::zoomIn()
 {
 	if (!ui.imageLabel->underMouse())
 		return;
 
-	if (d_zoomRatioFactor <= d_initialZoomRatioFactor + 1)
-	{
-		int x = d_mousePos.x();
-		int y = d_mousePos.y();
-		caculateMousePosOnImage(x, y);
-		d_zoomRatioFactor -= 1;
-		resizeWidget();
-		//TODO：重新计算d_mousePos;
-		d_mousePosOnImage.setX(d_mousePosOnImage.x() * d_zoomRatio);
-		d_mousePosOnImage.setY(d_mousePosOnImage.y() * d_zoomRatio);
+	int x = d_mousePos.x();
+	int y = d_mousePos.y();
+	caculateMousePosOnImage(x, y);
+	d_zoomRatioFactor -= 1;
+	d_zoomRatio = d_zoomRecommendRatio * d_zoomRatioFactor / d_initialZoomRatioFactor;
+	d_mousePosOnImage.setX(d_mousePosOnImage.x() * d_zoomRatio);
+	d_mousePosOnImage.setY(d_mousePosOnImage.y() * d_zoomRatio);
 
-		if (d_zoomRatioFactor < d_initialZoomRatioFactor)
+	if (d_zoomRatioFactor <= d_initialZoomRatioFactor)
+	{
+		d_imageTopLeftXOnImage = 0;
+		d_imageTopLeftYOnImage = 0;
+
+		if(d_zoomRatioFactor < d_initialZoomRatioFactor)
+			resizeAndMoveWidget(1);
+		else
 		{
+			//计算鼠标点位置在图像缩小之前在label中的位置，
+			//计算鼠标点位置在图像缩小之后原鼠标指向iamge上的点在label中的位置
+			//计算两个位置的差
+			auto widgetLeftTop = pos();
 			float ratio = float(1) / (d_zoomRatioFactor + 1);
-			move(pos().x() + d_mousePosOnImageLabel.x() * ratio, pos().y() + d_mousePosOnImageLabel.y() * ratio);
+			move(widgetLeftTop.x() + d_mousePosOnImage.x() - d_mousePosOnImageLabel.x(),
+				widgetLeftTop.y() + d_mousePosOnImage.y() - d_mousePosOnImageLabel.y());
 		}
 	}
 	else
 	{
-		int x = d_mousePos.x();
-		int y = d_mousePos.y();
-		caculateMousePosOnImage(x, y);
-		d_zoomRatioFactor -= 1;
-		d_zoomRatio = d_zoomRecommendRatio * d_zoomRatioFactor / d_initialZoomRatioFactor;
-		d_mousePosOnImage.setX(d_mousePosOnImage.x() * d_zoomRatio);
-		d_mousePosOnImage.setY(d_mousePosOnImage.y() * d_zoomRatio);
-		d_imageTopLeftXOnImage = d_mousePosOnImage.x() - (d_mousePosOnImageLabel.x() - (ui.imageLabel->width() - d_imageScreenWidth) / 2);
-		d_imageTopLeftYOnImage = d_mousePosOnImage.y() - (d_mousePosOnImageLabel.y() - (ui.imageLabel->height() - d_imageScreenHeight) / 2);
+		d_imageTopLeftXOnImage = d_mousePosOnImage.x() - 
+			(d_mousePosOnImageLabel.x() - (ui.imageLabel->width() - d_imageScreenWidth) / 2);
+		d_imageTopLeftYOnImage = d_mousePosOnImage.y() - 
+			(d_mousePosOnImageLabel.y() - (ui.imageLabel->height() - d_imageScreenHeight) / 2);
 	}
 
 	zoomImage();
@@ -236,6 +255,12 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 	mousePosStr.sprintf("%d, %d", posX, posY);
 	ui.messageLabel->setText(mousePosStr);
 }
+
+void ImageWidget::isOnImageLabel(int& _posX, int& _posY)
+{
+	
+}
+
 bool ImageWidget::caculateMousePosOnImage(int& _posX, int& _posY)
 {
 	d_imageLabelRect = ui.imageLabel->geometry();
@@ -272,27 +297,28 @@ bool ImageWidget::caculateMousePosOnImage(int& _posX, int& _posY)
 void ImageWidget::resizeEvent(QResizeEvent *event)
 {
 }
+
 void ImageWidget::on_foldButton_clicked()
 {
-	if (ui.folderTree->isVisible())
-	{
-		int wid = width();
-		int newWidth = width() - ui.folderTree->width();
-		ui.folderTree->hide();
-		ui.foldButton->setText(tr("<"));
-		resize(newWidth, height());
-	}
-	else
-	{
-		QLayout::SizeConstraint i  = ui.gridLayout->sizeConstraint();
-		int wid = maximumWidth();
-		int hei = maximumHeight();
-		int floderWidth = ui.folderTree->width();
-		int newWidth = width() + ui.folderTree->width();
-		ui.folderTree->show();
-		ui.foldButton->setText(tr(">"));
-		resize(newWidth, height());
-	}
+	//if (ui.folderTree->isVisible())
+	//{
+	//	int wid = width();
+	//	int newWidth = width() - ui.folderTree->width();
+	//	ui.folderTree->hide();
+	//	ui.foldButton->setText(tr("<"));
+	//	resize(newWidth, height());
+	//}
+	//else
+	//{
+	//	QLayout::SizeConstraint i  = ui.gridLayout->sizeConstraint();
+	//	int wid = maximumWidth();
+	//	int hei = maximumHeight();
+	//	int floderWidth = ui.folderTree->width();
+	//	int newWidth = width() + ui.folderTree->width();
+	//	ui.folderTree->show();
+	//	ui.foldButton->setText(tr(">"));
+	//	resize(newWidth, height());
+	//}
 }
 
 

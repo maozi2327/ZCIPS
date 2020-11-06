@@ -275,21 +275,22 @@ bool PESiPanel::setSampleMode(SampleMode _sampleMode, int _cycleTime)
 bool PESiPanel::setGainFactor(unsigned short _gainFactor)
 {
 	unsigned short iRet;
+	//TODO：面板未连接时，会因为hPESiAcqDesc句柄错误而导致异常
+	//if (_gainFactor == d_gainFactor)
+	//	return true;
 
-	if (_gainFactor == d_gainFactor)
-		return true;
-
-	if ((iRet = Acquisition_SetCameraGain(hPESiAcqDesc, _gainFactor)) == HIS_ALL_OK)
-	{
-		LOG_INFO("设置探测增益:%d", _gainFactor);
-		d_gainFactor = _gainFactor;
-		return true;
-	}
-	else
-	{
-		LOG_ERROR("%s失败！错误码%d", "Acquisition_SetCameraGain", iRet);
-		return false;
-	}
+	//if ((iRet = Acquisition_SetCameraGain(hPESiAcqDesc, _gainFactor)) == HIS_ALL_OK)
+	//{
+	//	LOG_INFO("设置探测增益:%d", _gainFactor);
+	//	d_gainFactor = _gainFactor;
+	//	return true;
+	//}
+	//else
+	//{
+	//	LOG_ERROR("%s失败！错误码%d", "Acquisition_SetCameraGain", iRet);
+	//	return false;
+	//}
+	return false;
 }
 //TODO_DJ:如果单次采集分配的内存很大，则在采集完成或者停止采集后清空d_PESiDetAcqBuffer
 bool PESiPanel::beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames, 
