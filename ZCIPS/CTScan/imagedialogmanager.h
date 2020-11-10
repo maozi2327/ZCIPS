@@ -1,20 +1,21 @@
 #pragma once
-#include "imagewidget.h"
 #include <vector>
 #include <memory>
-class ImageWidgetManager
+
+class ImageDialog;
+class ImageDialogManager
 {
 public:
-	ImageWidgetManager();
-	~ImageWidgetManager();
+	ImageDialogManager();
+	~ImageDialogManager();
 
 	bool showImageInNewWindow(unsigned char* _imageMemory, int _width, int _height);
-	bool showImageInFrontWindow(unsigned char* _imageMemory, int _width, int _height);
+	bool showImageInCurrentWindow(unsigned char* _imageMemory, int _width, int _height);
 	bool showImageInNewWindow(QString& _fileName);
-	bool showImageInFrontWindow(QString& _fileName);
+	bool showImageInCurrentWindow(QString& _fileName);
 private:
 	QString d_rootDirectory;
-	std::vector<ImageWidget*> d_imageWidgetVec;
+	std::vector<ImageDialog*> d_imageDialogVec;
 	std::size_t d_frontWidgetIndex;
 	int d_screenWidth;
 	int d_screenHeight;

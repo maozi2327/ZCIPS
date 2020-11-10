@@ -72,12 +72,6 @@
     <ClCompile Include="linedetairtune.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imagewidgetmanager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="imagewidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="imageprocess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -186,6 +180,12 @@
     <ClCompile Include="panelframeshot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="imagedialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imagedialogmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\lib\tinyxml2.h">
@@ -257,9 +257,6 @@
     <ClInclude Include="imageprocess.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imagewidgetmanager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="linedetairtune.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -285,6 +282,9 @@
       <Filter>public\utility</Filter>
     </ClInclude>
     <ClInclude Include="scantemplate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imagedialogmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -314,9 +314,6 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ctscanwidget.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="imagewidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="linedetnetwork.h">
@@ -367,6 +364,9 @@
     <QtMoc Include="panelframeshot.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="imagedialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="conescanwidget.ui">
@@ -399,14 +399,12 @@
     <QtUic Include="ct3templatedialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="imagedialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CTScan.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="imagewidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="ctscan.qrc">

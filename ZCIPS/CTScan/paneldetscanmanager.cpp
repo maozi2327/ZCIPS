@@ -5,10 +5,10 @@
 #include "controllerinterface.h"
 #include "../PanelDll/panel.h"
 #include "panelframeshot.h"
-#include "ImageWidgetManager.h"
+#include "ImageDialogManager.h"
 
 PanelDetScanManager::PanelDetScanManager(int _rayId, int _panelDetId, const std::vector<ScanMode>& _scanMode
-	, SetupData* _setupData, Panel* _panel, ControllerInterface* _controller, ImageWidgetManager* _imageWidgetManager
+	, SetupData* _setupData, Panel* _panel, ControllerInterface* _controller, ImageDialogManager* _imageWidgetManager
 	, QWidget *widgetParent, QObject *objectParent)
 	: QObject(objectParent)
 	, d_rayNum(_rayId), d_detNum(_panelDetId), d_panel(_panel), d_controller(_controller), d_imageWidgetManager(_imageWidgetManager)
@@ -104,5 +104,5 @@ void PanelDetScanManager::scanProgressSlot(float _progress)
 
 void PanelDetScanManager::showImageSlot(unsigned short* _image, int _width, int _height)
 {
-	d_imageWidgetManager->showImageInFrontWindow((unsigned char*)_image, _width, _height);
+	d_imageWidgetManager->showImageInCurrentWindow((unsigned char*)_image, _width, _height);
 }

@@ -1,21 +1,21 @@
 #pragma once
 
 #include <QWidget>
-#include "ui_imagewidget.h"
+#include "ui_imagedialog.h"
 #include <memory>
 
-class ImageWidgetManager;
-class ImageWidget : public QWidget
+class ImageDialogManager;
+class ImageDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	ImageWidget(ImageWidgetManager* _imageWidgetManager, int _screenWidth, int _screenHeight, QWidget *parent = Q_NULLPTR);
-	ImageWidget(ImageWidgetManager* _imageWidgetManager, int _screenWidth, int _screenHeight, unsigned char* _buffer,
+	ImageDialog(ImageDialogManager* _imageWidgetManager, int _screenWidth, int _screenHeight, QWidget *parent = Q_NULLPTR);
+	ImageDialog(ImageDialogManager* _imageWidgetManager, int _screenWidth, int _screenHeight, unsigned char* _buffer,
 		int _width, int _height, QWidget *parent = Q_NULLPTR);
-	ImageWidget(ImageWidgetManager* _imageWidgetManager, int _screenWidth, int _screenHeight, QString& _fileName,
+	ImageDialog(ImageDialogManager* _imageWidgetManager, int _screenWidth, int _screenHeight, QString& _fileName,
 		QWidget *parent = Q_NULLPTR);
-	~ImageWidget();
+	~ImageDialog();
 
 	bool loadImage(QString& _fileName);
 	bool loadImage(unsigned char* _buffer, int _width, int _height);
@@ -32,8 +32,8 @@ protected:
 	void zoomOut();
 	void zoomIn();
 private:
-	Ui::ImageWidget ui;
-	ImageWidgetManager* d_manager;
+	Ui::ImageDialog ui;
+	ImageDialogManager* d_manager;
 	std::unique_ptr<QPixmap> d_pixmap;
 	QPixmap d_zoomedPixMap;
 	std::unique_ptr<QImage> d_image;
@@ -46,15 +46,21 @@ private:
 	int d_screenHeight;
 	int d_initialdesktopWidth;
 	int d_initialWindowHeight;
-	int d_imageTopLeftXOnLabel;
-	int d_imageTopLeftYOnLabel;
+
+	//Label上左上角第一个点在缩放后的图像上对应的坐标
 	int d_imageTopLeftXOnImage;
 	int d_imageTopLeftYOnImage;
+
+	//鼠标上的点在Label上显示的图像的坐标
 	int d_mousePosToImageLeft;
-	int d_mousePosToImageRight;
+	int d_mousePosToImageTop;
+
+	//鼠标在对话框上的坐标
 	QPoint d_mousePos;
-	QPoint d_mousePosOnImageLabel;
+
+	//鼠标在缩放后的图像上的坐标
 	QPoint d_mousePosOnImage;
+
 	QRect d_imageLabelRect;
 	static QVector<QRgb> d_colorTable;
 	static QVector<QRgb> initializeColorTable();

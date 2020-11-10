@@ -19,11 +19,12 @@
 #include "acceleratorwidget.h"
 #include "floatacceleratordialog.h"
 #include "createDumpFile.h"
+#include "imagedialogmanager.h"
 #include "../PanelDll/panel.h"
 
 CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	: d_mainWidget(nullptr), d_upperWidget(d_upper)
-	, d_imageWidgetManager(new ImageWidgetManager())
+	, d_imageWidgetManager(new ImageDialogManager())
 	, d_controller(new SimotionController())
 	, d_setupData(new SetupData), d_configData(new ConfigData), d_setupDataPaser(new SetupDataParser(d_setupData.get()))
 	, d_workDir(QCoreApplication::applicationDirPath())

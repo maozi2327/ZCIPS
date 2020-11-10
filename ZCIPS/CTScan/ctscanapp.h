@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QObject>
-#include "imagewidgetmanager.h"
 #include <memory>
 #include "../Public/headers/setupdata.h"
 #include "../Public/util/logmacro.h"
@@ -23,6 +22,7 @@ class CT3TemplateDialog;
 class LineDetScanManager;
 class PanelDetScanManager;
 class LineDetImageProcess;
+class ImageDialogManager;
 
 class CTScanApp : public CTScanInterface
 {
@@ -48,7 +48,7 @@ private:
 	std::unique_ptr<SetupData> d_setupData;
 	std::unique_ptr<ConfigData> d_configData;
 	std::unique_ptr<SetupDataParser> d_setupDataPaser;
-	std::unique_ptr<ImageWidgetManager> d_imageWidgetManager;
+	std::unique_ptr<ImageDialogManager> d_imageWidgetManager;
 	std::unique_ptr<ControllerInterface> d_controller;
 	std::unique_ptr<ConeScanWidget> d_panle1Det1ScanWidget;
 	std::unique_ptr<LineDetImageProcess> d_lineDetImageProcess;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ImageWidget</class>
- <widget class="QWidget" name="ImageWidget">
+ <class>ImageDialog</class>
+ <widget class="QDialog" name="ImageDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>ImageWidget</string>
+   <string>ImageDialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout" rowstretch="1,0,1" columnstretch="1,0,1">
    <property name="sizeConstraint">
