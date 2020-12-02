@@ -156,7 +156,6 @@ void LineDetScanWidget::switchCt3MultilayerEquallayerShowHide(unsigned char _mod
 	}
 }
 
-
 void LineDetScanWidget::useCt3Item(const Ct3TemplateData& _templateData)
 {
 	if (_templateData.MutilayerOrEqualLayer == MULTILAYER)
@@ -226,12 +225,17 @@ void LineDetScanWidget::on_ct3LoadTemplateButton_clicked()
 	emit LoadCt3TemplateButtonSignal();
 }
 
+void LineDetScanWidget::on_bkgTuneButton_clicked()
+{
+	emit bkgTuneSignal();
+}
 void LineDetScanWidget::on_airTuneButton_clicked()
 {
 	//d_airDisposeDialog = LineDetAirDisposeDialog::getInstance(d_controller, d_lineDetNetWork, d_setupData,
 	//	d_rayNum, d_detNum, QString(""), this);
 	//connect(this, &LineDetScanWidget::readyToScanSignal, d_airDisposeDialog, &LineDetAirDisposeDialog::updateScanButtonSlot);
 	//d_airDisposeDialog->show();
+	emit airTuneSignal();
 }
 
 void LineDetScanWidget::updateControlsSlot()

@@ -17,8 +17,6 @@ public:
 private:
 	Panel* d_panel;
 	PanelImageProcess* d_imageProcess;
-	int d_width;
-	int d_height;
 	int d_frames;
 	int d_frameCount;
 	void frameShotCallback(unsigned short* _image);

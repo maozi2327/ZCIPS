@@ -47,6 +47,7 @@ private slots:
 	void on_ct3LayerPosLineEdit_returnd();
 	void on_stopButton_clicked();
 	void on_ct3LoadTemplateButton_clicked();
+	void on_bkgTuneButton_clicked();
 	void on_airTuneButton_clicked();
 	void updateControlsSlot();
 
@@ -58,4 +59,6 @@ signals:
 	void ct3ScanSignal();
 	void stopButtonSignal();
 	void LoadCt3TemplateButtonSignal();
+	void bkgTuneSignal();
+	void airTuneSignal();
 };

@@ -13,7 +13,7 @@ private:
 	QString d_tempFileDir;
 	std::vector<QString> d_tempFileVec;
 protected:
-	void scanThread();
+	//void scanThread();
 	void sendCmdToControl();
 	virtual void saveFile();
 	virtual bool setGenerialFileHeader();
@@ -25,7 +25,5 @@ public:
 	~CT3Scan();
 	bool setScanParameter(float _layers, int _matrix, float _view,
 		int _sampleTime, float _angle);
-	virtual void stopScan();
-	virtual bool beginScan();
 };
 

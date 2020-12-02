@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PanelImageProcess", "PanelI
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SiYuan", "SiYuan\SiYuan.vcxproj", "{16747E3F-A289-4020-818F-E72A6DE621F8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VarianPanel", "VarianPanel\VarianPanel.vcxproj", "{ED3344D3-1CFC-4143-AC17-61D0D31F14BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -53,6 +55,12 @@ Global
 		{16747E3F-A289-4020-818F-E72A6DE621F8}.Release|x64.ActiveCfg = Release|x64
 		{16747E3F-A289-4020-818F-E72A6DE621F8}.Release|x64.Build.0 = Release|x64
 		{16747E3F-A289-4020-818F-E72A6DE621F8}.Release|x86.ActiveCfg = Release|x64
+		{ED3344D3-1CFC-4143-AC17-61D0D31F14BA}.Debug|x64.ActiveCfg = Debug|x64
+		{ED3344D3-1CFC-4143-AC17-61D0D31F14BA}.Debug|x64.Build.0 = Debug|x64
+		{ED3344D3-1CFC-4143-AC17-61D0D31F14BA}.Debug|x86.ActiveCfg = Debug|x64
+		{ED3344D3-1CFC-4143-AC17-61D0D31F14BA}.Release|x64.ActiveCfg = Release|x64
+		{ED3344D3-1CFC-4143-AC17-61D0D31F14BA}.Release|x64.Build.0 = Release|x64
+		{ED3344D3-1CFC-4143-AC17-61D0D31F14BA}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -30,6 +30,7 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	, d_workDir(QCoreApplication::applicationDirPath())
 	, d_acceleratorWidget(new AcceleratorWidget())
 {
+	buildMenuBar();
 	//RunCrashHandler();
 	QString time = QDateTime::currentDateTime().time().toString();
 	auto i = time.length();
@@ -171,8 +172,71 @@ void CTScanApp::switchToLineWidget(int _rayId, int _detId)
 
 void CTScanApp::switchToPanelWidget(int _rayId, int _detId)
 {
-	auto widget = d_panelDetScanManagerMap[{_rayId, _detId}]->getWidget();
+	auto widget = static_cast<ConeScanWidget*>(d_panelDetScanManagerMap[{_rayId, _detId}]->getWidget());
 	d_mainWidget->switchLinePanelWidget(widget);
+}
+
+QMenuBar * CTScanApp::getMenuBar()
+{
+	return d_menuBar;
+}
+
+void CTScanApp::buildMenuBar()
+{
+	d_menuBar = new QMenuBar();
+	d_menuBar->setObjectName(QStringLiteral("menuBar"));
+	d_menuBar->setGeometry(QRect(0, 0, 342, 23));
+	
+	//系统菜单
+	d_systemMenu = new QMenu(d_menuBar);
+	d_systemMenu->setObjectName(QStringLiteral("systemMenu"));
+	d_systemMenu->setTitle(QString::fromLocal8Bit("系统"));
+	d_menuBar->addAction(d_systemMenu->menuAction());
+
+	d_initiliseSystemAction = new QAction(this);
+	d_initiliseSystemAction->setObjectName(QStringLiteral("initiliseSystemAction"));
+	d_initiliseSystemAction->setText(QString::fromLocal8Bit("初始化"));
+	d_systemMenu->addAction(d_initiliseSystemAction);
+
+	connect(d_initiliseSystemAction, &QAction::triggered, this, &CTScanApp::on_initiliseSystemAction_triggered);
+
+	//调试菜单
+	if (d_debugSystem)
+	{
+		d_debugMenu = new QMenu(d_menuBar);
+		d_debugMenu->setObjectName(QStringLiteral("systemMenu"));
+		d_debugMenu->setTitle(QString::fromLocal8Bit("调试"));
+		d_menuBar->addAction(d_debugMenu->menuAction());
+
+		d_axisZeroCoordinateAction = new QAction(this);
+		d_axisZeroCoordinateAction->setObjectName(QStringLiteral("axisZeroCoordinateAction"));
+		d_axisZeroCoordinateAction->setText(QString::fromLocal8Bit("零点标定"));
+		d_debugMenu->addAction(d_axisZeroCoordinateAction);
+
+		d_axisSpeedAction = new QAction(this);
+		d_axisSpeedAction->setObjectName(QStringLiteral("d_axisSpeedAction"));
+		d_axisSpeedAction->setText(QString::fromLocal8Bit("轴速度"));
+		d_debugMenu->addAction(d_axisSpeedAction);
+
+		d_lineDetectorAction = new QAction(this);
+		d_lineDetectorAction->setObjectName(QStringLiteral("lineDetectorAction"));
+		d_lineDetectorAction->setText(QString::fromLocal8Bit("线阵探测器设置查看"));
+		d_debugMenu->addAction(d_lineDetectorAction);
+
+		d_autoAlignLayerAction = new QAction(this);
+		d_autoAlignLayerAction->setObjectName(QStringLiteral("d_autoAlignLayerAction"));
+		d_autoAlignLayerAction->setText(QString::fromLocal8Bit("射线自动对齐"));
+		d_debugMenu->addAction(d_autoAlignLayerAction);
+
+		d_laserInterferometerAction = new QAction(this);
+		d_laserInterferometerAction->setObjectName(QStringLiteral("autoAlignLayer"));
+		d_laserInterferometerAction->setText(QString::fromLocal8Bit("激光干涉仪程序"));
+		d_debugMenu->addAction(d_laserInterferometerAction);
+	}
+}
+void CTScanApp::on_initiliseSystemAction_triggered()
+{
+	d_controller->initialiseController();
 }
 
 void CTScanApp::motorButonSlot()
@@ -182,14 +246,17 @@ void CTScanApp::motorButonSlot()
 
 void CTScanApp::switchToPanelWidgetSlot(int _rayId, int _detId)
 {
-	auto widget = d_panelDetScanManagerMap[{_rayId, _detId}]->getWidget();
+	auto widget = static_cast<ConeScanWidget*>(d_panelDetScanManagerMap[{_rayId, _detId}]->getWidget());
+	widget->setPanelDetWidget();
 	d_mainWidget->switchLinePanelWidget(widget);
+	//d_panelDetMap[0]->getWidget()->show();
 }
 
 void CTScanApp::switchToLineWidgetSlot(int _rayId, int _detId)
 {
 	auto widget = d_lineDetScanManagerMap[{_rayId, _detId}]->getWidget();
 	d_mainWidget->switchLinePanelWidget(widget);
+	//d_panelDetMap[0]->getWidget()->show();
 }
 
 void CTScanApp::setMiddleWidget(QWidget * _widget)

@@ -7,7 +7,7 @@ PanelFrameShot::PanelFrameShot(Panel* _panel, PanelImageProcess* _panelImageProc
 	: QObject(parent), d_panel(_panel), d_imageProcess(_panelImageProcess)
 	, d_frames(0), d_frameCount(0)
 {
-	d_panel->getPanelSize(d_width, d_height);
+
 }
 
 PanelFrameShot::~PanelFrameShot()
@@ -16,8 +16,10 @@ PanelFrameShot::~PanelFrameShot()
 
 void PanelFrameShot::frameShotCallback(unsigned short * _image)
 {
-	d_imageProcess->saveSingleBitmapDataToFile(_image, QString(""), d_height, d_width);
-	emit imageAcquiredSignal(_image, d_width, d_height);
+	auto width = d_panel->getPanelSize().first;
+	auto height = d_panel->getPanelSize().second;
+	d_imageProcess->saveSingleBitmapDataToFile(_image, QString(""), width, height);
+	emit imageAcquiredSignal(_image, width, height);
 	//free(_image);
 
 	//NOTEPAD
@@ -33,7 +35,10 @@ void PanelFrameShot::previewCallback(unsigned short * _image)
 
 void PanelFrameShot::beginAcquire(int _frames, int _cycleTime, unsigned short _gainFactor)
 {
-	emit imageAcquiredSignal(nullptr, d_width, d_height);
+	//DEBUG：测试图像缩放新增
+	emit imageAcquiredSignal(nullptr, 2048, 2048);
+	//DEBUG：测试图像缩放新增
+
 	//DEBUG：测试图像缩放被注释掉
 	//d_frames = _frames;
 	//d_frameCount = 0;

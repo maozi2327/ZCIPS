@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "PESiPanel.h"
 #pragma comment(lib, "./public/lib/xisl.lib")
 
@@ -18,23 +19,29 @@ PESiPanel::PESiPanel()
 	, Panel()
 	, d_PESiDetBufferSize(0), d_PESiDetAcqBuffer(nullptr), d_frameCount(0), d_sampleMode(SampleMode::wrongTrigger), d_cycleTime(0), d_gainFactor(10)
 {
+	d_widget = new PEsiPanelWidget();
 	ptrPESiPanel = this;
-	initialise();
+	connectPanel();
+	connect(d_widget, &PEsiPanelWidget::setCycleTimeSignal, this, &PESiPanel::setCycleTimeSlot);
+	connect(d_widget, &PEsiPanelWidget::setGainFactorSignal, this, &PESiPanel::setGainFactorSlot);
 }
 
 PESiPanel::~PESiPanel()
 {
+
 }
+
 void OnEndPESiDetFrameCallback(HACQDESC hAcqDesc)
 {
 	ptrPESiPanel->OnEndPESiDetFrameCallback(hAcqDesc);
 }
+
 void OnEndPESiDetAcqCallback(HACQDESC hAcqDesc)
 {
 	ptrPESiPanel->OnEndPESiDetAcqCallback(hAcqDesc);
 }
 
-bool PESiPanel::initialise()
+bool PESiPanel::connectPanel()
 {
 	unsigned int uiNumSensors;			// 探测器个数
 	unsigned int iRet;
@@ -68,7 +75,7 @@ bool PESiPanel::initialise()
 	}
 
 	if (nChannelType == HIS_BOARD_TYPE_ELTEC_XRD_FGX ||
-		nChannelType == HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto) 
+		nChannelType == HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto)
 	{
 		CHwHeaderInfo Info;
 		CHwHeaderInfoEx InfoEx; // new Header 1621
@@ -135,7 +142,6 @@ bool PESiPanel::initialise()
 		LOG_ERROR("%s失败！错误码%d", "Acquisition_SetCallbacksAndMessages", iRet);
 		return false;
 	}
-
 
 	if ((iRet = Acquisition_SetCameraTriggerMode(hAcqDesc, 1)) == HIS_ALL_OK)
 	{
@@ -272,7 +278,8 @@ bool PESiPanel::setSampleMode(SampleMode _sampleMode, int _cycleTime)
 
 	return true;
 }
-bool PESiPanel::setGainFactor(unsigned short _gainFactor)
+
+bool PESiPanel::setGainFactor(int _gainFactor)
 {
 	unsigned short iRet;
 	//TODO：面板未连接时，会因为hPESiAcqDesc句柄错误而导致异常
@@ -294,7 +301,7 @@ bool PESiPanel::setGainFactor(unsigned short _gainFactor)
 }
 //TODO_DJ:如果单次采集分配的内存很大，则在采集完成或者停止采集后清空d_PESiDetAcqBuffer
 bool PESiPanel::beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames, 
-	int _cycleTime, unsigned short _gainFactor)
+	int _cycleTime, int _gainFactor)
 {
 	setFrameCallback(_imageProcessCallBack);
 	d_PESiContinusSingleMode = PESICON_SINGLE_MODE::Single;
@@ -302,7 +309,7 @@ bool PESiPanel::beginSoftwareTriggerAcquire(std::function<void(unsigned short*)>
 }
 
 bool PESiPanel::beginExTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime, 
-	unsigned short _gainFactor)
+	int _gainFactor)
 {
 	setFrameCallback(_imageProcessCallBack);
 	d_PESiContinusSingleMode = PESICON_SINGLE_MODE::Single;
@@ -317,28 +324,31 @@ void PESiPanel::stopAcquire()
 	Acquisition_SetFrameSyncMode(hPESiAcqDesc, HIS_SYNCMODE_FREE_RUNNING);
 	d_sampleMode = SampleMode::freeRunning;
 }
+
 bool PESiPanel::setFrames(int _frames)
 {
 	d_frames = _frames;
 	return true;
 }
+
 float PESiPanel::getPixelSize()
 {
 	return d_pixelSize;
 }
+
 void PESiPanel::setFrameCallback(std::function<void(unsigned short*)> _imageProcessCallBack)
 {
 	d_imageProcCallback = _imageProcessCallBack;
 }
+
 int PESiPanel::caculateExTriggerSampleTime(int _cycleTime)
 {
 	return _cycleTime + d_exTriggerTimeMargin;
 }
-bool PESiPanel::getPanelSize(int& _width, int& _height)
+
+std::pair<int, int> PESiPanel::getPanelSize()
 {
-	_width = d_width;
-	_height = d_height;
-	return true;
+	return std::pair<int, int>{ d_width, d_height };
 }
 
 bool PESiPanel::setPanelSize(int _width, int _height)
@@ -346,6 +356,36 @@ bool PESiPanel::setPanelSize(int _width, int _height)
 	d_width = _width;
 	d_height = _height;
 	return true;
+}
+
+QWidget * PESiPanel::getWidget()
+{
+	return d_widget;
+}
+
+void PESiPanel::setCycleTimeSlot(int _milliseconds)
+{
+	setCycleTime(_milliseconds);
+}
+
+void PESiPanel::setGainFactorSlot(QString _text)
+{
+	int gain = 2;
+
+	if (_text == "0.25pF")
+		gain = 0;
+	else if (_text == "0.5pF")
+		gain = 1;
+	else if (_text == "1pF")
+		gain = 2;
+	else if (_text == "2pF")
+		gain = 3;
+	else if (_text == "4pF")
+		gain = 4;
+	else if (_text == "8pF")
+		gain = 5;
+
+	setGainFactor(gain);
 }
 
 bool PESiPanel::beginAcquire(SampleMode _sampleMode, int _cycleTime, int _frames)

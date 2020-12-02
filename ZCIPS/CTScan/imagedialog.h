@@ -10,11 +10,11 @@ class ImageDialog : public QDialog
 	Q_OBJECT
 
 public:
-	ImageDialog(ImageDialogManager* _imageWidgetManager, int _screenWidth, int _screenHeight, QWidget *parent = Q_NULLPTR);
-	ImageDialog(ImageDialogManager* _imageWidgetManager, int _screenWidth, int _screenHeight, unsigned char* _buffer,
-		int _width, int _height, QWidget *parent = Q_NULLPTR);
-	ImageDialog(ImageDialogManager* _imageWidgetManager, int _screenWidth, int _screenHeight, QString& _fileName,
+	ImageDialog(int _screenWidth, int _screenHeight, int _width, int _height, 
 		QWidget *parent = Q_NULLPTR);
+	ImageDialog(int _screenWidth, int _screenHeight, unsigned char* _buffer,
+		int _width, int _height, QWidget *parent = Q_NULLPTR);
+	ImageDialog(int _screenWidth, int _screenHeight, QString& _fileName, QWidget *parent = Q_NULLPTR);
 	~ImageDialog();
 
 	bool loadImage(QString& _fileName);

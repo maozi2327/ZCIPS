@@ -186,6 +186,9 @@
     <ClCompile Include="imagedialogmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="qtwidgetaddtest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\lib\tinyxml2.h">
@@ -287,6 +290,12 @@
     <ClInclude Include="imagedialogmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="forwarddecleration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fixedthreadpool.h">
+      <Filter>public\utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="..\Public\util\serialportutil.h">
@@ -367,6 +376,9 @@
     <QtMoc Include="imagedialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="qtwidgetaddtest.h">
+      <Filter>public</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="conescanwidget.ui">
@@ -400,6 +412,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="imagedialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="qtwidgetaddtest.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

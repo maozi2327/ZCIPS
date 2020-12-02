@@ -10,10 +10,15 @@ CTScanWidget::CTScanWidget(QWidget* _upWidget, QWidget* _middleWidget, QWidget* 
 	//layoutAcc->addWidget(d_upWidget, 0, 0);
 	//layoutAcc->setContentsMargins(0, 0, 0, 0);
 	//d_upWidget->setContentsMargins(0, 0, 0, 0);
+
 	d_middleLayout = new QVBoxLayout;
 	d_middleLayout->addWidget(d_middleWidget, 0, 0);
-	QSpacerItem* vSpacer = new QSpacerItem(0, 0, QSizePolicy::Maximum, QSizePolicy::Expanding);
-	d_middleLayout->addItem(vSpacer);
+	//d_middleLayout->setSpacing(6);
+	//d_middleLayout->setContentsMargins(11, 11, 11, 11);
+
+	//QSpacerItem* vSpacer = new QSpacerItem(0, 0, QSizePolicy::Maximum, QSizePolicy::Expanding);
+	//d_middleLayout->insertWidget(1, d_middleWidget, 0);
+	//d_middleLayout->insertSpacerItem(0, vSpacer);
 	ui.scanTable->setLayout(d_middleLayout);
 	////添加layout使位于中间
 	//QGridLayout* layout1 = new QGridLayout;

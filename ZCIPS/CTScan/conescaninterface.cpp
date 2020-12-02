@@ -8,7 +8,8 @@ ConeScanInterface::ConeScanInterface(Panel* _panel, ControllerInterface* _contro
 	d_panel(_panel), d_controller(_controller), d_imageProcess(_imageProcess),
 	d_imageProcessSleep(300), d_graduationCount(0)
 {
-	d_panel->getPanelSize(d_width, d_height);
+	d_width = d_panel->getPanelSize().first;
+	d_height = d_panel->getPanelSize().second;
 }
 
 ConeScanInterface::~ConeScanInterface()

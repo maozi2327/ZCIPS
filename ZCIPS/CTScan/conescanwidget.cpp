@@ -1,24 +1,26 @@
 #include "stdafx.h"
 #include "conescanwidget.h"
 #include "../PanelDll/panel.h"
+#include "qtwidgetaddtest.h"
 
-ConeScanWidget::ConeScanWidget(Panel* _panel, QWidget *parent)
+ConeScanWidget::ConeScanWidget(Panel* _panel, QWidget* _panelWidget, QWidget *parent)
 	: QWidget(parent)
-	, d_panel(_panel)
+	, d_panel(_panel), d_panelWidget(_panelWidget)
 {
 	ui.setupUi(this);
-	ui.singleShotFramesSpinBox->setValue(1);
-	ui.cycleTimeEdit->setText("500");
 	ui.coneScanGraduationComboBox->setCurrentText("256");
 	ui.coneScanframesComboBox->setCurrentText("1");
 	ui.orientIncEdit->setText("0");
-	QStringList gainGroupItem{"0.25pF", "0.5pF", "1pF", "2pF", "4pF", "8pF"};
-	ui.gainComboBox->addItems(gainGroupItem);
 }
 
 ConeScanWidget::~ConeScanWidget()
 {
 
+}
+
+void ConeScanWidget::setPanelDetWidget()
+{
+	d_panelWidget->setParent(ui.widget);
 }
 
 void ConeScanWidget::setConeScanProgress(float _progress, const QString & _msg)
@@ -64,7 +66,6 @@ unsigned short ConeScanWidget::getGainFactor(const QString & _text)
 	return gain;
 }
 
-
 void ConeScanWidget::on_coneScanBeginSampleButton_clicked()
 {
 	emit coneScanBeginSignal();
@@ -75,18 +76,7 @@ void ConeScanWidget::on_frameShotButton_clicked()
 	emit frameShotSignal();
 }
 
-void ConeScanWidget::on_cycleTimeEdit_returnPressed()
-{
-	int time = ui.cycleTimeEdit->text().toInt();
-	d_panel->setCycleTime(time);
-}
-
 void ConeScanWidget::on_coneScanStopButton_clicked()
 {
 	emit stopControllerSignal();
-}
-
-void ConeScanWidget::on_gainComboBox_currentIndexChanged(const QString& _text)
-{
-	d_panel->setGainFactor(getGainFactor(_text));
 }

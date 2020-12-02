@@ -10,6 +10,7 @@ protected:
 	virtual void sendCmdToControl();
 	virtual bool checkScanAble();
 	virtual bool canScan();
+	virtual void saveTempFile(LineDetList* _listHead) override;
 public:
 	LineDetAirTune(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWor,
 		const SetupData* _setupData, int _lineDetIndex);

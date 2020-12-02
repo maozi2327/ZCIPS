@@ -12,8 +12,6 @@
 #include "simotioncontroller.h"
 #include "filedb.h"
 
-std::chrono::minutes CT3Scan::d_intervalForSaveTempFile = std::chrono::minutes(3);
-
 CT3Scan::CT3Scan(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork,
 	const SetupData* _setupData, int _lineDetIndex)
 	: LineDetScanInterface(_controller, _lineDetNetWork, _setupData, _lineDetIndex)
@@ -41,43 +39,43 @@ bool CT3Scan::setScanParameter(float _layer, int _matrix, float _view,
 //更新进度条
 //检查扫描结束
 //每间隔固定时间保存一个零时文件，扫描完成后合成
-void CT3Scan::scanThread()
-{
-	if (d_lineDetNetWork->startExtTrigAcquire())
-	{
-		static std::chrono::steady_clock::time_point last_time;
-		last_time = d_start_time = std::chrono::steady_clock::now();
-		setGenerialFileHeader();
-		sendCmdToControl();
-		d_lineDetNetWork->clearRowList();
-		std::this_thread::sleep_for(std::chrono::seconds(3));
-
-		while (d_deadThreadRun)
-		{
-			auto now = std::chrono::steady_clock::now();
-
-			if (now > last_time + d_intervalForSaveTempFile)
-			{
-				auto listTempHead = d_lineDetNetWork->getRowList();
-				saveTempFile(listTempHead);
-				d_lineDetNetWork->clearRowList();
-				last_time = now;
-			}
-
-			emit(signalGraduationCount(100 * d_lineDetNetWork->getGraduationCount() / d_allGraduationSample));
-
-			if (d_controller->readSaveStatus())
-			{
-				saveFile();
-				break;
-			}
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		}
-	}
-	else
-		;
-}
+//void CT3Scan::scanThread()
+//{
+//	if (d_lineDetNetWork->startExtTrigAcquire())
+//	{
+//		static std::chrono::steady_clock::time_point last_time;
+//		last_time = d_start_time = std::chrono::steady_clock::now();
+//		setGenerialFileHeader();
+//		sendCmdToControl();
+//		d_lineDetNetWork->clearRowList();
+//		std::this_thread::sleep_for(std::chrono::seconds(3));
+//
+//		while (d_deadThreadRun)
+//		{
+//			auto now = std::chrono::steady_clock::now();
+//
+//			if (now > last_time + d_intervalForSaveTempFile)
+//			{
+//				auto listTempHead = d_lineDetNetWork->getRowList();
+//				saveTempFile(listTempHead);
+//				d_lineDetNetWork->clearRowList();
+//				last_time = now;
+//			}
+//
+//			emit(signalGraduationCount(100 * d_lineDetNetWork->getGraduationCount() / d_allGraduationSample));
+//
+//			if (d_controller->readSaveStatus())
+//			{
+//				saveFile();
+//				break;
+//			}
+//
+//			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+//		}
+//	}
+//	else
+//		;
+//}
 
 
 void CT3Scan::sendCmdToControl()
@@ -137,12 +135,14 @@ void CT3Scan::saveFile()
 	d_fileName += QString('_') + number;
 	saveOrgFile(d_lineDetNetWork->getRowList(), d_fileName);
 
+	//保存ORG记录到数据库
 	OrgRecord orgRecord;
 	orgRecord.path = d_orgPath;
 	orgRecord.fileName = d_fileName;
 	orgRecord.number = number.toInt();
 	orgRecord.type = static_cast<char>(ScanMode::CT3_SCAN);
 	d_fileDB->writeOrgRecord(orgRecord);
+	
 	d_orgPath = d_orgPath + d_fileName + '\\';
 	QString orgFileName(d_orgPath + d_fileName + ".org");
 	d_filePath = d_filePath + d_fileName + '\\';
@@ -151,6 +151,8 @@ void CT3Scan::saveFile()
 	//拷贝空气文件到校正参数路径
 	QFile::copy(d_airFile, d_installDirectory + "air.dat");
 	d_lineDetImageProcess->dispose(d_fileName);
+
+	//保存CT记录到数据库
 	CT3Record ct3Record;
 	ct3Record.path = d_filePath;
 	ct3Record.fileName = d_fileName;
@@ -160,55 +162,28 @@ void CT3Scan::saveFile()
 	ct3Record.sampleTime = d_sampleTime;
 	ct3Record.layer = d_layer;
 }
-//TODO_DJ
-//检测线阵采集数据大小是否为虚拟通道数整数倍
-//TODO_DJ
-bool CT3Scan::beginScan()
-{	
-	if (canScan())
-	{
-		d_scanThread.reset(new Thread(std::bind(&CT3Scan::scanThread, this), 
-			std::ref(d_deadThreadRun)));
-		d_scanThread->detach();
-		return true;
-	}	
-		
-	return false;
-}
 
 bool CT3Scan::setGenerialFileHeader()
 {
 	LineDetScanInterface::setGenerialFileHeader();
 
-	d_ictHeader.DataFormat.graduationBase = 0;						//3代扫描起始分度
-	d_ictHeader.ScanParameter.ScanMode = static_cast<char>(ScanMode::CT3_SCAN);
+	d_ictHeader.ScanParameter.SampleTime = float(d_sampleTime) / 1000;
+	d_ictHeader.ScanParameter.SetupSynchPulseNumber
+		= (WORD)(d_ictHeader.ScanParameter.SampleTime * d_ictHeader.SystemParameter.SynchFrequency);
+
 	d_ictHeader.ScanParameter.NumberOfGraduation = d_matrix;
 	d_ictHeader.ScanParameter.Azimuth = d_angle;
 	d_ictHeader.ScanParameter.NumberofValidVerticalDetector = d_channelNum;
 	//对无关参数设置默认值
-	d_ictHeader.ScanParameter.RadialDistanceInLocal = 0;
-	d_ictHeader.ScanParameter.AngleInLocal = 0;
-	d_ictHeader.ScanParameter.HelixScanPitch = 0;
-	d_ictHeader.ScanParameter.FirstSectStartCoordinateOfDR = 0;
-	d_ictHeader.ScanParameter.SecondSectStartCoordinateOfDR = 0;
-	d_ictHeader.ScanParameter.TotalLayers = 1;
-	d_ictHeader.ScanParameter.TotalLayers2 = 0;
-	d_ictHeader.ScanParameter.Ct2ScanMode = 0;
-	d_ictHeader.ScanParameter.DataTransferMode = 1;
-	d_ictHeader.ScanParameter.NumberOfTranslation = 0;
-	d_ictHeader.ReconstructParameter.NumberOfGraduationOfCt2 = 0;
-	d_ictHeader.ReconstructParameter.SerialOfGraduationOfCt2 = 0;
 	d_ictHeader.ScanParameter.ViewDiameter = d_viewDiameter;
-	d_ictHeader.ScanParameter.NumberOfTable = 1;
-	d_ictHeader.ScanParameter.LargeViewCenterOffset = 0;
 	d_ictHeader.ScanParameter.Pixels = d_matrix;
-	d_ictHeader.ScanParameter.GraduationDirection = P_DIR;
-	d_ictHeader.ScanParameter.DelaminationMode = 0;
 	CalculateView_ValidDetector(d_view);
 	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
-	d_ictHeader.ScanParameter.NumberOfInterpolation = 
+	d_ictHeader.ScanParameter.NumberOfInterpolation =
 		(float)d_matrix / d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector + 1;
 
+	d_ictHeader.ScanParameter.ScanMode = static_cast<char>(ScanMode::CT3_SCAN);
+	CalculateView_ValidDetector(d_view);
 	d_allGraduationSample = d_ictHeader.ScanParameter.NumberOfInterpolation * d_matrix;
 	int N = d_ictHeader.ScanParameter.NumberOfSystemHorizontalDetector;
 	float d = PI * d_ictHeader.ScanParameter.HorizontalSectorAngle / (180 * (N - 1));
@@ -260,9 +235,4 @@ void CT3Scan::saveTempFile(LineDetList* _listHead)
 	file.close();
 	delete[] fileMemory;
 	d_tempFileVec.push_back(tempFileName);
-}
-
-void CT3Scan::stopScan()
-{
-	LineDetScanInterface::stopScan();
 }

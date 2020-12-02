@@ -39,6 +39,9 @@
     <ClCompile Include="siyuan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mainwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -49,9 +52,15 @@
     <QtMoc Include="siyuan.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="mainwindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="siyuan.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="mainwindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

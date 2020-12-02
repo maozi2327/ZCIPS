@@ -18,6 +18,7 @@ public:
 	static CTScanInterface* loadCtScanInstance(QWidget* _parent);
 	~CTScanInterface();
 	virtual void ctScanWidgetClosed();
+	virtual QMenuBar* getMenuBar() = 0;
 };
 
 //TODO_DJ_NOTEPAD

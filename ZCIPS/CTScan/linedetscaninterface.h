@@ -47,6 +47,7 @@ protected:
 	int d_channelNum;
 
 	std::chrono::steady_clock::time_point d_start_time;
+	static std::chrono::minutes d_intervalForSaveTempFile;
 	LineDetNetWork* d_lineDetNetWork;
 	LineDetImageProcess* d_lineDetImageProcess;
 	ControllerInterface* d_controller;
@@ -56,13 +57,15 @@ protected:
 	const SetupData* d_setupData;
 	const ConfigData* d_configData;
 	static ICT_HEADER23 d_ictHeader;
-	virtual void scanThread() = 0;
+	virtual void scanThread();
 	void saveOrgFile(LineDetList* _list, const QString& _fileName);
 	virtual bool setGenerialFileHeader();
 	virtual void sendCmdToControl() = 0;
 	void CalculateView_ValidDetector(float _diameter);
-	virtual bool canScan() = 0;
+	virtual bool canScan();
 	virtual int loadTempFile();
+	virtual void saveTempFile(LineDetList* _listHead) = 0;
+	virtual void saveFile() = 0;
 signals:
 	void signalGraduationCount(int _count);
 	LOGSIGNAL
@@ -73,6 +76,6 @@ public:
 	void setFileName(const QString& _fileName) { d_fileName = _fileName; };
 	void setFilePath(const QString& _filePath) { d_filePath = _filePath; };
 	void setOrgPath(const QString& _orgPath) { d_orgPath = _orgPath; };
-	virtual bool beginScan() = 0;
-	virtual void stopScan() = 0;
+	virtual bool beginScan();
+	virtual void stopScan();
 };

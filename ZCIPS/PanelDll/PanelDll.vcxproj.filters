@@ -24,6 +24,14 @@
       <Extensions>moc;h;cpp</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>true</ParseFiles>
+    </Filter>
+    <Filter Include="Header Files\Varian Headers">
+      <UniqueIdentifier>{d1de34c2-3d06-4604-98f6-9a1554bc6712}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PESiPanel.cpp">
@@ -35,12 +43,51 @@
     <ClCompile Include="..\Public\util\logmacro.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="varianpanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="varianwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pesipanelwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="panelHeaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PESiPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="varianpanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="public\headers\varian\FluoroStructs.h">
+      <Filter>Header Files\Varian Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="public\headers\varian\HcpErrors.h">
+      <Filter>Header Files\Varian Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="public\headers\varian\HcpFuncDefs.h">
+      <Filter>Header Files\Varian Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="public\headers\varian\HcpPxlFormat.h">
+      <Filter>Header Files\Varian Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="public\headers\varian\HcpSundries.h">
+      <Filter>Header Files\Varian Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="public\headers\varian\iostatus.h">
+      <Filter>Header Files\Varian Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="public\headers\varian\WinDef.h">
+      <Filter>Header Files\Varian Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,5 +100,19 @@
     <QtMoc Include="panel.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="varianwidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="pesipanelwidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="varianwidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="pesipanelwidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@
 #include "LineDetNetWork.h"
 #include "../Public/headers/setupData.h"
 #include "ct3scan.h"
+#include "linedetbkgtune.h"
 #include "CT3TemplateDialog.h"
 #include "linedetairdisposedialog.h"
 #include "scantemplate.h"
@@ -133,4 +134,31 @@ void LineDetScanManager::LoadCt3TemplateButtonSlot()
 void LineDetScanManager::useCt3ItemSlot()
 {
 	d_lineDetScanWidget->useCt3Item(d_ct3TemplateDataItem);
+}
+
+void LineDetScanManager::bkgTuneSlot()
+{
+	float layer = d_lineDetScanWidget->getLayer();
+	int matrix = d_lineDetScanWidget->ui.ct3MatrixComboBox->currentText().toInt();
+	int view = d_lineDetScanWidget->ui.ct3ViewComboBox->currentText().toInt();
+	int sampleTime = d_lineDetScanWidget->ui.ct3SampleTimeComboBox->currentText().toInt();
+	float angle = d_lineDetScanWidget->ui.ct3AngleLineEdit->text().toFloat();
+	QString fileName = d_lineDetScanWidget->ui.ct3FileNameLineEdit->text();
+
+	d_scan.reset(new LineDetBkgTune(d_controller, d_lineDetNetWork, d_setupData, d_detNum));
+
+	if (!dynamic_cast<CT3Scan*>(d_scan.get())
+		->setScanParameter(layer, matrix, view, sampleTime, angle))
+		return;
+
+	//d_scan->setOrgPath();
+	//d_scan->setOrgPath();
+	d_scan->setFileName(fileName);
+	connect(d_scan.get(), &CT3Scan::signalGraduationCount, d_lineDetScanWidget, &LineDetScanWidget::updateCT3Progresser);
+	d_scan->beginScan();
+}
+
+void LineDetScanManager::airTuneSlot()
+{
+
 }

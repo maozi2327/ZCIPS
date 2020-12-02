@@ -9,6 +9,7 @@
 #include <algorithm>
 
 ICT_HEADER23 LineDetScanInterface::d_ictHeader;
+std::chrono::minutes LineDetScanInterface::d_intervalForSaveTempFile = std::chrono::minutes(30);
 
 LineDetScanInterface::LineDetScanInterface(ControllerInterface * _controller, LineDetNetWork* _lineDetNetWork,
 	const SetupData* _setupData, int _lineDetIndex)
@@ -23,10 +24,61 @@ LineDetScanInterface::~LineDetScanInterface()
 
 }
 
+bool LineDetScanInterface::beginScan()
+{
+	if (canScan())
+	{
+		d_scanThread.reset(new Thread(std::bind(&LineDetScanInterface::scanThread, this),
+			std::ref(d_deadThreadRun)));
+		d_scanThread->detach();
+		return true;
+	}
+
+	return false;
+}
+
 void LineDetScanInterface::stopScan()
 {
 	d_lineDetNetWork->stopAcquire(true);
 	d_scanThread->stopThread();
+}
+
+void LineDetScanInterface::scanThread()
+{
+	if (d_lineDetNetWork->startExtTrigAcquire())
+	{
+		static std::chrono::steady_clock::time_point last_time;
+		last_time = d_start_time = std::chrono::steady_clock::now();
+		setGenerialFileHeader();
+		sendCmdToControl();
+		d_lineDetNetWork->clearRowList();
+		std::this_thread::sleep_for(std::chrono::seconds(3));
+
+		while (d_deadThreadRun)
+		{
+			auto now = std::chrono::steady_clock::now();
+
+			if (now > last_time + d_intervalForSaveTempFile)
+			{
+				auto listTempHead = d_lineDetNetWork->getRowList();
+				saveTempFile(listTempHead);
+				d_lineDetNetWork->clearRowList();
+				last_time = now;
+			}
+
+			emit(signalGraduationCount(100 * d_lineDetNetWork->getGraduationCount() / d_allGraduationSample));
+
+			if (d_controller->readSaveStatus())
+			{
+				saveFile();
+				break;
+			}
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
+	}
+	else
+		;
 }
 
 void LineDetScanInterface::saveOrgFile(LineDetList* _List, const QString& _fileName)
@@ -90,6 +142,34 @@ bool LineDetScanInterface::setGenerialFileHeader()
 	d_ictHeader.ScanParameter.SetupSynchPulseNumber
 		= (WORD)(d_ictHeader.ScanParameter.SampleTime * d_ictHeader.SystemParameter.SynchFrequency);
 	
+	d_ictHeader.DataFormat.graduationBase = 0;						//3代扫描起始分度
+	d_ictHeader.ScanParameter.NumberOfGraduation = d_matrix;
+	d_ictHeader.ScanParameter.Azimuth = d_angle;
+	d_ictHeader.ScanParameter.NumberofValidVerticalDetector = d_channelNum;
+	//对无关参数设置默认值
+	d_ictHeader.ScanParameter.RadialDistanceInLocal = 0;
+	d_ictHeader.ScanParameter.AngleInLocal = 0;
+	d_ictHeader.ScanParameter.HelixScanPitch = 0;
+	d_ictHeader.ScanParameter.FirstSectStartCoordinateOfDR = 0;
+	d_ictHeader.ScanParameter.SecondSectStartCoordinateOfDR = 0;
+	d_ictHeader.ScanParameter.TotalLayers = 1;
+	d_ictHeader.ScanParameter.TotalLayers2 = 0;
+	d_ictHeader.ScanParameter.Ct2ScanMode = 0;
+	d_ictHeader.ScanParameter.DataTransferMode = 1;
+	d_ictHeader.ScanParameter.NumberOfTranslation = 0;
+	d_ictHeader.ReconstructParameter.NumberOfGraduationOfCt2 = 0;
+	d_ictHeader.ReconstructParameter.SerialOfGraduationOfCt2 = 0;
+	d_ictHeader.ScanParameter.ViewDiameter = d_viewDiameter;
+	d_ictHeader.ScanParameter.NumberOfTable = 1;
+	d_ictHeader.ScanParameter.LargeViewCenterOffset = 0;
+	d_ictHeader.ScanParameter.Pixels = d_matrix;
+	d_ictHeader.ScanParameter.GraduationDirection = P_DIR;
+	d_ictHeader.ScanParameter.DelaminationMode = 0;
+	CalculateView_ValidDetector(d_view);
+	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
+	d_ictHeader.ScanParameter.NumberOfInterpolation =
+		(float)d_matrix / d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector + 1;
+
 	//设置时间
 	QString time = QDateTime::currentDateTime().time().toString();
 	QByteArray byteArray = time.toLatin1();

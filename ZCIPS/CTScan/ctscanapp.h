@@ -68,11 +68,28 @@ private:
 	QSystemTrayIcon* d_tray;
 	QString	d_workDir;
 	QWidget* d_upperWidget;
+	bool d_debugSystem = true;
 
+	QMenuBar* d_menuBar;
+	QAction* d_initiliseSystemAction;
+	QMenu* d_systemMenu;
+	QMenu* d_debugMenu;
+	QAction* d_axisZeroCoordinateAction;
+	QAction* d_axisSpeedAction; 
+	QAction* d_lineDetectorAction;
+	QAction* d_autoAlignLayerAction;
+	QAction* d_laserInterferometerAction;
 public:
 	void setMiddleWidget(QWidget* _widget);
 	void setDownWidget(QWidget* _widget);
 	void ctScanWidgetClosed();
 	void switchToLineWidget(int _rayId, int _detId);
 	void switchToPanelWidget(int _rayId, int _detId);
+
+	virtual QMenuBar* getMenuBar();
+private:
+	void buildMenuBar();
+
+private slots:
+	void on_initiliseSystemAction_triggered();
 };

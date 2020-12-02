@@ -188,3 +188,20 @@ const std::map<const char*, Axis> AxisNameMap
 	{"DetTranslation", Axis::detTranslation},
 	{"DetRadial", Axis::detRadial}
 };
+
+struct AxisData
+{
+	QString axisName;
+	QString objectName;
+};
+
+const std::map<Axis, AxisData> AxisDataMap
+{
+	{Axis::objRotation, AxisData{"objRotaion", "objRotaion"}},
+	{Axis::objTranslation, AxisData{"objTranslation", "objTranslation"}},
+	{Axis::objRadial, AxisData{"objRadial", "objRadial"}},
+	{Axis::rayLayer, AxisData{"rayLayer", "rayLayer"}},
+	{Axis::detLayer, AxisData{"detLayer", "detLayer"}},
+	{Axis::detTranslation, AxisData{"detTranslation", "detTranslation"}},
+	{Axis::detRadial, AxisData{"detRadial", "detRadial"}}
+};

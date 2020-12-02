@@ -15,3 +15,38 @@ LineDetBkgTune::LineDetBkgTune(ControllerInterface* _controller, LineDetNetWork*
 LineDetBkgTune::~LineDetBkgTune()
 {
 }
+
+void LineDetBkgTune::sendCmdToControl()
+{
+	d_controller->sendToControl(CMD_BKG_TUNE, nullptr, 0, false);
+}
+
+bool LineDetBkgTune::setGenerialFileHeader()
+{
+	LineDetScanInterface::setGenerialFileHeader();
+
+	d_ictHeader.ScanParameter.SampleTime = float(d_sampleTime) / 1000;
+	d_ictHeader.ScanParameter.SetupSynchPulseNumber
+		= (WORD)(d_ictHeader.ScanParameter.SampleTime * d_ictHeader.SystemParameter.SynchFrequency);
+	d_ictHeader.ScanParameter.NumberOfGraduation = TUNE_PROJECTIONS;
+	d_ictHeader.ScanParameter.Azimuth = 0;
+	d_ictHeader.ScanParameter.NumberofValidVerticalDetector = d_channelNum;
+	d_allGraduationSample = d_ictHeader.ScanParameter.ViewDiameter = TUNE_PROJECTIONS;
+	d_ictHeader.ScanParameter.Pixels = TUNE_PROJECTIONS;
+	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
+	d_ictHeader.ScanParameter.NumberOfInterpolation = 1;
+	d_ictHeader.ScanParameter.ScanMode = static_cast<unsigned short>(ScanMode::BKG_SCAN);
+	return true;
+}
+
+void LineDetBkgTune::saveFile()
+{
+	d_fileName = QString("bkg.org");
+	saveOrgFile(d_lineDetNetWork->getRowList(), d_fileName);
+	d_lineDetImageProcess->createBkgDat(d_fileName);
+}
+
+void LineDetBkgTune::saveTempFile(LineDetList * _listHead)
+{
+
+}

@@ -11,42 +11,52 @@ ImageDialogManager::ImageDialogManager()
 	d_screenWidth = screenGeometry.width();
 }
 
-
 ImageDialogManager::~ImageDialogManager()
 {
+	for (auto it : d_imageDialogVec)
+		delete it;
 }
+
 bool ImageDialogManager::showImageInNewWindow(unsigned char* _imageMemory, int _width, int _height)
 {
-	d_imageDialogVec.push_back(new ImageDialog(this, d_screenWidth, d_screenHeight, _imageMemory, _width, _height));
-	auto imageDialog = d_imageDialogVec.back();
-	imageDialog->show();
+	auto dialog = new ImageDialog(d_screenWidth, d_screenHeight, _imageMemory, _width, _height);
+	d_imageDialogVec.insert(dialog);
+	d_currentImageDialog = dialog;
+	dialog->show();
 	return true;
 }
-bool ImageDialogManager::showImageInCurrentWindow(unsigned char* _imageMemory, int _width, int _height)
-{
-	if (d_imageDialogVec.size() == 0)
-	{
-		d_imageDialogVec.push_back(new ImageDialog(this, d_screenWidth, d_screenHeight, _imageMemory, _width, _height));
-		d_frontWidgetIndex = 0; 
-	}
-	else
-	{
-		d_imageDialogVec[d_frontWidgetIndex]->loadImage(_imageMemory, _width, _height);
-	}
 
-	auto front = d_imageDialogVec[d_frontWidgetIndex];
-	front->show();
-	return true;
-}
 bool ImageDialogManager::showImageInNewWindow(QString& _fileName)
 {
-	d_imageDialogVec.push_back(new ImageDialog(this, d_screenWidth, d_screenHeight, _fileName));
-	auto imageDialog = d_imageDialogVec.back();
-	imageDialog->show();
+	auto dialog = new ImageDialog(d_screenWidth, d_screenHeight, _fileName);
+	d_imageDialogVec.insert(dialog);
+	d_currentImageDialog = dialog;
+	dialog->show();
 	return true;
 }
-bool ImageDialogManager::showImageInCurrentWindow(QString& _fileName)
+
+bool ImageDialogManager::showImageInCurrentWindow(IMAGEDIALOGHANDLE _handle, unsigned char* _imageMemory, int _width, int _height)
 {
-	d_imageDialogVec[d_frontWidgetIndex]->loadImage(_fileName);
-	return true;
+	auto ptr = static_cast<ImageDialog*>(_handle);
+
+	if (d_imageDialogVec.find(ptr) != d_imageDialogVec.end())
+	{
+		ptr->loadImage(_imageMemory, _width, _height);
+		ptr->show();
+		return true;
+	}
+	
+	return false;
+}
+
+bool ImageDialogManager::showImageInCurrentWindow(IMAGEDIALOGHANDLE _handle, QString& _fileName)
+{
+	return false;
+}
+
+IMAGEDIALOGHANDLE ImageDialogManager::getNewWindow(int _width, int _height)
+{
+	auto dialog = new ImageDialog(d_screenWidth, d_screenHeight, _width, _height);
+	d_imageDialogVec.insert(dialog);
+	return static_cast<IMAGEDIALOGHANDLE>(dialog);
 }

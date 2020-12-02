@@ -13,10 +13,10 @@ class ConeScanWidget : public QWidget
 	friend class PanelDetScanManager;
 
 public:
-	ConeScanWidget(Panel* _panel, QWidget *parent = Q_NULLPTR);
+	ConeScanWidget(Panel* _panel, QWidget* _panelWidget, QWidget *parent = Q_NULLPTR);
 
 	~ConeScanWidget();
-
+	void setPanelDetWidget();
 private:
 	Ui::ConeScanWidget ui;
 	void setConeScanProgress(float _progress, const QString& _msg);
@@ -24,12 +24,12 @@ private:
 	void initiliseConeJointRotScanControls(ConeJointRotScanData& _data);
 	unsigned short getGainFactor(const QString& _text);
 	Panel* d_panel;
+	QVBoxLayout* d_middleLayout;
+	QWidget* d_panelWidget;
 private slots:
 	void on_coneScanBeginSampleButton_clicked();
 	void on_frameShotButton_clicked();
-	void on_cycleTimeEdit_returnPressed();
 	void on_coneScanStopButton_clicked();
-	void on_gainComboBox_currentIndexChanged(const QString& _text);
 signals:
 	void coneScanBeginSignal();
 	void frameShotSignal();

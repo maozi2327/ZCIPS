@@ -21,24 +21,19 @@ LineDetAirTune::~LineDetAirTune()
 bool LineDetAirTune::setGenerialFileHeader()
 {
 	LineDetScanInterface::setGenerialFileHeader();
-	d_ictHeader.ScanParameter.NumberOfTable = 1;					//校正扫描转台数量
-	d_ictHeader.ScanParameter.LargeViewCenterOffset = 0;			//大视场扫描回转中心偏置(同时用于多转台扫描回转中心偏移)
-	d_ictHeader.ScanParameter.Pixels = TUNE_PROJECTIONS;			//V2.3中定义为射线平面图像像素个数(投影数M), 取消V2.2中代号表示方式
 
-	d_ictHeader.ScanParameter.Azimuth = 0;							//CT扫描时分度起始方位角(°),或DR扫描角度
-	d_ictHeader.ScanParameter.SpaceBetweenLayer						//CT层距/DR分层厚度, 单位:mm
-		=0;
-	d_ictHeader.ScanParameter.GraduationDirection = P_DIR;			//分度方向:N_DIR-顺时针(负方向), P_DIR-逆时针(正方向)
-
-	d_ictHeader.ScanParameter.ViewDiameter = 300;
-	d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector = 
-		d_setupData->lineDetData[d_lineDetIndex].NumberOfSystemHorizontalDetector;
-	d_ictHeader.ScanParameter.InterpolationFlag = 0;
+	d_ictHeader.ScanParameter.SampleTime = float(d_sampleTime) / 1000;
+	d_ictHeader.ScanParameter.SetupSynchPulseNumber
+		= (WORD)(d_ictHeader.ScanParameter.SampleTime * d_ictHeader.SystemParameter.SynchFrequency);
+	d_ictHeader.ScanParameter.NumberOfGraduation = TUNE_PROJECTIONS;
+	d_ictHeader.ScanParameter.Azimuth = 0;
+	d_ictHeader.ScanParameter.NumberofValidVerticalDetector = d_channelNum;
+	d_allGraduationSample = d_ictHeader.ScanParameter.ViewDiameter = TUNE_PROJECTIONS;
+	d_ictHeader.ScanParameter.Pixels = TUNE_PROJECTIONS;
+	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
 	d_ictHeader.ScanParameter.NumberOfInterpolation = 1;
-	d_allGraduationSample = d_ictHeader.ScanParameter.NumberOfGraduation = TUNE_PROJECTIONS;
-	d_ictHeader.ScanParameter.DelaminationMode = 0;
-	d_ictHeader.ScanParameter.TotalLayers = 1;
-	return false;
+	d_ictHeader.ScanParameter.ScanMode = static_cast<unsigned short>(ScanMode::AIR_SCAN);
+	return true;
 }
 
 #define	RTBUF_LEN	256						//定义接收/发送缓冲区长度
@@ -101,6 +96,10 @@ bool LineDetAirTune::checkScanAble()
 bool LineDetAirTune::canScan()
 {
 	return false;
+}
+
+void LineDetAirTune::saveTempFile(LineDetList * _listHead)
+{
 }
 
 void LineDetAirTune::stopScan()

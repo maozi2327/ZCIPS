@@ -49,6 +49,8 @@ private slots:
 	void stopButtonSlot();
 	void LoadCt3TemplateButtonSlot();
 	void useCt3ItemSlot();
+	void bkgTuneSlot();
+	void airTuneSlot();
 signals:
 	void readyToScanSignal(bool _sts);
 };

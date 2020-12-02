@@ -5,6 +5,8 @@
 #include "ui_conescanwidget.h"
 #include "../Public/headers/setupdata.h"
 
+#define IMAGEDIALOGHANDLE void*
+
 class PanelImageProcess;
 class ConeScanInterface;
 class ControllerInterface;
@@ -35,7 +37,7 @@ private:
 	ImageDialogManager* d_imageWidgetManager;
 	std::unique_ptr<PanelFrameShot> d_panelFrameShot;
 	virtual void frameShotCallback(unsigned short* _image);
-
+	IMAGEDIALOGHANDLE d_imageDialogHandle;
 public:
 	QWidget* getWidget();
 

@@ -27,27 +27,24 @@ QVector<QRgb> ImageDialog::initializeColorTable()
 	return colorTable;
 }
 
-ImageDialog::ImageDialog(ImageDialogManager* _imageWidgetManager, int _screenWidth, int _screenHeight, QWidget *parent)
-	: d_manager(_imageWidgetManager), QDialog(parent), d_screenWidth(_screenWidth), d_screenHeight(_screenHeight)
+ImageDialog::ImageDialog(int _screenWidth, int _screenHeight, int _width, int _height,
+	QWidget *parent)
+	: QDialog(parent), d_screenWidth(_screenWidth), d_screenHeight(_screenHeight)
+	, d_pixmap(new QPixmap)//, d_imageWidth(_width), d_imageHeight(_height)
+	, d_imageWidth(2048), d_imageHeight(2048)
 {
 	ui.setupUi(this);
-	QString str;
-	loadImage(str);
-	ui.imageLabel->setAlignment(Qt::AlignCenter);
-
-	if (float(d_screenWidth) / d_screenHeight > float(d_imageWidth) / d_imageHeight)
-	{
-		resize(d_screenWidth * 0.6, d_screenHeight * 0.6 * d_imageHeight / d_imageWidth);
-	}
-	else
-	{
-		resize(d_screenHeight * 0.6 * d_imageWidth / d_imageHeight, d_screenHeight * 0.6);
-	}
+	//DEBUG：测试图像缩放被注释，面板未连接_width和_height没有值
+	//d_imageBuffer = (unsigned char*)malloc(_width * _height);
+	d_imageBuffer = (unsigned char*)malloc(2048 * 2048);
+	initialWindowSize();
+	setMouseTracking(true);
+	ui.imageLabel->setMouseTracking(true);
 }
 
-ImageDialog::ImageDialog(ImageDialogManager* _imageWidgetManager, int _screenWidth, int _screenHeight,
+ImageDialog::ImageDialog(int _screenWidth, int _screenHeight,
 	unsigned char* _buffer, int _width, int _height, QWidget *parent)
-	: d_manager(_imageWidgetManager), QDialog(parent), d_screenWidth(_screenWidth), d_screenHeight(_screenHeight)
+	: QDialog(parent), d_screenWidth(_screenWidth), d_screenHeight(_screenHeight)
 	, d_pixmap(new QPixmap)//, d_imageWidth(_width), d_imageHeight(_height)
 	, d_imageWidth(2048), d_imageHeight(2048)
 {
@@ -62,9 +59,9 @@ ImageDialog::ImageDialog(ImageDialogManager* _imageWidgetManager, int _screenWid
 	ui.imageLabel->setMouseTracking(true);
 }
 
-ImageDialog::ImageDialog(ImageDialogManager* _imageWidgetManager, int _screenWidth, int _screenHeight, 
+ImageDialog::ImageDialog(int _screenWidth, int _screenHeight, 
 	QString& _fileName, QWidget *parent)
-	: d_manager(_imageWidgetManager), QDialog(parent), d_screenWidth(_screenWidth), d_screenHeight(_screenHeight)
+	: QDialog(parent), d_screenWidth(_screenWidth), d_screenHeight(_screenHeight)
 	, d_pixmap(new QPixmap)
 {
 	ui.setupUi(this);
@@ -109,6 +106,9 @@ bool ImageDialog::loadImage(QString& _fileName)
 
 bool ImageDialog::loadImage(unsigned char* _buffer, int _width, int _height)
 {
+	//if (_width != d_imageWidth || _height != d_imageHeight)
+	//	return false;
+	//
 	//for (int i = 0; i != _height; ++i)
 	//	for (int j = 0; j != _width; ++j)
 	//		d_imageBuffer[i * _width + j] = ((unsigned short*)_buffer)[i * _width + j] / 256;
