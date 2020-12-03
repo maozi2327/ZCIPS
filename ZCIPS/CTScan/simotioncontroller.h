@@ -139,7 +139,7 @@ public:
 	virtual std::map<Axis, float> readAxisSpeed();
 	virtual float readAxisPostion(AxisPosEnum _axis);
 	virtual std::map<AxisPosEnum, float> readAxisPostion();
-	virtual std::map<Axis, float> readAxisWorkZero();
+	virtual std::map<AxisZeroEnum, float> readAxisWorkZero();
 
 	virtual void getSystemStatus();
 	virtual void getAxisPosition();
@@ -149,7 +149,7 @@ public:
 	virtual void stopGettingAxisPostion();
 
 	virtual void setAxisSpeed(std::map<Axis, float>& _speed);
-	virtual void setAxisWorkZero(std::map<Axis, float>& _workZero);
+	virtual void setAxisWorkZero(std::map<AxisZeroEnum, float>& _workZero);
 	
 	virtual void sendToControl(int _cmd, char * _data, int _size, bool _consist);
 	virtual void decodePackages(char* _package, int _size);

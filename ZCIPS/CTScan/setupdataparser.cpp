@@ -342,7 +342,7 @@ bool SetupDataParser::parseAxisDefinition(tinyxml2::XMLElement * _element)
 	for (auto element = _element->FirstChildElement(); element != nullptr;
 		element = element->NextSiblingElement())
 	{
-		auto itr = AxisNameMap.find(element->Value());
+		auto itr = AxisNameMap.find(element->FirstAttribute()->Value());
 
 		if(itr != AxisNameMap.end())
 			d_setupData->sysAxisDefine.push_back(itr->second);

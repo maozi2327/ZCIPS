@@ -68,12 +68,14 @@ std::map<AxisPosEnum, float> SimotionController::readAxisPostion()
 	return d_axisPosition;
 }
 
-std::map<Axis, float> SimotionController::readAxisWorkZero()
+std::map<AxisZeroEnum, float> SimotionController::readAxisWorkZero()
 {
-	if (GetResult(d_receivedCmd, STS_WORKZERO, d_mutex, d_con))
-		return d_axisSpeed;
+	getAxisWorkZero();
 
-	return std::map<Axis, float>();
+	if (GetResult(d_receivedCmd, STS_WORKZERO, d_mutex, d_con))
+		return d_axisWorkZero;
+
+	return std::map<AxisZeroEnum, float>();
 }
 
 bool SimotionController::readReadyStatus()
@@ -391,18 +393,14 @@ void SimotionController::setAxisSpeed(std::map<Axis, float>& _speed)
 	delete[] data;
 }
 
-void SimotionController::setAxisWorkZero(std::map<Axis, float>& _workZero)
+void SimotionController::setAxisWorkZero(std::map<AxisZeroEnum, float>& _workZero)
 {
-	int size = _workZero.size() * 5;
+	int size = sizeof(FWorkZero);
 	char* data = new char[size];
 	int i = 0;
 
 	for (auto& pair : _workZero)
-	{
-		data[i * 5] = char(pair.first);
-		memcpy(data + i * 5 + 1, &pair.second, sizeof(float));
-		++i;
-	}
+		memcpy(data + int(pair.first) * 4, &pair.second, sizeof(float));
 
 	fillInCmdStructAndFillCmdList(CMD_DOWNLOAD_AXIS_SPEED, data, size, false);
 	delete[] data;

@@ -6,6 +6,7 @@
 #include "../Public/util/logmacro.h"
 #include "ctscanexport.h"
 
+
 class SetupDataParser;
 class RayPanelMotion;
 class LineDetScanWidget;
@@ -23,6 +24,8 @@ class LineDetScanManager;
 class PanelDetScanManager;
 class LineDetImageProcess;
 class ImageDialogManager;
+class AxisStatusWidget;
+class AxisZeroCoordinationDialog;
 
 class CTScanApp : public CTScanInterface
 {
@@ -59,6 +62,8 @@ private:
 	std::map<std::pair<int, int>, std::vector<ScanMode>> d_panelDetScanModeMap;
 	std::map<std::pair<int, int>, LineDetScanManager*> d_lineDetScanManagerMap;
 	std::map<std::pair<int, int>, PanelDetScanManager*> d_panelDetScanManagerMap;
+
+	std::map<Axis, AxisData> d_axisDataMap;
 	MsgListBoxDialog* d_msg;			//消息对话框无父窗口
 	MotorWidget* d_motorWidget;
 	CTScanWidget* d_mainWidget;
@@ -68,6 +73,8 @@ private:
 	QSystemTrayIcon* d_tray;
 	QString	d_workDir;
 	QWidget* d_upperWidget;
+	AxisStatusWidget* d_axisStatusWidget;
+	AxisZeroCoordinationDialog* d_axisZeroCoordinationDialog;
 	bool d_debugSystem = true;
 
 	QMenuBar* d_menuBar;
@@ -92,4 +99,9 @@ private:
 
 private slots:
 	void on_initiliseSystemAction_triggered();
+	void on_axisZeroCoordinateAction_triggered();
+	void on_axisSpeedAction_triggered();
+	void on_lineDetectorAction_triggered();
+	void on_autoAlignLayerAction_triggered();
+	void on_laserInterferometerAction_triggered();
 };

@@ -178,30 +178,13 @@ enum class AxisZeroEnum
 	detTranslation = 14
 };
 
-const std::map<const char*, Axis> AxisNameMap
-{
-	{"ObjRotation", Axis::objRotation}, 
-	{"ObjTranslaiton", Axis::objTranslation},
-	{"ObjRadial", Axis::objRadial},
-	{"RayLayer", Axis::rayLayer},
-	{"DetLayer", Axis::detLayer},
-	{"DetTranslation", Axis::detTranslation},
-	{"DetRadial", Axis::detRadial}
-};
-
 struct AxisData
 {
+	QString axisCaption;
 	QString axisName;
-	QString objectName;
 };
 
-const std::map<Axis, AxisData> AxisDataMap
-{
-	{Axis::objRotation, AxisData{"objRotaion", "objRotaion"}},
-	{Axis::objTranslation, AxisData{"objTranslation", "objTranslation"}},
-	{Axis::objRadial, AxisData{"objRadial", "objRadial"}},
-	{Axis::rayLayer, AxisData{"rayLayer", "rayLayer"}},
-	{Axis::detLayer, AxisData{"detLayer", "detLayer"}},
-	{Axis::detTranslation, AxisData{"detTranslation", "detTranslation"}},
-	{Axis::detRadial, AxisData{"detRadial", "detRadial"}}
-};
+extern const std::map<QString, Axis> AxisNameMap;
+extern const std::map<Axis, AxisData> AxisDataMap;
+extern const std::map<Axis, AxisPosEnum> AxisNamePosMap;
+extern const std::map<Axis, AxisZeroEnum> AxisNameZeroMap;

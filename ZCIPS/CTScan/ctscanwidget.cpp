@@ -21,10 +21,10 @@ CTScanWidget::CTScanWidget(QWidget* _upWidget, QWidget* _middleWidget, QWidget* 
 	//d_middleLayout->insertSpacerItem(0, vSpacer);
 	ui.scanTable->setLayout(d_middleLayout);
 	////添加layout使位于中间
-	//QGridLayout* layout1 = new QGridLayout;
-	//layout1->addWidget(d_downWidget, 0, 0);
-	//layout1->setMargin(0);
-	//ui.motorControlGroupBox->setLayout(layout1);
+	QGridLayout* layout1 = new QGridLayout;
+	layout1->addWidget(d_downWidget, 0, 0);
+	layout1->setMargin(0);
+	ui.motorControlGroupBox->setLayout(layout1);
 
 	d_layout = new QGridLayout;
 	d_layout->addWidget(this, 0, 0);

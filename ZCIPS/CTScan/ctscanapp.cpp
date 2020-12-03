@@ -20,6 +20,8 @@
 #include "floatacceleratordialog.h"
 #include "createDumpFile.h"
 #include "imagedialogmanager.h"
+#include "axisstatuswidget.h"
+#include "axiszerocoordinationdialog.h"
 #include "../PanelDll/panel.h"
 
 CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
@@ -45,14 +47,22 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	connect(this, &CTScanApp::infoMsgSignal, this, &CTScanApp::infoMsgSlot);
 	connect(this, &CTScanApp::errorMsgSignal, this, &CTScanApp::errorMsgSlot);
 	connect(this, &CTScanApp::bugMsgSignal, this, &CTScanApp::bugMsgSlot);
-
-	LOG_INFO("软件启动");
-
 	connect(d_controller.get(), &ControllerInterface::netWorkStsSginal
 		, this, &CTScanApp::controllerNetWorkStsSlot, Qt::QueuedConnection);
 
 	d_motorWidget = new MotorWidget(d_controller.get(), nullptr);
 
+	for (auto &axisDefineItr : d_setupData->sysAxisDefine)
+	{
+		auto axisDataItr = AxisDataMap.find(axisDefineItr);
+		
+		if (axisDataItr != AxisDataMap.end())
+			d_axisDataMap[axisDefineItr] = axisDataItr->second;
+		else
+			LOG_ERROR("未定义的轴");
+	}
+	
+	d_axisStatusWidget = new AxisStatusWidget(d_controller.get(), d_axisDataMap);
 	for (int i = 0; i != d_setupData->lineDetNum; ++i)
 	{
 		int blockModuleIndex = 0;
@@ -112,7 +122,7 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	}
 
 	auto scanWidget = d_lineDetScanManagerMap[{0, 0}]->getWidget();
-	d_mainWidget = new CTScanWidget(d_acceleratorWidget, scanWidget, d_motorWidget, d_upperWidget);
+	d_mainWidget = new CTScanWidget(d_acceleratorWidget, scanWidget, d_axisStatusWidget, d_upperWidget);
 	connect(d_mainWidget, &CTScanWidget::showMotorButtonSignal, this, &CTScanApp::motorButonSlot);
 	d_floatAcceleratorDialog = new FloatAcceleratorDialog(nullptr, Qt::FramelessWindowHint);
 	QGridLayout* bLayout = new QGridLayout(d_floatAcceleratorDialog);
@@ -125,6 +135,8 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 		this, &CTScanApp::switchToPanelWidgetSlot);
 	connect(d_mainWidget, &CTScanWidget::switchToLineWidgetSignal,
 		this, &CTScanApp::switchToLineWidgetSlot);
+
+	LOG_INFO("软件启动");
 }
 
 CTScanApp::~CTScanApp()
@@ -212,27 +224,49 @@ void CTScanApp::buildMenuBar()
 		d_axisZeroCoordinateAction->setObjectName(QStringLiteral("axisZeroCoordinateAction"));
 		d_axisZeroCoordinateAction->setText(QString::fromLocal8Bit("零点标定"));
 		d_debugMenu->addAction(d_axisZeroCoordinateAction);
+		connect(d_axisZeroCoordinateAction, &QAction::triggered, this, &CTScanApp::on_axisZeroCoordinateAction_triggered);
 
 		d_axisSpeedAction = new QAction(this);
 		d_axisSpeedAction->setObjectName(QStringLiteral("d_axisSpeedAction"));
 		d_axisSpeedAction->setText(QString::fromLocal8Bit("轴速度"));
 		d_debugMenu->addAction(d_axisSpeedAction);
+		connect(d_axisSpeedAction, &QAction::triggered, this, &CTScanApp::on_axisSpeedAction_triggered);
 
 		d_lineDetectorAction = new QAction(this);
 		d_lineDetectorAction->setObjectName(QStringLiteral("lineDetectorAction"));
 		d_lineDetectorAction->setText(QString::fromLocal8Bit("线阵探测器设置查看"));
 		d_debugMenu->addAction(d_lineDetectorAction);
+		connect(d_lineDetectorAction, &QAction::triggered, this, &CTScanApp::on_lineDetectorAction_triggered);
 
 		d_autoAlignLayerAction = new QAction(this);
 		d_autoAlignLayerAction->setObjectName(QStringLiteral("d_autoAlignLayerAction"));
 		d_autoAlignLayerAction->setText(QString::fromLocal8Bit("射线自动对齐"));
 		d_debugMenu->addAction(d_autoAlignLayerAction);
+		connect(d_autoAlignLayerAction, &QAction::triggered, this, &CTScanApp::on_autoAlignLayerAction_triggered);
 
 		d_laserInterferometerAction = new QAction(this);
 		d_laserInterferometerAction->setObjectName(QStringLiteral("autoAlignLayer"));
 		d_laserInterferometerAction->setText(QString::fromLocal8Bit("激光干涉仪程序"));
 		d_debugMenu->addAction(d_laserInterferometerAction);
+		connect(d_laserInterferometerAction, &QAction::triggered, this, &CTScanApp::on_laserInterferometerAction_triggered);
 	}
+}
+void CTScanApp::on_axisZeroCoordinateAction_triggered()
+{
+	d_axisZeroCoordinationDialog = new AxisZeroCoordinationDialog(d_controller.get(), d_axisDataMap);
+	d_axisZeroCoordinationDialog->show();
+}
+void CTScanApp::on_axisSpeedAction_triggered()
+{
+}
+void CTScanApp::on_lineDetectorAction_triggered()
+{
+}
+void CTScanApp::on_autoAlignLayerAction_triggered()
+{
+}
+void CTScanApp::on_laserInterferometerAction_triggered()
+{
 }
 void CTScanApp::on_initiliseSystemAction_triggered()
 {

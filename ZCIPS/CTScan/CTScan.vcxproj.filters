@@ -189,6 +189,15 @@
     <ClCompile Include="qtwidgetaddtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="axisstatuswidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\headers\machineType.cpp">
+      <Filter>public\publicHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="axiszerocoordinationdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\lib\tinyxml2.h">
@@ -379,6 +388,12 @@
     <QtMoc Include="qtwidgetaddtest.h">
       <Filter>public</Filter>
     </QtMoc>
+    <QtMoc Include="axisstatuswidget.h">
+      <Filter>public</Filter>
+    </QtMoc>
+    <QtMoc Include="axiszerocoordinationdialog.h">
+      <Filter>public</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="conescanwidget.ui">
@@ -415,6 +430,12 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="qtwidgetaddtest.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="axisstatuswidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="axiszerocoordinationdialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

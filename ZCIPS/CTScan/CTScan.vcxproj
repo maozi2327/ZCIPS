@@ -124,6 +124,7 @@
     </QtRcc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Public\headers\machineType.cpp" />
     <ClCompile Include="..\Public\lib\tinyxml2.cpp" />
     <ClCompile Include="..\Public\util\functions.cpp" />
     <ClCompile Include="..\Public\util\iulog.cpp" />
@@ -135,6 +136,8 @@
     <ClCompile Include="..\Public\util\tcpserver.cpp" />
     <ClCompile Include="..\Public\util\thread.cpp" />
     <ClCompile Include="acceleratorwidget.cpp" />
+    <ClCompile Include="axisstatuswidget.cpp" />
+    <ClCompile Include="axiszerocoordinationdialog.cpp" />
     <ClCompile Include="conecontinusscan.cpp" />
     <ClCompile Include="conescan.cpp" />
     <ClCompile Include="conescaninterface.cpp" />
@@ -186,6 +189,20 @@
     <ClInclude Include="..\Public\headers\panelimageprocess.h" />
     <ClInclude Include="..\Public\headers\setupdata.h" />
     <ClInclude Include="..\Public\lib\tinyxml2.h" />
+    <QtMoc Include="axisstatuswidget.h">
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;_CRT_SECURE_NO_WARNINGS;CTSCANDLL_LIB;_WINDLL</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
+    </QtMoc>
+    <QtMoc Include="axiszerocoordinationdialog.h">
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;_CRT_SECURE_NO_WARNINGS;CTSCANDLL_LIB;_WINDLL</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
+    </QtMoc>
     <ClInclude Include="fixedthreadpool.h" />
     <QtMoc Include="ctscanwidget.h">
       <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
@@ -376,6 +393,8 @@
   <ItemGroup>
     <QtUic Include="Acceleratorwidget.ui" />
     <QtUic Include="addmodifyairdisposedialog.ui" />
+    <QtUic Include="axisstatuswidget.ui" />
+    <QtUic Include="axiszerocoordinationdialog.ui" />
     <QtUic Include="conescanwidget.ui" />
     <QtUic Include="ct3AddModifyDialog.ui" />
     <QtUic Include="ct3templatedialog.ui" />

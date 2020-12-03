@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 class QTimer;
+
 class ControllerInterface : public QObject
 {
 	Q_OBJECT
@@ -43,7 +44,7 @@ public:
 	virtual std::map<Axis, float> readAxisSpeed() = 0;
 	virtual float readAxisPostion(AxisPosEnum _axis) = 0;
 	virtual std::map<AxisPosEnum, float> readAxisPostion() = 0;
-	virtual std::map<Axis, float> readAxisWorkZero() = 0;
+	virtual std::map<AxisZeroEnum, float> readAxisWorkZero() = 0;
 
 	virtual void getSystemStatus() = 0;
 	virtual void getAxisPosition() = 0;
@@ -53,7 +54,7 @@ public:
 	virtual void stopGettingAxisPostion() = 0;
 
 	virtual void setAxisSpeed(std::map<Axis, float>& _speed) = 0;
-	virtual void setAxisWorkZero(std::map<Axis, float>& _workZero) = 0;
+	virtual void setAxisWorkZero(std::map<AxisZeroEnum, float>& _workZero) = 0;
 	virtual void sendToControl(int _cmd, char * _data, int _size, bool _consist) = 0;
 	virtual void decodePackages(char* _package, int _size) = 0;
 	virtual void restartLineDet(int _detNum) = 0;
