@@ -134,8 +134,8 @@ bool LineDetScanInterface::setGenerialFileHeader()
 	d_ictHeader.ScanParameter.SpaceOfVerticalDetector = 0;
 	d_ictHeader.ScanParameter.HorizontalSectorAngle = d_setupData->lineDetData[d_lineDetIndex].HorizontalDetectorAngle;
 	d_ictHeader.ScanParameter.VerticalSectorAngle = 0;
-	d_ictHeader.ScanParameter.RadialPosition = d_controller->readAxisPostion(AxisPosEnum::objRadial);
-	d_ictHeader.ScanParameter.SourceDetectorDistance = d_controller->readAxisPostion(AxisPosEnum::detRadial);
+	d_ictHeader.ScanParameter.RadialPosition = d_controller->readAxisPostion(Axis::objRadial);
+	d_ictHeader.ScanParameter.SourceDetectorDistance = d_controller->readAxisPostion(Axis::detRadial);
 	d_ictHeader.ScanParameter.CollimationSize = d_colimateSize;
 	d_ictHeader.ScanParameter.LayerThickness = 2/*d_layerThickness*/; //TODO_DJ
 	d_ictHeader.ScanParameter.SampleTime = float(d_sampleTime) / 1000;

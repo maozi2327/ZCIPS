@@ -12,7 +12,6 @@ class LineDetScanWidget;
 class LineDetNetWork;
 class MsgListBoxDialog;
 class LineDetScanInterface;
-class MotorWidget;
 class CTScanWidget;
 class AcceleratorWidget;
 class PanelDetScanManager;

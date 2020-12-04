@@ -108,7 +108,7 @@ private:
 	std::unique_ptr<Thread> d_sendThread;
 	char* d_netWorkBuffer;
 	int d_bytesReceived;
-	void getAixsValueAndNotify(std::map<AxisPosEnum, float>& _value, char* _data, int _axisNum, int _typeCode);
+	void getAixsValueAndNotify(std::map<Axis, float>& _value, char* _data, int _axisNum, int _typeCode);
 	void fillInCmdStructAndFillCmdList(int _cmd, char* _data, int _size, bool _consist);
 protected:
 	virtual bool sendCmd();
@@ -137,9 +137,10 @@ public:
 	virtual bool readWaitNextScanStatus();
 	virtual bool readIdleStatus();
 	virtual std::map<Axis, float> readAxisSpeed();
-	virtual float readAxisPostion(AxisPosEnum _axis);
-	virtual std::map<AxisPosEnum, float> readAxisPostion();
-	virtual std::map<AxisZeroEnum, float> readAxisWorkZero();
+	virtual float readAxisPostion(Axis _axis);
+	virtual std::map<Axis, float> readAxisPostion();
+	virtual std::map<Axis, float> readAxisWorkZero();
+	virtual std::map<Axis, AxisCoordinateSwitchStatus> readAxisStatus();
 
 	virtual void getSystemStatus();
 	virtual void getAxisPosition();
@@ -149,7 +150,7 @@ public:
 	virtual void stopGettingAxisPostion();
 
 	virtual void setAxisSpeed(std::map<Axis, float>& _speed);
-	virtual void setAxisWorkZero(std::map<AxisZeroEnum, float>& _workZero);
+	virtual void setAxisWorkZero(std::map<Axis, float>& _workZero);
 	
 	virtual void sendToControl(int _cmd, char * _data, int _size, bool _consist);
 	virtual void decodePackages(char* _package, int _size);

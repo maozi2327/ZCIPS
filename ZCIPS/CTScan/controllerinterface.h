@@ -6,6 +6,16 @@
 #include <map>
 class QTimer;
 
+struct AxisCoordinateSwitchStatus
+{
+	float coordinate;
+	bool elp;
+	bool sdp;
+	bool sdn;
+	bool eln;
+	bool zeroFound;
+};
+
 class ControllerInterface : public QObject
 {
 	Q_OBJECT
@@ -14,8 +24,8 @@ signals:
 	void netWorkStsSginal(bool sts);
 protected:
 	std::map<Axis, float> d_axisSpeed;
-	std::map<AxisPosEnum, float> d_axisPosition;
-	std::map<AxisZeroEnum, float> d_axisWorkZero;
+	std::map<Axis, float> d_axisPosition;
+	std::map<Axis, float> d_axisWorkZero;
 	bool d_connected;
 	int d_timeoutCount;
 	QTimer* d_timer;
@@ -42,9 +52,10 @@ public:
 	virtual bool readWaitNextScanStatus() = 0;
 	virtual bool readIdleStatus() = 0;
 	virtual std::map<Axis, float> readAxisSpeed() = 0;
-	virtual float readAxisPostion(AxisPosEnum _axis) = 0;
-	virtual std::map<AxisPosEnum, float> readAxisPostion() = 0;
-	virtual std::map<AxisZeroEnum, float> readAxisWorkZero() = 0;
+	virtual float readAxisPostion(Axis _axis) = 0;
+	virtual std::map<Axis, float> readAxisPostion() = 0;
+	virtual std::map<Axis, AxisCoordinateSwitchStatus> readAxisStatus() = 0;
+	virtual std::map<Axis, float> readAxisWorkZero() = 0;
 
 	virtual void getSystemStatus() = 0;
 	virtual void getAxisPosition() = 0;
@@ -54,7 +65,7 @@ public:
 	virtual void stopGettingAxisPostion() = 0;
 
 	virtual void setAxisSpeed(std::map<Axis, float>& _speed) = 0;
-	virtual void setAxisWorkZero(std::map<AxisZeroEnum, float>& _workZero) = 0;
+	virtual void setAxisWorkZero(std::map<Axis, float>& _workZero) = 0;
 	virtual void sendToControl(int _cmd, char * _data, int _size, bool _consist) = 0;
 	virtual void decodePackages(char* _package, int _size) = 0;
 	virtual void restartLineDet(int _detNum) = 0;

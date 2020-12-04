@@ -126,9 +126,6 @@
     <ClCompile Include="ctscanexport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="motorwidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ctscanapp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -196,6 +193,15 @@
       <Filter>public\publicHeaders</Filter>
     </ClCompile>
     <ClCompile Include="axiszerocoordinationdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="axisstatusdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="linedetdebugdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="drawwidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -343,9 +349,6 @@
     <QtMoc Include="linedetscanwidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="motorwidget.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="msglistboxdialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -394,15 +397,21 @@
     <QtMoc Include="axiszerocoordinationdialog.h">
       <Filter>public</Filter>
     </QtMoc>
+    <QtMoc Include="axisstatusdialog.h">
+      <Filter>public</Filter>
+    </QtMoc>
+    <QtMoc Include="linedetdebugdialog.h">
+      <Filter>public</Filter>
+    </QtMoc>
+    <QtMoc Include="drawwidget.h">
+      <Filter>public</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="conescanwidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="linedetscanwidget.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="motorwidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="ctscanwidget.ui">
@@ -436,6 +445,15 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="axiszerocoordinationdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="axisstatusdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="linedetdebugdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="drawwidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

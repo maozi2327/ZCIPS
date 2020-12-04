@@ -16,7 +16,6 @@ class Panel;
 class MsgListBoxDialog;
 class LineDetScanInterface;
 class ConeScanWidget;
-class MotorWidget;
 class CTScanWidget;
 class AcceleratorWidget;
 class CT3TemplateDialog;
@@ -26,6 +25,7 @@ class LineDetImageProcess;
 class ImageDialogManager;
 class AxisStatusWidget;
 class AxisZeroCoordinationDialog;
+class AxisStatusDialog;
 
 class CTScanApp : public CTScanInterface
 {
@@ -65,7 +65,6 @@ private:
 
 	std::map<Axis, AxisData> d_axisDataMap;
 	MsgListBoxDialog* d_msg;			//消息对话框无父窗口
-	MotorWidget* d_motorWidget;
 	CTScanWidget* d_mainWidget;
 	AcceleratorWidget* d_acceleratorWidget;
 	QDialog* d_floatAcceleratorDialog;
@@ -74,12 +73,15 @@ private:
 	QString	d_workDir;
 	QWidget* d_upperWidget;
 	AxisStatusWidget* d_axisStatusWidget;
-	AxisZeroCoordinationDialog* d_axisZeroCoordinationDialog;
+	AxisZeroCoordinationDialog* d_axisZeroCoordinationDialog = nullptr;
+	AxisStatusDialog* d_axisStatusDialog = nullptr;
 	bool d_debugSystem = true;
 
 	QMenuBar* d_menuBar;
-	QAction* d_initiliseSystemAction;
 	QMenu* d_systemMenu;
+	QAction* d_initiliseSystemAction;
+	QMenu* d_viewMenu;
+	QAction* d_axisStatusAction;
 	QMenu* d_debugMenu;
 	QAction* d_axisZeroCoordinateAction;
 	QAction* d_axisSpeedAction; 
@@ -99,6 +101,7 @@ private:
 
 private slots:
 	void on_initiliseSystemAction_triggered();
+	void on_axisStatusAction_triggered();
 	void on_axisZeroCoordinateAction_triggered();
 	void on_axisSpeedAction_triggered();
 	void on_lineDetectorAction_triggered();

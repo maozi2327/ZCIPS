@@ -58,24 +58,29 @@ inline bool GetResult(T1& t1, T2 t2, std::mutex& d_mutex, std::condition_variabl
 	return false;
 }
 
-float SimotionController::readAxisPostion(AxisPosEnum _axis)
+float SimotionController::readAxisPostion(Axis _axis)
 {
 	return d_axisPosition[_axis];
 }
 
-std::map<AxisPosEnum, float> SimotionController::readAxisPostion()
+std::map<Axis, float> SimotionController::readAxisPostion()
 {
 	return d_axisPosition;
 }
 
-std::map<AxisZeroEnum, float> SimotionController::readAxisWorkZero()
+std::map<Axis, float> SimotionController::readAxisWorkZero()
 {
 	getAxisWorkZero();
 
 	if (GetResult(d_receivedCmd, STS_WORKZERO, d_mutex, d_con))
 		return d_axisWorkZero;
 
-	return std::map<AxisZeroEnum, float>();
+	return std::map<Axis, float>();
+}
+
+std::map<Axis, AxisCoordinateSwitchStatus> SimotionController::readAxisStatus()
+{
+	return std::map<Axis, AxisCoordinateSwitchStatus>();
 }
 
 bool SimotionController::readReadyStatus()
@@ -165,10 +170,21 @@ bool SimotionController::sliceMove(float _pos)
 	return true;
 }
 
-void SimotionController::getAixsValueAndNotify(std::map<AxisPosEnum, float>& _value, char * _data, int _axisNum, int _typeCode)
+void SimotionController::getAixsValueAndNotify(std::map<Axis, float>& _value, char * _data, int _axisNum, int _typeCode)
 {
+	std::map<AxisPosEnum, float> temp; 
+
 	for (int i = 0; i != _axisNum; ++i)
-		_value[AxisPosEnum(i)] = *(float*)((_data + i * 4));
+		temp[AxisPosEnum(i)] = *(float*)((_data + i * 4));
+	
+	for (auto& itr : temp)
+	{
+		for (auto& axisNamePosMapItr : AxisNamePosMap)
+		{
+			if (axisNamePosMapItr.second == itr.first)
+				_value[axisNamePosMapItr.first] = itr.second;
+		}
+	}
 	
 	{
 		std::lock_guard<std::mutex> lock(d_mutex);
@@ -393,7 +409,7 @@ void SimotionController::setAxisSpeed(std::map<Axis, float>& _speed)
 	delete[] data;
 }
 
-void SimotionController::setAxisWorkZero(std::map<AxisZeroEnum, float>& _workZero)
+void SimotionController::setAxisWorkZero(std::map<Axis, float>& _workZero)
 {
 	int size = sizeof(FWorkZero);
 	char* data = new char[size];

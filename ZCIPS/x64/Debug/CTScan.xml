@@ -112,7 +112,6 @@
 		<Axis Name="ObjRadial"/>
 		<Axis Name="RayLayer"/>
 		<Axis Name="DetLayer"/>
-		<Axis Name="DetRadial"/>
 	</AxisDefinition>
 	<ScanModeSection>
 		<CT2>

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "ctscanapp.h"
 #include "ctscanwidget.h"
-#include "motorwidget.h"
 #include "simotioncontroller.h"
 #include "linedetscanwidget.h"
 #include "linedetscanmanager.h"
@@ -22,7 +21,9 @@
 #include "imagedialogmanager.h"
 #include "axisstatuswidget.h"
 #include "axiszerocoordinationdialog.h"
+#include "axisstatusdialog.h"
 #include "../PanelDll/panel.h"
+#include "linedetdebugdialog.h"
 
 CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	: d_mainWidget(nullptr), d_upperWidget(d_upper)
@@ -49,8 +50,6 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	connect(this, &CTScanApp::bugMsgSignal, this, &CTScanApp::bugMsgSlot);
 	connect(d_controller.get(), &ControllerInterface::netWorkStsSginal
 		, this, &CTScanApp::controllerNetWorkStsSlot, Qt::QueuedConnection);
-
-	d_motorWidget = new MotorWidget(d_controller.get(), nullptr);
 
 	for (auto &axisDefineItr : d_setupData->sysAxisDefine)
 	{
@@ -210,7 +209,18 @@ void CTScanApp::buildMenuBar()
 	d_initiliseSystemAction->setText(QString::fromLocal8Bit("初始化"));
 	d_systemMenu->addAction(d_initiliseSystemAction);
 
+	d_viewMenu = new QMenu(d_menuBar);
+	d_viewMenu->setObjectName(QStringLiteral("viewMenu"));
+	d_viewMenu->setTitle(QString::fromLocal8Bit("视图"));
+	d_menuBar->addAction(d_viewMenu->menuAction());
+
+	d_axisStatusAction = new QAction(this);
+	d_axisStatusAction->setObjectName(QStringLiteral("axisStatusAction"));
+	d_axisStatusAction->setText(QString::fromLocal8Bit("轴状态"));
+	d_viewMenu->addAction(d_axisStatusAction);
+
 	connect(d_initiliseSystemAction, &QAction::triggered, this, &CTScanApp::on_initiliseSystemAction_triggered);
+	connect(d_axisStatusAction, &QAction::triggered, this, &CTScanApp::on_axisStatusAction_triggered);
 
 	//调试菜单
 	if (d_debugSystem)
@@ -253,14 +263,19 @@ void CTScanApp::buildMenuBar()
 }
 void CTScanApp::on_axisZeroCoordinateAction_triggered()
 {
-	d_axisZeroCoordinationDialog = new AxisZeroCoordinationDialog(d_controller.get(), d_axisDataMap);
-	d_axisZeroCoordinationDialog->show();
+	if(d_axisZeroCoordinationDialog == nullptr)
+		d_axisZeroCoordinationDialog = new AxisZeroCoordinationDialog(d_controller.get(), d_axisDataMap, 
+			d_mainWidget);
+
+	d_axisZeroCoordinationDialog->exec();
 }
 void CTScanApp::on_axisSpeedAction_triggered()
 {
 }
 void CTScanApp::on_lineDetectorAction_triggered()
 {
+	LineDetDebugDialog dlg;
+	dlg.exec();
 }
 void CTScanApp::on_autoAlignLayerAction_triggered()
 {
@@ -268,9 +283,18 @@ void CTScanApp::on_autoAlignLayerAction_triggered()
 void CTScanApp::on_laserInterferometerAction_triggered()
 {
 }
+
 void CTScanApp::on_initiliseSystemAction_triggered()
 {
 	d_controller->initialiseController();
+}
+
+void CTScanApp::on_axisStatusAction_triggered()
+{
+	if(d_axisStatusDialog == nullptr)
+		d_axisStatusDialog = new AxisStatusDialog(d_controller.get(), d_axisDataMap, d_mainWidget);
+
+	d_axisStatusDialog->show();
 }
 
 void CTScanApp::motorButonSlot()
@@ -283,14 +307,12 @@ void CTScanApp::switchToPanelWidgetSlot(int _rayId, int _detId)
 	auto widget = static_cast<ConeScanWidget*>(d_panelDetScanManagerMap[{_rayId, _detId}]->getWidget());
 	widget->setPanelDetWidget();
 	d_mainWidget->switchLinePanelWidget(widget);
-	//d_panelDetMap[0]->getWidget()->show();
 }
 
 void CTScanApp::switchToLineWidgetSlot(int _rayId, int _detId)
 {
 	auto widget = d_lineDetScanManagerMap[{_rayId, _detId}]->getWidget();
 	d_mainWidget->switchLinePanelWidget(widget);
-	//d_panelDetMap[0]->getWidget()->show();
 }
 
 void CTScanApp::setMiddleWidget(QWidget * _widget)

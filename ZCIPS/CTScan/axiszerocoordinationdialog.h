@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QWidget>
+#include <QDialog>
 #include "ui_axiszerocoordinationdialog.h"
 #include "../Public/headers/machineType.h"
-#include "controllerinterface.h"
 
-class AxisZeroCoordinationDialog : public QWidget
+class ControllerInterface;
+class AxisZeroCoordinationDialog : public QDialog
 {
 	Q_OBJECT
 
@@ -19,13 +19,11 @@ private:
 
 	struct AxisControl
 	{
-		Axis axis;
 		QLabel*	axisNameLabel;
 		QLineEdit* axisZeroCoordinationEdit;
 
-		AxisControl(Axis _axis, const QString& _axisCaption, const QString& _objectName, QWidget* _parent)
+		AxisControl(const QString& _axisCaption, const QString& _objectName, QWidget* _parent)
 		{
-			axis = _axis;
 			axisNameLabel = new QLabel(_parent);
 			axisNameLabel->setObjectName(_objectName + QString::fromLocal8Bit("Label"));
 			axisNameLabel->setText(_axisCaption);
@@ -34,9 +32,8 @@ private:
 		}
 	};
 
-	std::vector<AxisControl*> d_axisControls;
-	QVBoxLayout* d_verticalLayout;
-	QHBoxLayout* d_buttonHorizontalLayout;
+	std::map<Axis, AxisControl*> d_axisControls;
+	QGridLayout* d_gridLayout;
 	QPushButton* d_uploadButton;
 	QPushButton* d_downloadButton;
 	ControllerInterface* d_controller;

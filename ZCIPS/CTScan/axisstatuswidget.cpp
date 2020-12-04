@@ -123,14 +123,15 @@ void AxisStatusWidget::on_negativePosButton_clicked()
 }
 void AxisStatusWidget::updateStatus()
 {
-	std::map<AxisPosEnum, float> axisPos = d_controller->readAxisPostion();
+	std::map<Axis, float> axisPos = d_controller->readAxisPostion();
 
 	for (auto& itr : d_axisControls)
 	{
 		auto axisPosEnumItr = AxisNamePosMap.find(itr->axis);
 
 		if(axisPosEnumItr != AxisNamePosMap.end())
-			itr->axisPosLabel->setText(QString("%1").arg(axisPos[axisPosEnumItr->second], 0, 'f', 2));
+			itr->axisPosLabel->
+			setText(QString("%1").arg(axisPos[itr->axis], 0, 'f', 2));
 	}
 }
 void AxisStatusWidget::updateAxisStatus()
