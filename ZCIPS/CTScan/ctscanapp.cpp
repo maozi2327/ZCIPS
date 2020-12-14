@@ -274,7 +274,7 @@ void CTScanApp::on_axisSpeedAction_triggered()
 }
 void CTScanApp::on_lineDetectorAction_triggered()
 {
-	LineDetDebugDialog dlg;
+	LineDetDebugDialog dlg(d_lineDetNetWorkMap[0].get());
 	dlg.exec();
 }
 void CTScanApp::on_autoAlignLayerAction_triggered()

@@ -151,14 +151,14 @@ class LineDetNetWork : public QObject
 {
 	Q_OBJECT
 private:
-
 	QTimer* d_timer;
 	std::unique_ptr<TcpServer> d_server;
 	enum DataType
 	{
 		CMD = 0,
 		PARAMETER,
-		DATA
+		DATA,
+		INTERNAL_COLLECT
 	};
 	bool d_connected;
 	bool d_detInitSucceed;
@@ -171,7 +171,7 @@ private:
 	unsigned int d_smallBoardNum;        //小板子数量
 	unsigned short d_channelDepth;    //小板子通道数，64
 	unsigned short d_ampSize;
-	unsigned short d_intTime;
+	unsigned short d_sampleTime;
 	unsigned short d_delayTime;
 	unsigned short d_fifoMask;
 
@@ -185,16 +185,21 @@ private:
 	std::atomic<bool> d_deadThreadRunFlag;
 
 	char* d_netWorkBuffer;
+	unsigned long* d_internalCollectTempData;
 	int d_bytesReceived;
 	std::unique_ptr<Thread> d_netWorkCheckThread;
 	//线阵探测器每次发送数据格式
 	//									数据长度|
-	//第一个大板子(分度号|脉冲号|64个通道|校验和)|第二个大板子|......|最后一个大板子|
+	//第一个小板子(分度号|脉冲号|64个通道|校验和)|第二个小板子|......|最后一个小板子|
 	//		  (----------------------第一个脉冲数据------------------------------------)
 	//        ------------------------其他脉冲数据-----------------------------------
 	//        -----------------------最后一个脉冲数据-----------------------------------
 	std::vector<unsigned int> d_blockModuleMap;
 	int d_detNum;
+
+	bool ChannelSelect();
+	bool ChannelDepthSet();
+	bool caculateChannel();
 signals:
 	void netWorkStatusSignal(int detId, bool sts);
 public:
@@ -202,18 +207,20 @@ public:
 	bool NetCheck();
 	bool NetSetup();
 	bool ARMTest();
-	bool ChannelSelect();
-	bool ChannelDepthSet();
 	bool StartCI();
 	bool FPGATest();
 	bool DetectorTest();
 	bool SetAmpSize(int _ampSize);
-	bool SetIntTime(int _intTime);
+	bool SetSampleTime(int _sampleTime);
 	bool SetDelayTime(int _delayTime);
 	bool ReadAmpSize();
-	bool ReadIntTime();
+	bool ReadSampleTime();
 	bool ReadDelayTime();
+	bool setChannelMask(int _mask);
+	bool setChannelDepth(int _depth);
 	bool startExtTrigAcquire();
+	bool startInternalTrigAcquire(int _mode, unsigned long* _data);
+	bool stopInternalTrigAcquire();
 	void stopAcquire(bool _finished);
 	void DecodePackages(char* _buff, int _size);
 
@@ -226,7 +233,7 @@ public:
 
 	bool getConnected();
 	LineDetNetWork(unsigned short _port, unsigned short _fifoMask, unsigned short _channelDepth, unsigned short _delayTime,
-		unsigned short _intTime, unsigned short _ampSize, std::vector<unsigned int> _blockModuleVec, int _detNum);
+		unsigned short _sampleTime, unsigned short _ampSize, std::vector<unsigned int> _blockModuleVec, int _detNum);
 	~LineDetNetWork();
 };
 

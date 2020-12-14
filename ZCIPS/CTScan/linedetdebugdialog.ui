@@ -31,7 +31,7 @@
      <item>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="downloadSampleTimeButton">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -44,7 +44,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEdit">
+        <widget class="QLineEdit" name="sampleTimeLineEdit">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -54,7 +54,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="downloadDelayTimeButton">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -67,7 +67,7 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit_2">
+        <widget class="QLineEdit" name="delayTimeLineEdit">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -77,7 +77,7 @@
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QPushButton" name="downloadAmplifyFactorButton">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -90,7 +90,7 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEdit_3">
+        <widget class="QLineEdit" name="amplifyFactorLineEdit">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -104,7 +104,7 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QPushButton" name="pushButton_4">
+        <widget class="QPushButton" name="uploadSampleTimeButton">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -117,7 +117,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_5">
+        <widget class="QPushButton" name="uploadDelayTimeButton">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -130,7 +130,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_6">
+        <widget class="QPushButton" name="uploadAmplifyFactorButton">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -147,7 +147,7 @@
      <item>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit_4">
+        <widget class="QLineEdit" name="depthLineEdit">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -157,7 +157,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QPushButton" name="pushButton_8">
+        <widget class="QPushButton" name="setDepthButton">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -170,7 +170,7 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QPushButton" name="pushButton_7">
+        <widget class="QPushButton" name="setMaskButton">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -183,7 +183,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEdit_5">
+        <widget class="QLineEdit" name="maskLineEdit">
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -195,7 +195,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_9">
+      <widget class="QPushButton" name="internalAcquireButton">
        <property name="maximumSize">
         <size>
          <width>75</width>
@@ -204,6 +204,19 @@
        </property>
        <property name="text">
         <string>内信采集</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="stopInternalAcquireButton">
+       <property name="maximumSize">
+        <size>
+         <width>75</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>停止采集</string>
        </property>
       </widget>
      </item>

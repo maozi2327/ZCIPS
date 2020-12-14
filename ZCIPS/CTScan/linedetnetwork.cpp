@@ -9,7 +9,7 @@
 static in_addr hostAddr;
 
 LineDetNetWork::LineDetNetWork(unsigned short _port, unsigned short _fifoMask, unsigned short _channelDepth, unsigned short _delayTime,
-	unsigned short _intTime, unsigned short _ampSize, std::vector<unsigned int> _blockModuleVec, int _detNum)
+	unsigned short _sampleTime, unsigned short _ampSize, std::vector<unsigned int> _blockModuleVec, int _detNum)
 	: d_server(
 		new TcpServer(4, 4, 0
 		, [this](SOCKET _sock){ return setParameterAfterConnect(_sock); }
@@ -17,22 +17,12 @@ LineDetNetWork::LineDetNetWork(unsigned short _port, unsigned short _fifoMask, u
 		, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), 4000)
 	)
 	, d_fifoMask(_fifoMask), d_channelDepth(_channelDepth)
-	, d_delayTime(_delayTime), d_intTime(_intTime), d_ampSize(_ampSize)
+	, d_delayTime(_delayTime), d_sampleTime(_sampleTime), d_ampSize(_ampSize)
 	, d_netWorkBuffer(new char[2u << 12]), d_bytesReceived(0), d_blockModuleMap(_blockModuleVec)
 	, d_isScanning(false), d_connected(false)
 	, d_detNum(_detNum)
 {
-	auto tempMask = d_fifoMask;
-	d_smallBoardNum = 0;
-
-	while (tempMask)
-	{
-		tempMask &= (tempMask - 1);
-		++d_smallBoardNum;
-	}
-
-	d_channelNum = (d_smallBoardNum * 8 - d_blockModuleMap.size()) * 8;
-	d_dataSizePerPulse = sizeof(int) * (d_smallBoardNum * (d_channelDepth + 3));
+	caculateChannel();
 	//d_netWorkCheckThread.reset
 	//(
 	//	new Thread
@@ -92,7 +82,7 @@ bool LineDetNetWork::setParameterAfterConnect(SOCKET _sock)
 	if (!StartCI()) return false;
 	if (!DetectorTest()) return false;
 	if (!SetDelayTime(d_delayTime)) return false;
-	if (!SetIntTime(d_intTime)) return false;
+	if (!SetSampleTime(d_sampleTime)) return false;
 	if (!SetAmpSize(d_ampSize)) return false;
 
 	d_connected = true;
@@ -188,6 +178,22 @@ bool LineDetNetWork::ChannelDepthSet()
 	return false;
 }
 
+bool LineDetNetWork::caculateChannel()
+{
+	auto tempMask = d_fifoMask;
+	d_smallBoardNum = 0;
+
+	while (tempMask)
+	{
+		tempMask &= (tempMask - 1);
+		++d_smallBoardNum;
+	}
+
+	d_channelNum = (d_smallBoardNum * 8 - d_blockModuleMap.size()) * 8;
+	d_dataSizePerPulse = sizeof(int) * (d_smallBoardNum * (d_channelDepth + 3));
+	return true;
+}
+
 bool LineDetNetWork::StartCI()
 {
 	CMD_STRUCT cmdInfo{ 16, CMD_START_CI, 0, 0 };
@@ -227,9 +233,9 @@ bool LineDetNetWork::SetAmpSize(int _ampSize)
 	return false;
 }
 
-bool LineDetNetWork::SetIntTime(int _intTime)
+bool LineDetNetWork::SetSampleTime(int _sampleTime)
 {
-	CMD_STRUCT cmdInfo{ 16, CMD_SET_INT_TIME, (unsigned int)_intTime, 0 };
+	CMD_STRUCT cmdInfo{ 16, CMD_SET_INT_TIME, (unsigned int)_sampleTime, 0 };
 	d_recvType = PARAMETER;
 	d_dataList.clear();
 
@@ -263,7 +269,7 @@ bool LineDetNetWork::ReadAmpSize()
 	return false;
 }
 
-bool LineDetNetWork::ReadIntTime()
+bool LineDetNetWork::ReadSampleTime()
 {
 	CMD_STRUCT cmdInfo{ 16, CMD_READ_INT_TIME, 0x0, 1 };
 	d_recvType = PARAMETER;
@@ -287,12 +293,51 @@ bool LineDetNetWork::ReadDelayTime()
 	return false;
 }
 
+bool LineDetNetWork::setChannelMask(int _mask)
+{
+	d_fifoMask = _mask;
+	d_blockModuleMap.resize(0);
+	caculateChannel();
+	ChannelSelect();
+	return false;
+}
+
+bool LineDetNetWork::setChannelDepth(int _depth)
+{
+	return false;
+}
+
 bool LineDetNetWork::startExtTrigAcquire()
 {
 	d_dataList.clear();
 	d_recvType = DATA;
 	d_isScanning = false;
 	CMD_STRUCT cmdInfo{ 16, CMD_INTERNAL_COLLECT, 1, 0 };
+
+	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
+		return true;
+
+	return false;
+}
+
+bool LineDetNetWork::startInternalTrigAcquire(int _mode, unsigned long* _data)
+{
+	d_dataList.clear();
+	d_recvType = INTERNAL_COLLECT;
+	d_internalCollectTempData = _data;
+	d_isScanning = false;
+	CMD_STRUCT cmdInfo{ 16, CMD_INTERNAL_COLLECT, _mode, 0 };
+
+	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
+		return true;
+
+	return false;
+}
+
+bool LineDetNetWork::stopInternalTrigAcquire()
+{
+	d_isScanning = false;
+	CMD_STRUCT cmdInfo{ 16, CMD_INTERNAL_COLLECT, 0, 0 };
 
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return true;
@@ -328,8 +373,9 @@ void LineDetNetWork::DecodePackages(char * _buff, int _size)
 	}
 		break;
 	case DATA:
+	case INTERNAL_COLLECT:
 		CollectUsefulData(_buff, _size);
-		break;
+		break;		
 	}
 }
 
@@ -387,6 +433,10 @@ int LineDetNetWork::CollectUsefulData(char * _buff, int _size)
 		memcpy((char*)(dataHead)+dataCopied
 			, _buff + 2 * sizeof(unsigned int) + (before + 1) * moduleDataSize
 			, (end - before -1) * moduleDataSize);
+
+		if(d_recvType == INTERNAL_COLLECT)
+			memcpy(d_internalCollectTempData, dataHead + 2, d_channelNum * sizeof(unsigned long));
+
 		d_dataList.push_back(item);
 	}
 

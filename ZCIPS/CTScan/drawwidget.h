@@ -28,4 +28,7 @@ private:
 	float d_xValuePerPixel;
 protected:
 	virtual void paintEvent(QPaintEvent *event) override;
+
+public:
+	void draw(unsigned long* _data, int _size);
 };
