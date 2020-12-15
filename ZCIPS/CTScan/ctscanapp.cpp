@@ -28,12 +28,10 @@
 CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	: d_mainWidget(nullptr), d_upperWidget(d_upper)
 	, d_imageWidgetManager(new ImageDialogManager())
-	, d_controller(new SimotionController())
 	, d_setupData(new SetupData), d_configData(new ConfigData), d_setupDataPaser(new SetupDataParser(d_setupData.get()))
 	, d_workDir(QCoreApplication::applicationDirPath())
 	, d_acceleratorWidget(new AcceleratorWidget())
 {
-	buildMenuBar();
 	//RunCrashHandler();
 	QString time = QDateTime::currentDateTime().time().toString();
 	auto i = time.length();
@@ -60,7 +58,8 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 		else
 			LOG_ERROR("未定义的轴");
 	}
-	
+
+	d_controller.reset(new SimotionController(d_axisDataMap));
 	d_axisStatusWidget = new AxisStatusWidget(d_controller.get(), d_axisDataMap);
 	for (int i = 0; i != d_setupData->lineDetNum; ++i)
 	{
@@ -93,8 +92,6 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 
 	for (int i = 0; i != d_setupData->panDetNum; ++i)
 	{
-		int blockModuleIndex = 0;
-		std::vector<unsigned int> blockModuleVec;
 		std::unique_ptr<Panel> ptr(PanelFactory::getPanel(0));
 		d_panelDetMap.insert({ d_setupData->panDetData[i].ID, std::move(ptr) });
 	}
@@ -135,6 +132,7 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	connect(d_mainWidget, &CTScanWidget::switchToLineWidgetSignal,
 		this, &CTScanApp::switchToLineWidgetSlot);
 
+	buildMenuBar();
 	LOG_INFO("软件启动");
 }
 
@@ -209,6 +207,32 @@ void CTScanApp::buildMenuBar()
 	d_initiliseSystemAction->setText(QString::fromLocal8Bit("初始化"));
 	d_systemMenu->addAction(d_initiliseSystemAction);
 
+	d_rayDetSwitchMenu = new QMenu(d_systemMenu);
+	d_rayDetSwitchMenu->setTitle(QString::fromLocal8Bit("射线源-探测器组合切换"));
+	d_systemMenu->addAction(d_rayDetSwitchMenu->menuAction());
+
+	for (auto& itr : d_lineDetScanModeMap)
+	{
+		auto action = new QAction(this);
+		d_lineDetRayActions[itr.first] = action;
+		QString text(QString::fromLocal8Bit(d_setupData->kVRayData[itr.first.first].rayType)
+			+ QString::fromLocal8Bit("--") + QString::fromLocal8Bit("线阵探测器"));
+		action->setText(text);
+		d_rayDetSwitchMenu->addAction(action);
+	}
+
+	for (auto& itr : d_panelDetScanModeMap)
+	{
+		auto action = new QAction(this);
+		d_panelDetRayActions[itr.first] = action;
+		QString text(QString::fromLocal8Bit(d_setupData->kVRayData[itr.first.first].rayType) +
+			QString::fromLocal8Bit("--") +
+			QString::fromLocal8Bit("面阵探测器") + 
+			QString::fromLocal8Bit(d_setupData->panDetData[itr.first.second].PandetType));
+		action->setText(text);
+		d_rayDetSwitchMenu->addAction(action);
+	}
+
 	d_viewMenu = new QMenu(d_menuBar);
 	d_viewMenu->setObjectName(QStringLiteral("viewMenu"));
 	d_viewMenu->setTitle(QString::fromLocal8Bit("视图"));
@@ -271,10 +295,13 @@ void CTScanApp::on_axisZeroCoordinateAction_triggered()
 }
 void CTScanApp::on_axisSpeedAction_triggered()
 {
+
 }
 void CTScanApp::on_lineDetectorAction_triggered()
 {
-	LineDetDebugDialog dlg(d_lineDetNetWorkMap[0].get());
+	LineDetDebugDialog dlg(d_lineDetNetWorkMap[0].get(), d_setupData->lineDetData[0].nChnnelMask, 
+		d_setupData->lineDetData[0].nFIFOdepth, d_setupData->lineDetData[0].DelayTime, 
+		d_setupData->lineDetData[0].IntegralTime, d_setupData->lineDetData[0].AmplifyMultiple);
 	dlg.exec();
 }
 void CTScanApp::on_autoAlignLayerAction_triggered()
@@ -289,10 +316,15 @@ void CTScanApp::on_initiliseSystemAction_triggered()
 	d_controller->initialiseController();
 }
 
+void CTScanApp::on_rayDetAction_triggered()
+{
+	
+}
+
 void CTScanApp::on_axisStatusAction_triggered()
 {
 	if(d_axisStatusDialog == nullptr)
-		d_axisStatusDialog = new AxisStatusDialog(d_controller.get(), d_axisDataMap, d_mainWidget);
+		d_axisStatusDialog = new AxisStatusDialog(d_controller.get(), d_axisDataMap, nullptr);
 
 	d_axisStatusDialog->show();
 }

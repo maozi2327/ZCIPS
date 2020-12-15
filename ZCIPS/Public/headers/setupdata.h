@@ -285,7 +285,7 @@ struct LineDetData
 	short	IntegralTime;									//采样积分时间(us), 典型值70
 	short	DelayTime;										//采样延迟时间(us), 典型值10
 	short	nFIFOdepth;										//数据采集FIFO通道深度, 典型值64
-	short	nChnnelMask;									//数据采集FIFO通道掩码(2进制表示, 每位代表64通道)
+	unsigned long	nChnnelMask;							//数据采集FIFO通道掩码(2进制表示, 每位代表64通道)
 	short	nDetectorChnnelAmount;							//探测器通道数(由上面2参数计算获得,可能大于物理探测器数)
 	float	HorizontalSectorAngle;                          //射线平面方向扇角
 	float	HorizontalDetectorAngle;						//水平方向单个探测器夹角(°)

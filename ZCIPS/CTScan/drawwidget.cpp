@@ -96,6 +96,9 @@ void DrawWidget::paintEvent(QPaintEvent * event)
 	{
 		QPoint point(i * d_xLineSpace + d_graphLeft, widgetHeight - d_graphDownMargin + 10);
 		painter.drawText(point, QString("%1").arg(i * d_data->size() / 10));
+
+		point = QPoint(d_graphLeft - 20, widgetHeight - (i * d_yLineSpace + d_graphDownMargin));
+		painter.drawText(point, QString("%1").arg(i * max / 10));
 	}
 
 	painter.setViewport(d_graphLeft, d_graphTop, widgetWidth, widgetHeight);

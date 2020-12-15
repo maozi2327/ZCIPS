@@ -6,6 +6,10 @@ AxisStatusDialog::AxisStatusDialog(ControllerInterface* _controller,
 	const std::map<Axis, AxisData>& _axisDataMap, QWidget *parent)
 	: QDialog(parent), d_controller(_controller)
 {
+	auto flags = windowFlags();
+	setAttribute(Qt::WA_QuitOnClose, false);
+	setWindowFlags(flags | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+
 	for (auto& itr : _axisDataMap)
 	{
 		auto controlsCombo = new AxisStatusControls(itr.second.axisCaption, 20,
@@ -40,6 +44,7 @@ AxisStatusDialog::AxisStatusDialog(ControllerInterface* _controller,
 		d_gridLayout->addWidget(itr.second->d_SDp, row, column++);
 		d_gridLayout->addWidget(itr.second->d_SDn, row, column++);
 		d_gridLayout->addWidget(itr.second->d_ELn, row, column++);
+		d_gridLayout->addWidget(itr.second->d_zeroFound, row, column++);
 		++row;
 	}
 	
@@ -60,7 +65,7 @@ void AxisStatusDialog::updateSlot()
 	for (auto& itr : axisStatus)
 	{
 		d_axisStatusControls[itr.first]->d_coordinate->
-			setText(QString("1%").arg(itr.second.coordinate, 0, 'f', 2));
+			setText(QString("%1").arg(itr.second.coordinate, 0, 'f', 2));
 		QString zero(QString::fromLocal8Bit("0"));
 		QString one(QString::fromLocal8Bit("1"));
 		d_axisStatusControls[itr.first]->d_ELp->setText(itr.second.elp ? one : zero);

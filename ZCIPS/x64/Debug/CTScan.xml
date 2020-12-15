@@ -48,13 +48,13 @@
 		<num>2</num>
 		<kVRayData>
 			<ID>0</ID>
-			<rayType>Comet-450</rayType>
+			<rayType>Comet450</rayType>
 			<rayEnergy>450kV</rayEnergy>
 			<rayDoseRate>100</rayDoseRate>
 		</kVRayData>
 		<kVRayData>
 			<ID>1</ID>
-			<rayType>Wrox-225</rayType>
+			<rayType>Wrox225</rayType>
 			<rayEnergy>225kV</rayEnergy>
 			<rayDoseRate>60</rayDoseRate>
 		</kVRayData>

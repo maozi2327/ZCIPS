@@ -80,6 +80,10 @@ private:
 	QMenuBar* d_menuBar;
 	QMenu* d_systemMenu;
 	QAction* d_initiliseSystemAction;
+	QMenu* d_rayDetSwitchMenu;
+	std::map<std::pair<int, int>, QAction*> d_lineDetRayActions;
+	std::map<std::pair<int, int>, QAction*> d_panelDetRayActions;
+
 	QMenu* d_viewMenu;
 	QAction* d_axisStatusAction;
 	QMenu* d_debugMenu;
@@ -101,6 +105,7 @@ private:
 
 private slots:
 	void on_initiliseSystemAction_triggered();
+	void on_rayDetAction_triggered();
 	void on_axisStatusAction_triggered();
 	void on_axisZeroCoordinateAction_triggered();
 	void on_axisSpeedAction_triggered();

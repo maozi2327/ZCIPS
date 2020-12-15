@@ -178,5 +178,6 @@ void CTScanWidget::changeEvent(QEvent * event)
 
 void CTScanWidget::closeEvent(QCloseEvent * event)
 {
+
 }
 

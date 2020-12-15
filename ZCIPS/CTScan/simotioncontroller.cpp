@@ -13,8 +13,9 @@ const unsigned short SimotionController::d_port = 8000;
 const int SimotionController::d_packetSize = 256;
 static in_addr hostAddr;
 
-SimotionController::SimotionController() : ControllerInterface(), d_bytesReceived(0) , d_netWorkBuffer(new char[1000])
-	, d_server
+SimotionController::SimotionController(std::map<Axis, AxisData>& _axisDataMap) 
+	: ControllerInterface(_axisDataMap)
+	, d_bytesReceived(0) , d_netWorkBuffer(new char[1000]), d_server
 	(
 		new TcpServer(sizeof(tagCOMM_PACKET1), 2, 4
 			, [this](SOCKET _sock) { return initialSend(_sock); }
@@ -80,7 +81,71 @@ std::map<Axis, float> SimotionController::readAxisWorkZero()
 
 std::map<Axis, AxisCoordinateSwitchStatus> SimotionController::readAxisStatus()
 {
-	return std::map<Axis, AxisCoordinateSwitchStatus>();
+	AxisCoordinateSwitchStatus sts;
+	std::map<Axis, AxisCoordinateSwitchStatus> ret;
+
+	for (auto& itr : d_axisDataMap)
+	{
+		if (itr.first == Axis::objRotation) 
+		{
+			sts.eln = 0;
+			sts.elp = 0;
+			sts.sdn = 0;
+			sts.sdp = 0;
+			sts.zeroFound = d_sysStatus.s.graduation_zero_found;
+		}
+		else if(itr.first == Axis::objTranslation)
+		{
+			sts.eln = d_sysStatus.s.translation_ELn;
+			sts.elp = d_sysStatus.s.translation_ELp;
+			sts.sdn = d_sysStatus.s.translation_SDn;
+			sts.sdp = d_sysStatus.s.translation_SDp;
+			sts.zeroFound = d_sysStatus.s.translation_zero_found;
+		}
+		else if (itr.first == Axis::rayLayer)
+		{
+			sts.eln = d_sysStatus.s.layer1_ELn;
+			sts.elp = d_sysStatus.s.layer1_ELp;
+			sts.sdn = d_sysStatus.s.layer1_SDn;
+			sts.sdp = d_sysStatus.s.layer1_SDp;
+			sts.zeroFound = d_sysStatus.s.layer1_zero_found;
+		}
+		else if (itr.first == Axis::detLayer)
+		{
+			sts.eln = d_sysStatus.s.layer2_ELn;
+			sts.elp = d_sysStatus.s.layer2_ELp;
+			sts.sdn = d_sysStatus.s.layer2_SDn;
+			sts.sdp = d_sysStatus.s.layer2_SDp;
+			sts.zeroFound = d_sysStatus.s.layer2_zero_found;
+		}
+		else if (itr.first == Axis::objRadial)
+		{
+			sts.eln = d_sysStatus.s.radial_ELn;
+			sts.elp = d_sysStatus.s.radial_ELp;
+			sts.sdn = d_sysStatus.s.radial_SDn;
+			sts.sdp = d_sysStatus.s.radial_SDp;
+			sts.zeroFound = d_sysStatus.s.radial_zero_found;
+		}
+		else if (itr.first == Axis::detRadial)
+		{
+			sts.eln = d_sysStatus.s.detRadial_ELn;
+			sts.elp = d_sysStatus.s.radial_ELp;
+			sts.sdn = d_sysStatus.s.radial_SDn;
+			sts.sdp = d_sysStatus.s.radial_SDp;
+			sts.zeroFound = d_sysStatus.s.radial_zero_found;
+		}
+		else if (itr.first == Axis::detTranslation)
+		{
+			sts.eln = d_sysStatus.s.detTranslation_ELn;
+			sts.elp = d_sysStatus.s.detTranslation_ELp;
+			sts.sdn = d_sysStatus.s.detTranslation_SDn;
+			sts.sdp = d_sysStatus.s.detTranslation_SDp;
+			sts.zeroFound = d_sysStatus.s.detTranslation_zero_found;
+		}
+		ret[itr.first] = sts;
+		sts.coordinate = d_axisPosition[itr.first];
+	}
+	return ret;
 }
 
 bool SimotionController::readReadyStatus()

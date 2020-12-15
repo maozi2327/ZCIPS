@@ -118,7 +118,7 @@ protected:
 private slots:
 	void netCheckSlot();
 public:
-	SimotionController();
+	SimotionController(std::map<Axis, AxisData>& _axisDataMap);
 	~SimotionController();
 	
 	virtual bool getConnected();

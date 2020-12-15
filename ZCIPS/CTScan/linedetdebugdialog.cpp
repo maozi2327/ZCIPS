@@ -7,8 +7,9 @@
 std::uniform_int_distribution<unsigned> u(0, 500);
 std::default_random_engine e;
 
-LineDetDebugDialog::LineDetDebugDialog(LineDetNetWork* _lineDetNetWork, QWidget *parent)
-	: QDialog(parent), d_data(nullptr), d_channelNum(608), d_lineDetWork(_lineDetNetWork)
+LineDetDebugDialog::LineDetDebugDialog(LineDetNetWork* _lineDetNetWork, unsigned long _fifoMask,
+	int _channelDepth, int _delayTime, int _sampleTime, int _ampSize, QWidget *parent)
+	: QDialog(parent), d_data(nullptr), d_fifoMask(_fifoMask), d_channelNum(_channelDepth), d_lineDetWork(_lineDetNetWork)
 {
 	ui.setupUi(this);
 
@@ -17,6 +18,11 @@ LineDetDebugDialog::LineDetDebugDialog(LineDetNetWork* _lineDetNetWork, QWidget 
 	d_graph->setMinimumSize(QSize(800, 600));
 
 	ui.horizontalLayout->addWidget(d_graph);
+	ui.delayTimeLineEdit->setText(QString("%1").arg(_delayTime));
+	ui.sampleTimeLineEdit->setText(QString("%1").arg(_sampleTime));
+	ui.amplifyFactorLineEdit->setText(QString("%1").arg(_ampSize));
+	ui.maskLineEdit->setText(QString("%1").arg(_fifoMask, 0, 2));
+	ui.depthLineEdit->setText(QString("%1").arg(_channelDepth));
 }
 
 LineDetDebugDialog::~LineDetDebugDialog()
@@ -74,7 +80,8 @@ void LineDetDebugDialog::on_setDepthButton_clicked()
 
 void LineDetDebugDialog::on_setMaskButton_clicked()
 {
-	d_lineDetWork->setChannelMask(ui.maskLineEdit->text().toInt());
+	if (d_lineDetWork->setChannelMask(ui.maskLineEdit->text().toInt()))
+		d_channelNum = d_lineDetWork->getChannelNum();
 }
 
 
@@ -84,7 +91,7 @@ void LineDetDebugDialog::on_internalAcquireButton_clicked()
 		d_data = new unsigned long[d_channelNum];
 
 	d_timer = new QTimer(this);
-	d_timer->start(20);
+	d_timer->start(200);
 	connect(d_timer, &QTimer::timeout, this, &LineDetDebugDialog::updateDataSlot);
 
 	d_TESTtimer = new QTimer(this);

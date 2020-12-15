@@ -11,7 +11,8 @@ class LineDetDebugDialog : public QDialog
 	Q_OBJECT
 
 public:
-	LineDetDebugDialog(LineDetNetWork* _lineDetNetWork, QWidget *parent = Q_NULLPTR);
+	LineDetDebugDialog(LineDetNetWork* _lineDetNetWork, unsigned long _fifoMask, int _channelDepth, 
+		int _delayTime, int _sampleTime, int _ampSize, QWidget *parent = Q_NULLPTR);
 	~LineDetDebugDialog();
 
 private:
@@ -20,7 +21,9 @@ private:
 	int d_channelNum;
 	DrawWidget* d_graph;
 	QTimer* d_timer;
-	
+	unsigned long d_fifoMask;
+	unsigned short d_channelDepth;
+
 	QTimer* d_TESTtimer;
 
 	unsigned long* d_data;

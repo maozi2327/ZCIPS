@@ -26,13 +26,14 @@ protected:
 	std::map<Axis, float> d_axisSpeed;
 	std::map<Axis, float> d_axisPosition;
 	std::map<Axis, float> d_axisWorkZero;
+	const std::map<Axis, AxisData>& d_axisDataMap;
 	bool d_connected;
 	int d_timeoutCount;
 	QTimer* d_timer;
 	virtual void setConnectdSts() = 0;
 	virtual bool sendCmd() = 0;
 public:
-	ControllerInterface();
+	ControllerInterface(std::map<Axis, AxisData>& _axisDataMap);
 	virtual ~ControllerInterface();
 	
 	virtual bool getConnected() = 0;

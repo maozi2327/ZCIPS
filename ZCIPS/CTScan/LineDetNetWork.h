@@ -230,9 +230,10 @@ public:
 	int CollectUsefulData(char * _buff, int _size);
 	LineDetList* getRowList();
 	void clearRowList();
+	int getChannelNum();
 
 	bool getConnected();
-	LineDetNetWork(unsigned short _port, unsigned short _fifoMask, unsigned short _channelDepth, unsigned short _delayTime,
+	LineDetNetWork(unsigned short _port, unsigned long _fifoMask, unsigned short _channelDepth, unsigned short _delayTime,
 		unsigned short _sampleTime, unsigned short _ampSize, std::vector<unsigned int> _blockModuleVec, int _detNum);
 	~LineDetNetWork();
 };

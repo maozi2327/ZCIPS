@@ -530,7 +530,7 @@ union SysStatus{
 		BYTE	detTranslation_zero_found		:1;			//探测平移零位已找到(1)
 		BYTE	rayRadial_zero_found			:1;			//射线径向零位已找到(1)
 		BYTE	rayTranslation_zero_found		:1;			//射线平移零位已找到(1)
-		BYTE	tableVertical_zero_found			:1;			//工件升降零位已找到(1)
+		BYTE	tableVertical_zero_found		:1;			//工件升降零位已找到(1)
 		BYTE	deflection_zero_found			:1;			//偏摆零位已找到(1)
 		BYTE									:2;			//保留
 

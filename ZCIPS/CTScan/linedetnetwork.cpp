@@ -8,7 +8,7 @@
 
 static in_addr hostAddr;
 
-LineDetNetWork::LineDetNetWork(unsigned short _port, unsigned short _fifoMask, unsigned short _channelDepth, unsigned short _delayTime,
+LineDetNetWork::LineDetNetWork(unsigned short _port, unsigned long _fifoMask, unsigned short _channelDepth, unsigned short _delayTime,
 	unsigned short _sampleTime, unsigned short _ampSize, std::vector<unsigned int> _blockModuleVec, int _detNum)
 	: d_server(
 		new TcpServer(4, 4, 0
@@ -451,4 +451,9 @@ LineDetList * LineDetNetWork::getRowList()
 void LineDetNetWork::clearRowList()
 {
 	d_dataList.clear();
+}
+
+int LineDetNetWork::getChannelNum()
+{
+	return d_channelNum;
 }
