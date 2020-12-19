@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "panelframeshot.h"
-#include "../PanelDll/panel.h"
+#include "../PanelDetector/panel.h"
 #include "../PanelImageProcess/panelimageprocess.h"
 
 PanelFrameShot::PanelFrameShot(Panel* _panel, PanelImageProcess* _panelImageProcess, QObject *parent)

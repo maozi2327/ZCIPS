@@ -3,32 +3,25 @@
 
 CTScanWidget::CTScanWidget(QWidget* _upWidget, QWidget* _middleWidget, QWidget* _downWidget, QWidget *parent)
     : QWidget(parent)
-	, d_scanWidget(nullptr), d_upWidget(_upWidget), d_middleWidget(_middleWidget), d_downWidget(_downWidget)
+	, d_scanWidget(nullptr), d_upWidget(_upWidget), d_scanTableWidget(_middleWidget), d_downWidget(_downWidget)
 {
 	ui.setupUi(this);
-	//QGridLayout* layoutAcc = new QGridLayout(ui.acceleratorContainerwidget);
-	//layoutAcc->addWidget(d_upWidget, 0, 0);
-	//layoutAcc->setContentsMargins(0, 0, 0, 0);
-	//d_upWidget->setContentsMargins(0, 0, 0, 0);
+	d_scanTableVLayout = new QVBoxLayout;
+	d_scanTableVLayout->addWidget(d_scanTableWidget, 0, 0);
+	d_scanTableVLayout->setContentsMargins(0, 0, 0, 0);
+	ui.scanTable->setLayout(d_scanTableVLayout);
 
-	d_middleLayout = new QVBoxLayout;
-	d_middleLayout->addWidget(d_middleWidget, 0, 0);
-	//d_middleLayout->setSpacing(6);
-	//d_middleLayout->setContentsMargins(11, 11, 11, 11);
-
-	//QSpacerItem* vSpacer = new QSpacerItem(0, 0, QSizePolicy::Maximum, QSizePolicy::Expanding);
-	//d_middleLayout->insertWidget(1, d_middleWidget, 0);
-	//d_middleLayout->insertSpacerItem(0, vSpacer);
-	ui.scanTable->setLayout(d_middleLayout);
-	////添加layout使位于中间
 	QGridLayout* layout1 = new QGridLayout;
+	layout1->setContentsMargins(0, 0, 0, 0);
 	layout1->addWidget(d_downWidget, 0, 0);
 	layout1->setMargin(0);
 	ui.motorControlGroupBox->setLayout(layout1);
+	ui.motorControlGroupBox->setFixedHeight(d_downWidget->height());
 
 	d_layout = new QGridLayout;
 	d_layout->addWidget(this, 0, 0);
 	parent->setLayout(d_layout);
+	d_layout->setContentsMargins(5, 5, 5, 0);
 }
 
 CTScanWidget::~CTScanWidget()
@@ -48,16 +41,18 @@ QLayout * CTScanWidget::getLayout()
 
 void CTScanWidget::switchLinePanelWidget(QWidget * _widget)
 {
-	if (d_middleWidget != nullptr && d_middleWidget->isVisible())
+	if (d_scanTableWidget != nullptr && d_scanTableWidget->isVisible())
 	{
-		d_middleWidget->setParent(nullptr);
-		d_middleLayout->removeWidget(d_middleWidget);
+		d_scanTableWidget->setParent(nullptr);
+		d_scanTableVLayout->removeWidget(d_scanTableWidget);
 	}
-
-	d_middleWidget = _widget;
-	d_middleLayout->addWidget(d_middleWidget, 0, 0);
-	//d_middleWidget->setGeometry((QRect(0, 0, 520, 730)));
-	//d_middleWidget->show();
+	d_scanTableWidget = _widget;
+	_widget->setFixedHeight(_widget->height() + 2);
+	d_scanTableVLayout->addWidget(d_scanTableWidget, 0, 0);
+	ui.controlTabWidget->setFixedHeight(d_scanTableWidget->height() + ui.controlTabWidget->iconSize().height());
+	setFixedHeight(ui.controlTabWidget->height() + ui.motorControlGroupBox->height() + 
+		ui.acceleratorContainerwidget->height() + 2);
+	updateGeometry();
 }
 
 void CTScanWidget::on_ray0LineDet0Button_clicked()

@@ -28,8 +28,10 @@ public:
 	virtual float getPixelSize() = 0;
 	virtual bool setPanelSize(int _width, int _height) = 0;
 	virtual size_t getFrameSize() = 0;
-	virtual bool beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames, int _cycleTime, int _gainFactor) = 0;
-	virtual bool beginExTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime, int _gainFactor) = 0;
+	virtual bool beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames
+		, int _cycleTime, int _gainFactor) = 0;
+	virtual bool beginExTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime
+		, int _gainFactor) = 0;
 	virtual void stopAcquire() = 0;
 	virtual void setFrameCallback(std::function<void(unsigned short*)> _imageProcessCallBack) =  0;
 	virtual int caculateExTriggerSampleTime(int _cycleTime) = 0;

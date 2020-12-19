@@ -7,70 +7,21 @@
     <x>0</x>
     <y>0</y>
     <width>342</width>
-    <height>648</height>
+    <height>619</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <item>
-     <widget class="QWidget" name="widget" native="true"/>
-    </item>
-   </layout>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>342</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menu1">
-    <property name="title">
-     <string>1</string>
-    </property>
-    <widget class="QMenu" name="menu1_1">
-     <property name="title">
-      <string>1.1</string>
-     </property>
-     <addaction name="action1_1_1"/>
-     <addaction name="action1_1_2"/>
-    </widget>
-    <addaction name="menu1_1"/>
-   </widget>
-   <addaction name="menu1"/>
-  </widget>
-  <action name="action1_1">
-   <property name="text">
-    <string>1.1</string>
-   </property>
-  </action>
-  <action name="action1_2">
-   <property name="text">
-    <string>1.2</string>
-   </property>
-  </action>
-  <action name="action1_1_1">
-   <property name="text">
-    <string>1.1.1</string>
-   </property>
-  </action>
-  <action name="action1_1_2">
-   <property name="text">
-    <string>1.1.2</string>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

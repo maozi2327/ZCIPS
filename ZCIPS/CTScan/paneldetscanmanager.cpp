@@ -3,7 +3,7 @@
 #include "conescanwidget.h"
 #include "conescan.h"
 #include "controllerinterface.h"
-#include "../PanelDll/panel.h"
+#include "../PanelDetector/panel.h"
 #include "panelframeshot.h"
 #include "ImageDialogManager.h"
 
@@ -101,8 +101,9 @@ void PanelDetScanManager::frameShotSlot()
 	//DEBUG£º²âÊÔÍ¼ÏñËõ·Å×¢ÊÍ
 
 	//DEBUG£º²âÊÔÍ¼ÏñËõ·ÅÐÂÔö
-	d_imageDialogHandle = d_imageWidgetManager->getNewWindow(2048, 2048);
+	//d_imageDialogHandle = d_imageWidgetManager->getNewWindow(2048, 2048);
 	//DEBUG£º²âÊÔÍ¼ÏñËõ·ÅÐÂÔö
+	d_panelFrameShot->beginAcquire(0, 0, 0);
 }
 
 void PanelDetScanManager::stopControllerSlot()

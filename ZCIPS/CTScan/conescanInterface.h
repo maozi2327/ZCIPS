@@ -2,11 +2,11 @@
 #include <memory>
 #include <mutex>
 #include "../Public/util/logmacro.h"
-#include "../PanelDll/panel.h"
 #include "../PanelImageProcess/panelimageprocess.h"
 #include "../Public/headers/commandqueue.h"
 #include "../Public/util/thread.h"
 
+class Panel;
 class PanelRawData
 {
 private:

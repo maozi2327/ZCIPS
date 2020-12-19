@@ -35,7 +35,7 @@ public:
 	~CTScanApp();
 
 signals:
-	LOGSIGNAL
+	LOGSIGNAL;
 private slots:
 	void controllerNetWorkStsSlot(bool sts);
 	void lineDetNetWorkStsSlot(int _det, bool sts);

@@ -22,8 +22,10 @@
 #include "axisstatuswidget.h"
 #include "axiszerocoordinationdialog.h"
 #include "axisstatusdialog.h"
-#include "../PanelDll/panel.h"
+#include "../PanelDetector/panel.h"
 #include "linedetdebugdialog.h"
+
+QString str(QCoreApplication::applicationDirPath());
 
 CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 	: d_mainWidget(nullptr), d_upperWidget(d_upper)
@@ -339,6 +341,7 @@ void CTScanApp::switchToPanelWidgetSlot(int _rayId, int _detId)
 	auto widget = static_cast<ConeScanWidget*>(d_panelDetScanManagerMap[{_rayId, _detId}]->getWidget());
 	widget->setPanelDetWidget();
 	d_mainWidget->switchLinePanelWidget(widget);
+	emit sizeChangedSignal(d_mainWidget->height() + d_mainWidget->layout()->contentsMargins().top());
 }
 
 void CTScanApp::switchToLineWidgetSlot(int _rayId, int _detId)

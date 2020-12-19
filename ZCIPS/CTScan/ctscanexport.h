@@ -10,7 +10,7 @@ public slots:
 
 signals:
 	void signal1(bool);
-
+	void sizeChangedSignal(int _height);
 protected:
 	CTScanInterface();
 

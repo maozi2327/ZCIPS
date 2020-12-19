@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>587</height>
+    <height>442</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>300</width>
-    <height>470</height>
+    <height>440</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -34,14 +34,23 @@
   <property name="windowTitle">
    <string>锥束扫描</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,1">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetNoConstraint</enum>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
    <item>
-    <widget class="QWidget" name="widget" native="true">
+    <widget class="QWidget" name="panelWidget" native="true">
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>100</height>
+       <height>0</height>
       </size>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -183,7 +192,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -191,7 +200,7 @@
      <property name="minimumSize">
       <size>
        <width>80</width>
-       <height>0</height>
+       <height>322</height>
       </size>
      </property>
      <property name="maximumSize">
@@ -789,19 +798,6 @@
       <zorder>coneJointRotScanProgressStaticLabel</zorder>
      </widget>
     </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

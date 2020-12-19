@@ -56,30 +56,30 @@ protected:
 	void netWorkThread();
 	FixedThreadPool d_fixedThreadPool;
 public:
-	VarianPanel(QObject *parent);
+	VarianPanel();
 	~VarianPanel();
 
-	virtual bool connectPanel();
-	virtual bool setCycleTime(int _milliseconds);
-	virtual bool setFrames(int _frames);
-	virtual bool setSampleMode(SampleMode _sampleMode, int _cycleTime);
+	virtual bool connectPanel() override;
+	virtual bool setCycleTime(int _milliseconds) override;
+	virtual bool setFrames(int _frames) override;
+	virtual bool setSampleMode(SampleMode _sampleMode, int _cycleTime) override;
 	bool setVarianMode(int _mode);
-	virtual bool setGainFactor(int _gainFactor);
-	virtual bool getConnected();
-	virtual bool getReady();
+	virtual bool setGainFactor(int _gainFactor) override;
+	virtual bool getConnected() override;
+	virtual bool getReady() override;
 
 	//采集多帧时会将数据连续存储在同一内存区域
-	virtual int getSampleTime();
-	virtual std::pair<int, int> getPanelSize();
-	virtual float getPixelSize();
-	virtual bool setPanelSize(int _width, int _height);
-	virtual size_t getFrameSize();
+	virtual int getSampleTime() override;
+	virtual std::pair<int, int> getPanelSize() override;
+	virtual float getPixelSize() override;
+	virtual bool setPanelSize(int _width, int _height) override;
+	virtual size_t getFrameSize() override;
 	virtual bool beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, 
-		int _frames, int _cycleTime, int _gainFactor);
+		int _frames, int _cycleTime, int _gainFactor) override;
 	virtual bool beginExTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, 
-		int _cycleTime, int _gainFactor);
-	virtual void stopAcquire();
-	virtual void setFrameCallback(std::function<void(unsigned short*)> _imageProcessCallBack);
-	virtual int caculateExTriggerSampleTime(int _cycleTime);
-	virtual QWidget* getWidget();
+		int _cycleTime, int _gainFactor) override;
+	virtual void stopAcquire() override;
+	virtual void setFrameCallback(std::function<void(unsigned short*)> _imageProcessCallBack) override;
+	virtual int caculateExTriggerSampleTime(int _cycleTime) override;
+	virtual QWidget* getWidget() override;
 };

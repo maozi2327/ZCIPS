@@ -7,19 +7,34 @@
     <x>0</x>
     <y>0</y>
     <width>269</width>
-    <height>100</height>
+    <height>70</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>0</width>
-    <height>100</height>
+    <width>269</width>
+    <height>70</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>269</width>
+    <height>70</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>PEsiPanelWidget</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
+   <property name="verticalSpacing">
+    <number>3</number>
+   </property>
    <item row="0" column="0">
     <widget class="QLabel" name="sampleTimeStaticLabel">
      <property name="minimumSize">
@@ -100,6 +115,9 @@
        <width>80</width>
        <height>20</height>
       </size>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::DefaultContextMenu</enum>
      </property>
     </widget>
    </item>

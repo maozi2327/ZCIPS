@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>317</width>
-    <height>747</height>
+    <height>556</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -77,6 +77,12 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
+     <property name="iconSize">
+      <size>
+       <width>16</width>
+       <height>16</height>
+      </size>
+     </property>
      <widget class="QWidget" name="scanTable">
       <attribute name="title">
        <string>扫描</string>
@@ -92,19 +98,6 @@
        <string>校准</string>
       </attribute>
      </widget>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="showMotorWidgetButton">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>PushButton</string>
-     </property>
     </widget>
    </item>
    <item>

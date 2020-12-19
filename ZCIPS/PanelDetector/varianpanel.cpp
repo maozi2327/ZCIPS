@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include "varianpanel.h"
 
-VarianPanel::VarianPanel(QObject *parent)
+VarianPanel::VarianPanel()
 	: Panel()
 	, d_fixedThreadPool(2)
 {
@@ -267,6 +267,8 @@ bool VarianPanel::beginAcquire(SampleMode _sampleMode, int _cycleTime, int _fram
 		vip_reset_state();
 		return false;
 	}
+
+	return true;
 }
 
 //void UnicodeToByte(CString& str, char *&ch)

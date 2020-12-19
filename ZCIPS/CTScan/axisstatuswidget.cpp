@@ -8,15 +8,17 @@ AxisStatusWidget::AxisStatusWidget(ControllerInterface* _controller, const std::
 	for (auto& itr : _axisDataMap)
 	{
 		auto controlsCombo = new AxisControl(itr.first, itr.second.axisCaption, itr.second.axisName, this);
-		controlsCombo->radioButton->setMinimumSize(QSize(13, 0));
-		controlsCombo->radioButton->setMaximumSize(QSize(13, 16777215));
-
-		controlsCombo->axisNameLabel->setMinimumSize(QSize(60, 0));
-		controlsCombo->axisNameLabel->setMaximumSize(QSize(60, 16777215));
+		//controlsCombo->radioButton->setMinimumSize(QSize(13, 0));
+		//controlsCombo->radioButton->setMaximumSize(QSize(13, 16777215));
+		controlsCombo->radioButton->setFixedHeight(15);
+		//controlsCombo->axisNameLabel->setMinimumSize(QSize(60, 0));
+		//controlsCombo->axisNameLabel->setMaximumSize(QSize(60, 16777215));
+		controlsCombo->axisNameLabel->setFixedHeight(15);
 		controlsCombo->axisNameLabel->setFrameShape(QFrame::Box);
 
-		controlsCombo->axisPosLabel->setMinimumSize(QSize(60, 0));
-		controlsCombo->axisPosLabel->setMaximumSize(QSize(60, 16777215));
+		//controlsCombo->axisPosLabel->setMinimumSize(QSize(60, 0));
+		//controlsCombo->axisPosLabel->setMaximumSize(QSize(60, 16777215));
+		controlsCombo->axisPosLabel->setFixedHeight(15);
 		controlsCombo->axisPosLabel->setFrameShape(QFrame::Box);
 		d_axisControls.push_back(controlsCombo);
 	}
@@ -51,14 +53,14 @@ AxisStatusWidget::AxisStatusWidget(ControllerInterface* _controller, const std::
 	d_posAreaGridLayout->setObjectName(QStringLiteral("gridLayout"));
 	d_posLineEdit = new QLineEdit(this);
 	d_posLineEdit->setObjectName(QStringLiteral("posLineEdit"));
-	d_posLineEdit->setMinimumSize(QSize(60, 0));
-	d_posLineEdit->setMaximumSize(QSize(60, 16777215));
+	d_posLineEdit->setMinimumSize(QSize(60, 15));
+	d_posLineEdit->setMaximumSize(QSize(60, 15));
 
 	d_posAreaGridLayout->addWidget(d_posLineEdit, 0, 0, 1, 2);
 
 	d_negativePosButton = new QPushButton(this);
 	d_negativePosButton->setObjectName(QStringLiteral("negativePosButton"));
-	d_negativePosButton->setText(QString::fromLocal8Bit("反向"));
+	d_negativePosButton->setText(QString::fromLocal8Bit("反"));
 	d_negativePosButton->setMinimumSize(QSize(25, 25));
 	d_negativePosButton->setMaximumSize(QSize(25, 25));
 
@@ -66,7 +68,7 @@ AxisStatusWidget::AxisStatusWidget(ControllerInterface* _controller, const std::
 
 	d_positivePosButton = new QPushButton(this);
 	d_positivePosButton->setObjectName(QStringLiteral("positivePosButton"));
-	d_positivePosButton->setText(QString::fromLocal8Bit("正向"));
+	d_positivePosButton->setText(QString::fromLocal8Bit("正"));
 	d_positivePosButton->setMinimumSize(QSize(25, 25));
 	d_positivePosButton->setMaximumSize(QSize(25, 25));
 
@@ -89,7 +91,7 @@ AxisStatusWidget::AxisStatusWidget(ControllerInterface* _controller, const std::
 	sizePolicy1.setHeightForWidth(d_stopButton->sizePolicy().hasHeightForWidth());
 	d_stopButton->setSizePolicy(sizePolicy1);
 	d_stopButton->setMinimumSize(QSize(50, 50));
-	d_stopButton->setMaximumSize(QSize(100, 100));
+	d_stopButton->setMaximumSize(QSize(100, 50));
 
 	d_posAreaGridLayout->addWidget(d_stopButton, 3, 0, 1, 2);
 
@@ -101,6 +103,16 @@ AxisStatusWidget::AxisStatusWidget(ControllerInterface* _controller, const std::
 	d_axisControls[0]->radioButton->setChecked(true);
 	d_axisSelected = d_axisControls[0]->axis;
 
+	auto axisControlsHeight = _axisDataMap.size() * (10 + 6) +
+		d_axisGridLayout->contentsMargins().top() + d_axisGridLayout->contentsMargins().bottom();
+
+	auto buttonsHeight = d_posLineEdit->height() + d_negativePosButton->height() + d_absPosButton->height() + d_stopButton->height() +
+		d_posAreaGridLayout->contentsMargins().top() + d_posAreaGridLayout->contentsMargins().bottom() + 10 * 3;
+
+	auto height = axisControlsHeight > buttonsHeight ? axisControlsHeight : buttonsHeight;
+	setFixedHeight(height + d_horizontalLayout->contentsMargins().top() + d_horizontalLayout->contentsMargins().bottom());
+	//	d_axisGridLayout->contentsMargins().top() + d_axisGridLayout->contentsMargins().bottom() +
+	//	d_horizontalLayout->contentsMargins().top() + d_horizontalLayout->contentsMargins().bottom());
 	ui.setupUi(this);
 
 	for (auto& itr : d_axisControls)

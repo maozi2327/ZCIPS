@@ -9,6 +9,7 @@ LineDetScanWidget::LineDetScanWidget(QWidget *parent)
 {
 	ui.setupUi(this);
 	initiliseControls();
+	setFixedHeight(470);
 }
 
 LineDetScanWidget::~LineDetScanWidget()

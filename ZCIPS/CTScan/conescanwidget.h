@@ -26,6 +26,7 @@ private:
 	Panel* d_panel;
 	QVBoxLayout* d_middleLayout;
 	QWidget* d_panelWidget;
+	int d_initialHeight;
 private slots:
 	void on_coneScanBeginSampleButton_clicked();
 	void on_frameShotButton_clicked();

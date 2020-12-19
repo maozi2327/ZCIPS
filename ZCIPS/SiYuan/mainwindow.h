@@ -13,4 +13,7 @@ public:
 
 private:
 	Ui::MainWindow ui;
+
+private slots:
+	void sizeChangedSlot(int _height);
 };

@@ -3,6 +3,7 @@
 #include "controllerinterface.h"
 #include "imageprocess.h"
 #include "../../Public/util/functions.h"
+#include "../PanelDetector/panel.h"
 
 ConeScanInterface::ConeScanInterface(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _imageProcess):
 	d_panel(_panel), d_controller(_controller), d_imageProcess(_imageProcess),

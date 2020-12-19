@@ -47,8 +47,8 @@ private:
 	QWidget* d_scanWidget;
 	QGridLayout* d_layout;
 	QWidget* d_upWidget;
-	QVBoxLayout* d_middleLayout;
-	QWidget* d_middleWidget;
+	QVBoxLayout* d_scanTableVLayout;
+	QWidget* d_scanTableWidget;
 	QWidget* d_downWidget;
 };
 //#ifdef TABLETRANSLATION

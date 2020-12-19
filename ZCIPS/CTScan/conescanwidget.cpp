@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "conescanwidget.h"
-#include "../PanelDll/panel.h"
 #include "qtwidgetaddtest.h"
 
 ConeScanWidget::ConeScanWidget(Panel* _panel, QWidget* _panelWidget, QWidget *parent)
@@ -11,6 +10,7 @@ ConeScanWidget::ConeScanWidget(Panel* _panel, QWidget* _panelWidget, QWidget *pa
 	ui.coneScanGraduationComboBox->setCurrentText("256");
 	ui.coneScanframesComboBox->setCurrentText("1");
 	ui.orientIncEdit->setText("0");
+	d_initialHeight = minimumHeight();
 }
 
 ConeScanWidget::~ConeScanWidget()
@@ -20,7 +20,12 @@ ConeScanWidget::~ConeScanWidget()
 
 void ConeScanWidget::setPanelDetWidget()
 {
-	d_panelWidget->setParent(ui.widget);
+	d_panelWidget->setParent(ui.panelWidget);
+	auto size = d_panelWidget->width() + 2;
+	size = d_panelWidget->height() + 2;
+	ui.panelWidget->setFixedSize(d_panelWidget->width(), d_panelWidget->height());
+	setFixedHeight(ui.panelWidget->height() + d_initialHeight);
+	updateGeometry();
 }
 
 void ConeScanWidget::setConeScanProgress(float _progress, const QString & _msg)
