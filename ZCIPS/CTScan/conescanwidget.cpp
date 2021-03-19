@@ -21,8 +21,6 @@ ConeScanWidget::~ConeScanWidget()
 void ConeScanWidget::setPanelDetWidget()
 {
 	d_panelWidget->setParent(ui.panelWidget);
-	auto size = d_panelWidget->width() + 2;
-	size = d_panelWidget->height() + 2;
 	ui.panelWidget->setFixedSize(d_panelWidget->width(), d_panelWidget->height());
 	setFixedHeight(ui.panelWidget->height() + d_initialHeight);
 	updateGeometry();

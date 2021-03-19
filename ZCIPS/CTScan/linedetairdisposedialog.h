@@ -24,10 +24,8 @@ class LineDetAirDisposeDialog : public QDialog
 {
 	Q_OBJECT
 
-protected:
-	LineDetAirDisposeDialog(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork,
-		const SetupData* _setupData, int _lineDetIndex, int _rayIndex, const QString& _orgPath, QWidget *parent = Q_NULLPTR);
-public:	
+public:
+	LineDetAirDisposeDialog(const QString& _orgPath, QWidget *parent = Q_NULLPTR);
 	~LineDetAirDisposeDialog();
 
 private:
@@ -35,11 +33,13 @@ private:
 	AddModifyAirDisposeDialog* d_newAirDialog;
 	std::unique_ptr<LineDetScanInterface> d_airTuneScan;
 	QString d_templateFileName;
-	bool loadTemplateData();
+	bool loadFileInfo();
 	bool saveTemplateData();
 	bool d_modified;
+	std::vector<std::vector<QString>> d_fileInfo;
 	std::vector<AirTemplateData> d_airTemplateData;
 	std::vector<AirTemplateData>::iterator d_currentTempDataIter;
+	QString d_airFileDirectory;
 public slots:
 	void updateScanButtonSlot(bool _sts);
 
@@ -55,22 +55,8 @@ protected:
 	virtual void closeEvent(QCloseEvent* _event) override;
 
 private:
-	static LineDetAirDisposeDialog* d_ref;
 
 signals:
 	LOGSIGNAL
-
-public:
-	static LineDetAirDisposeDialog* getInstance(ControllerInterface* _controller,
-		LineDetNetWork* _lineDetNetWork,
-		const SetupData* _setupData, int _lineDetIndex, int _rayIndex, 
-		const QString& _orgPath, QWidget *parent)
-	{
-		if(d_ref == nullptr)
-			d_ref = new LineDetAirDisposeDialog(_controller, _lineDetNetWork,
-			_setupData, _lineDetIndex, _rayIndex,
-			_orgPath, nullptr);
-
-		return d_ref;
-	};
+	
 };

@@ -19,10 +19,12 @@ class LineDetScanInterface : public QObject
 	Q_OBJECT
 protected:
 	QTimer* d_timer;
-	//输入文件名，从数据库中检索获取文件编号
 	QString d_fileName;
-	QString d_orgPath;
-	//输入，目录深度到日期
+	
+	//org全路径名
+	QString d_orgName;
+
+	//校正后文件路径
 	QString d_filePath;
 	QString d_installDirectory;
 	QString d_airFile;
@@ -58,7 +60,8 @@ protected:
 	const ConfigData* d_configData;
 	static ICT_HEADER23 d_ictHeader;
 	virtual void scanThread();
-	void saveOrgFile(LineDetList* _list, const QString& _fileName);
+	virtual void saveOrgFile(LineDetList* _list, const QString& _fileName);
+	virtual bool scanFinished();
 	virtual bool setGenerialFileHeader();
 	virtual void sendCmdToControl() = 0;
 	void CalculateView_ValidDetector(float _diameter);
@@ -68,14 +71,15 @@ protected:
 	virtual void saveFile() = 0;
 signals:
 	void signalGraduationCount(int _count);
+	void scanThreadQuitSignal(int _sts);
 	LOGSIGNAL
+
+private slots:
 public:
 	LineDetScanInterface(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork, 
 		const SetupData* _setupData, int _lineDetIndex);
+	virtual void setFileName(const QString& _orgName, const QString& _destPath);
 	virtual ~LineDetScanInterface();
-	void setFileName(const QString& _fileName) { d_fileName = _fileName; };
-	void setFilePath(const QString& _filePath) { d_filePath = _filePath; };
-	void setOrgPath(const QString& _orgPath) { d_orgPath = _orgPath; };
 	virtual bool beginScan();
 	virtual void stopScan();
 };

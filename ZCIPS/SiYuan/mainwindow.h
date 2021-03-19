@@ -2,7 +2,6 @@
 
 #include <QMainWindow>
 #include "ui_mainwindow.h"
-
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT

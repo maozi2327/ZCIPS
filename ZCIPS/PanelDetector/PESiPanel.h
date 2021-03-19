@@ -1,12 +1,10 @@
 #pragma once
 #include "Panel.h"
-#include "Acq.h"
-#include "panelHeaders.h"
-#include "../Public/headers/CommandQueue.h"
+#include ".\public\headers\Acq.h"
 #include <tuple>
 #include <map>
-#include <functional>
 #include "pesipanelwidget.h"
+
 class PESiPanel : public Panel
 {
 private:

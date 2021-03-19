@@ -230,12 +230,14 @@ void LineDetScanWidget::on_bkgTuneButton_clicked()
 {
 	emit bkgTuneSignal();
 }
+
+void on_loadTuneDataButton_clicked()
+{
+	emit loadTuneDataSignal();
+}
+
 void LineDetScanWidget::on_airTuneButton_clicked()
 {
-	//d_airDisposeDialog = LineDetAirDisposeDialog::getInstance(d_controller, d_lineDetNetWork, d_setupData,
-	//	d_rayNum, d_detNum, QString(""), this);
-	//connect(this, &LineDetScanWidget::readyToScanSignal, d_airDisposeDialog, &LineDetAirDisposeDialog::updateScanButtonSlot);
-	//d_airDisposeDialog->show();
 	emit airTuneSignal();
 }
 

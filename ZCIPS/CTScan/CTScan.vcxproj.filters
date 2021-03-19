@@ -204,6 +204,9 @@
     <ClCompile Include="drawwidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="linedetfilenamedialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\lib\tinyxml2.h">
@@ -406,6 +409,9 @@
     <QtMoc Include="drawwidget.h">
       <Filter>public</Filter>
     </QtMoc>
+    <QtMoc Include="linedetfilenamedialog.h">
+      <Filter>public</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="conescanwidget.ui">
@@ -454,6 +460,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="drawwidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="linedetfilenamedialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

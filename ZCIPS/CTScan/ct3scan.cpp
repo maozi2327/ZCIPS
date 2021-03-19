@@ -1,7 +1,7 @@
 #include "stdafx.h"
+#include "ct3scan.h"
 #include <functional>
 #include <chrono>
-#include "ct3scan.h"
 #include "linedetnetwork.h"
 #include "linedetimageprocess.h"
 #include "../Public/util/IULog.h"
@@ -129,38 +129,49 @@ void CT3Scan::saveFile()
 	//TODO_DJ：断续扫描合成完整文件
 
 	//从数据库中检索文件当天扫描的文件编号，如果有同名文件就当前最大编号+1，无同名文件就新建编号0000
-	auto number = d_fileDB->getNumber(d_fileName);
-	
-	//加上编号
-	d_fileName += QString('_') + number;
-	saveOrgFile(d_lineDetNetWork->getRowList(), d_fileName);
+	//auto number = d_fileDB->getNumber(d_fileName);
 
-	//保存ORG记录到数据库
-	OrgRecord orgRecord;
-	orgRecord.path = d_orgPath;
-	orgRecord.fileName = d_fileName;
-	orgRecord.number = number.toInt();
-	orgRecord.type = static_cast<char>(ScanMode::CT3_SCAN);
-	d_fileDB->writeOrgRecord(orgRecord);
-	
-	d_orgPath = d_orgPath + d_fileName + '\\';
-	QString orgFileName(d_orgPath + d_fileName + ".org");
-	d_filePath = d_filePath + d_fileName + '\\';
-	QString disposedFileName(d_filePath + d_fileName);
+	QString orgDirectory;
+	QDir  logDir;
+	QString orgPath = d_orgName.left(d_orgName.lastIndexOf('/') + 1);
 
+	if (!logDir.exists(orgPath))
+		logDir.mkpath(d_orgName.left(d_orgName.lastIndexOf('/') + 1));
+
+	if (!logDir.exists(d_filePath))
+		logDir.mkpath(d_filePath);
+
+	QDir dir(d_filePath);
+	int filesNumber = 0;
+	dir.setFilter(QDir::Dirs | QDir::Files);
+	dir.setSorting(QDir::DirsFirst);
+	int fileNumber = dir.count();
+	d_orgName = orgPath + QString::number(fileNumber + 1) + d_orgName.right(d_orgName.length() - d_orgName.lastIndexOf('_'));
+	saveOrgFile(d_lineDetNetWork->getRowList(), d_orgName);
+
+	//TODO_DJ：保存ORG记录到数据库
+	//OrgRecord orgRecord;
+	//orgRecord.path = d_orgPath;
+	//orgRecord.fileName = d_fileName;
+	//orgRecord.number = number.toInt();
+	//orgRecord.type = static_cast<char>(ScanMode::CT3_SCAN);
+	//d_fileDB->writeOrgRecord(orgRecord);
+	//TODO_DJ：保存ORG记录到数据库
+	
 	//拷贝空气文件到校正参数路径
 	QFile::copy(d_airFile, d_installDirectory + "air.dat");
-	d_lineDetImageProcess->dispose(d_fileName);
+	d_lineDetImageProcess->ct3Dispose(d_orgName, d_filePath);
 
-	//保存CT记录到数据库
-	CT3Record ct3Record;
-	ct3Record.path = d_filePath;
-	ct3Record.fileName = d_fileName;
-	ct3Record.number = orgRecord.number;
-	ct3Record.view = d_viewDiameter;
-	ct3Record.matrix = d_matrix;
-	ct3Record.sampleTime = d_sampleTime;
-	ct3Record.layer = d_layer;
+	//TODO_DJ：保存CT记录到数据库
+	//CT3Record ct3Record;
+	//ct3Record.path = d_filePath;
+	//ct3Record.fileName = d_fileName;
+	//ct3Record.number = orgRecord.number;
+	//ct3Record.view = d_viewDiameter;
+	//ct3Record.matrix = d_matrix;
+	//ct3Record.sampleTime = d_sampleTime;
+	//ct3Record.layer = d_layer;
+	//TODO_DJ：保存CT记录到数据库
 }
 
 bool CT3Scan::setGenerialFileHeader()

@@ -317,6 +317,7 @@ struct CT2Data
 	std::vector<unsigned short> Matrix;
 	std::vector<unsigned short> SampleTime;
 	unsigned char translationModeDefine;
+	unsigned char Ct2ScanMode;
 };
 struct CT3Data
 {

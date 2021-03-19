@@ -80,8 +80,7 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 			this, &CTScanApp::lineDetNetWorkStsSlot, Qt::QueuedConnection);
 	}
 
-	d_lineDetImageProcess.reset(new LineDetImageProcess(d_workDir, d_configData->OrgPath,
-		d_configData->CTPath, d_configData->DrPath));
+	d_lineDetImageProcess.reset(new LineDetImageProcess(d_workDir));
 	//查找同一种扫描方式有几种射线源和探测器组合，有几种就初始化几个线阵扫描和面阵扫描的widget
 	for (auto& matrixItr : d_setupData->ct3Data)
 		d_lineDetScanModeMap[{ matrixItr.Ray, matrixItr.Det }].push_back(ScanMode::CT3_SCAN);
@@ -341,13 +340,15 @@ void CTScanApp::switchToPanelWidgetSlot(int _rayId, int _detId)
 	auto widget = static_cast<ConeScanWidget*>(d_panelDetScanManagerMap[{_rayId, _detId}]->getWidget());
 	widget->setPanelDetWidget();
 	d_mainWidget->switchLinePanelWidget(widget);
-	emit sizeChangedSignal(d_mainWidget->height() + d_mainWidget->layout()->contentsMargins().top());
+	auto height = d_menuBar->height() + d_mainWidget->height() + d_mainWidget->layout()->contentsMargins().top();
+	emit sizeChangedSignal(d_menuBar->height() + d_mainWidget->height() + d_mainWidget->layout()->contentsMargins().top());
 }
 
 void CTScanApp::switchToLineWidgetSlot(int _rayId, int _detId)
 {
 	auto widget = d_lineDetScanManagerMap[{_rayId, _detId}]->getWidget();
 	d_mainWidget->switchLinePanelWidget(widget);
+	emit sizeChangedSignal(d_menuBar->height() + d_mainWidget->height() + d_mainWidget->layout()->contentsMargins().top());
 }
 
 void CTScanApp::setMiddleWidget(QWidget * _widget)

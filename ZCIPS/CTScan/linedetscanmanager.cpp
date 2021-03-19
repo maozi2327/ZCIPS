@@ -9,16 +9,17 @@
 #include "CT3TemplateDialog.h"
 #include "linedetairdisposedialog.h"
 #include "scantemplate.h"
+#include "linedetfilenamedialog.h"
 
 QWidget * LineDetScanManager::getWidget()
 {
 	return d_lineDetScanWidget;
 }
 
-LineDetScanManager::LineDetScanManager(int _rayId, int _lineDetId
-	, const std::vector<ScanMode>& _scanMode, SetupData* _setupData
-	, LineDetNetWork* _lineDetNetWork, ControllerInterface* _controller
-	, QWidget* _widgetParent, QObject *_ObjectParent)
+LineDetScanManager::LineDetScanManager(int _rayId, int _lineDetId, const std::vector<ScanMode>& _scanMode, 
+	SetupData* _setupData, LineDetNetWork* _lineDetNetWork, ControllerInterface* _controller, /*
+	const QString& _initialDirectory, const QString& _orgDirectory, const QString& _objectName, 
+	const QString& _objectNumber, */QWidget* _widgetParent, QObject *_ObjectParent)
 	: QObject(_ObjectParent)
 	, d_rayNum(_rayId), d_detNum(_lineDetId)
 	, d_setupData(_setupData), d_lineDetNetWork(_lineDetNetWork), d_controller(_controller)
@@ -55,6 +56,8 @@ LineDetScanManager::LineDetScanManager(int _rayId, int _lineDetId
 
 	connect(d_lineDetScanWidget, &LineDetScanWidget::ct3ScanSignal, 
 		this, &LineDetScanManager::ct3ScanSlot);
+	connect(d_lineDetScanWidget, &LineDetScanWidget::airTuneSignal,
+		this, &LineDetScanManager::airTuneSlot);
 	connect(d_lineDetScanWidget, &LineDetScanWidget::LoadCt3TemplateButtonSignal, 
 		this, &LineDetScanManager::LoadCt3TemplateButtonSlot);
 	d_timer = new QTimer();
@@ -68,24 +71,41 @@ LineDetScanManager::~LineDetScanManager()
 
 void LineDetScanManager::ct3ScanSlot()
 {
+	QString objectName, objectNumber, fileNumber, comment;
+	getFileNameFromDialog(objectNumber, objectNumber, fileNumber, comment);
+
 	float layer = d_lineDetScanWidget->getLayer();
 	int matrix = d_lineDetScanWidget->ui.ct3MatrixComboBox->currentText().toInt();
 	int view = d_lineDetScanWidget->ui.ct3ViewComboBox->currentText().toInt();
 	int sampleTime = d_lineDetScanWidget->ui.ct3SampleTimeComboBox->currentText().toInt();
 	float angle = d_lineDetScanWidget->ui.ct3AngleLineEdit->text().toFloat();
-	QString fileName = d_lineDetScanWidget->ui.ct3FileNameLineEdit->text();
 
+	//TODO_DJ：文件保存后增加文件编号
 	d_scan.reset(new CT3Scan(d_controller, d_lineDetNetWork, d_setupData, d_detNum));
 
 	if (!dynamic_cast<CT3Scan*>(d_scan.get())
 		->setScanParameter(layer, matrix, view, sampleTime, angle))
 		return;
 
-	//d_scan->setOrgPath();
-	//d_scan->setOrgPath();
-	d_scan->setFileName(fileName);
-	connect(d_scan.get(), &CT3Scan::signalGraduationCount, d_lineDetScanWidget, &LineDetScanWidget::updateCT3Progresser);
+	QString fileName = d_initialFileDirectory + objectName + '/' + objectNumber + '/' + fileNumber + 
+		QString::fromLocal8Bit("_") + comment + QString::fromLocal8Bit(".org");
+	QString destFilePath = d_orgDirectory + objectName + '/' + objectNumber + '/';
+	d_scan->setFileName(fileName, destFilePath);
+
+	connect(d_scan.get(), &CT3Scan::signalGraduationCount, d_lineDetScanWidget, 
+		&LineDetScanWidget::updateCT3Progresser);
 	d_scan->beginScan();
+}
+
+void LineDetScanManager::drScanSlot()
+{
+	QString objectName, objectNumber, fileNumber, comment;
+	getFileNameFromDialog(objectNumber, objectNumber, fileNumber, comment);
+	
+	int matrix = d_lineDetScanWidget->ui.ct3MatrixComboBox->currentText().toInt();
+	int view = d_lineDetScanWidget->ui.ct3ViewComboBox->currentText().toInt();
+	int sampleTime = d_lineDetScanWidget->ui.ct3SampleTimeComboBox->currentText().toInt();
+	float angle = d_lineDetScanWidget->ui.ct3AngleLineEdit->text().toFloat();
 }
 
 void LineDetScanManager::updateControlsSlot()
@@ -153,12 +173,30 @@ void LineDetScanManager::bkgTuneSlot()
 
 	//d_scan->setOrgPath();
 	//d_scan->setOrgPath();
-	d_scan->setFileName(fileName);
+	//TODO_DJ:
+	//d_scan->setFileName(fileName, 0);
 	connect(d_scan.get(), &CT3Scan::signalGraduationCount, d_lineDetScanWidget, &LineDetScanWidget::updateCT3Progresser);
 	d_scan->beginScan();
 }
 
 void LineDetScanManager::airTuneSlot()
 {
-
+	d_newAirDialog = new AddModifyAirDisposeDialog(d_airTuneScan.get(), nullptr);
+	//connect(this, &LineDetAirDisposeDialog::updateScanButtonSignal,	d_newAirDialog, &AddModifyAirDisposeDialog::updateScanButtonSlot);
+	d_newAirDialog->show();
 }
+
+void LineDetScanManager::loadTuneDataSlot()
+{
+	d_airDisposeDialog = new LineDetAirDisposeDialog(QString::fromLocal8Bit(""), nullptr);
+	//connect(this, &LineDetScanWidget::readyToScanSignal, d_airDisposeDialog, &LineDetAirDisposeDialog::updateScanButtonSlot);
+	d_airDisposeDialog->exec();
+}
+
+void LineDetScanManager::getFileNameFromDialog(QString& _objectName, QString& _objectNumber, QString& _fileNumber, QString& _comment)
+{
+	LineDetFileNameDialog* dlg = new LineDetFileNameDialog(_objectName, _objectNumber, _fileNumber,	_comment, nullptr);
+	dlg->exec();
+	delete dlg;
+}
+

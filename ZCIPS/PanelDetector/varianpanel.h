@@ -1,8 +1,7 @@
 #pragma once
-#include "panel.h"
+#include "Panel.h"
 #include <tuple>
 #include <map>
-#include <functional>
 #include "../../Public/util/fixedthreadpool.h"
 #include <varian/FluoroStructs.h>
 #include <varian/HcpErrors.h>

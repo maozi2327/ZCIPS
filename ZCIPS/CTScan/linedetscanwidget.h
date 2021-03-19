@@ -38,7 +38,6 @@ private:
 	void initiliseControls();
 	void switchCt3MultilayerEquallayerShowHide(unsigned char _mode);
 	void useCt3Item(const Ct3TemplateData& _templateData);
-	LineDetAirDisposeDialog* d_airDisposeDialog;
 private slots:
 	void showMotorTable();
 	void on_Ct3StartButton_clicked();
@@ -48,8 +47,10 @@ private slots:
 	void on_stopButton_clicked();
 	void on_ct3LoadTemplateButton_clicked();
 	void on_bkgTuneButton_clicked();
+	void on_loadTuneDataButton_clicked();
 	void on_airTuneButton_clicked();
 	void updateControlsSlot();
+
 
 public slots:
 	void updateCT3Progresser(int _progress);
@@ -57,8 +58,10 @@ public slots:
 signals:
 	void readyToScanSignal(bool _sts);
 	void ct3ScanSignal();
+	void drScanSignal();
 	void stopButtonSignal();
 	void LoadCt3TemplateButtonSignal();
 	void bkgTuneSignal();
 	void airTuneSignal();
+	void loadTuneDataSignal();
 };

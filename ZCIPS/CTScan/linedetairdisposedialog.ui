@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>277</height>
+    <height>321</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>20</x>
      <y>30</y>
      <width>121</width>
-     <height>181</height>
+     <height>201</height>
     </rect>
    </property>
    <property name="editTriggers">
@@ -51,7 +51,7 @@
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>170</y>
+     <y>200</y>
      <width>75</width>
      <height>31</height>
     </rect>
@@ -64,7 +64,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>230</y>
+     <y>260</y>
      <width>75</width>
      <height>31</height>
     </rect>
@@ -80,7 +80,7 @@
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>120</y>
+     <y>150</y>
      <width>75</width>
      <height>31</height>
     </rect>
@@ -89,7 +89,7 @@
     <string>使用</string>
    </property>
   </widget>
-  <widget class="QLabel" name="ct3MultiLayerLabel">
+  <widget class="QLabel" name="voltageLabel">
    <property name="geometry">
     <rect>
      <x>210</x>
@@ -176,7 +176,7 @@
     <string>电流</string>
    </property>
   </widget>
-  <widget class="QLabel" name="ct3MatrixLabel">
+  <widget class="QLabel" name="currentLabel">
    <property name="geometry">
     <rect>
      <x>210</x>
@@ -211,7 +211,7 @@
    <property name="geometry">
     <rect>
      <x>180</x>
-     <y>230</y>
+     <y>260</y>
      <width>75</width>
      <height>31</height>
     </rect>
@@ -220,7 +220,7 @@
     <string>取消</string>
    </property>
   </widget>
-  <widget class="QLabel" name="ct3LayerThickness">
+  <widget class="QLabel" name="layerThicknessLabel">
    <property name="geometry">
     <rect>
      <x>210</x>
@@ -274,6 +274,62 @@
    </property>
    <property name="text">
     <string>层厚</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="comentLabel">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>120</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>80</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>80</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>120</y>
+     <width>54</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>54</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>54</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>备注</string>
    </property>
   </widget>
  </widget>

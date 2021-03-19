@@ -34,9 +34,9 @@
   <property name="windowTitle">
    <string/>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0,0,1">
+  <layout class="QVBoxLayout" name="verticalLayout_7">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,0">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,0,0">
      <item>
       <widget class="Line" name="line">
        <property name="orientation">
@@ -94,6 +94,28 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="loadTuneDataButton">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="cursor">
+        <cursorShape>ArrowCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>加载校正数据</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -117,7 +139,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="ct3Tab">
       <attribute name="title">

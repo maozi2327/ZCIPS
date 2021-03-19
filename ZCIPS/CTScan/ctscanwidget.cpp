@@ -47,9 +47,9 @@ void CTScanWidget::switchLinePanelWidget(QWidget * _widget)
 		d_scanTableVLayout->removeWidget(d_scanTableWidget);
 	}
 	d_scanTableWidget = _widget;
-	_widget->setFixedHeight(_widget->height() + 2);
 	d_scanTableVLayout->addWidget(d_scanTableWidget, 0, 0);
-	ui.controlTabWidget->setFixedHeight(d_scanTableWidget->height() + ui.controlTabWidget->iconSize().height());
+	auto height = d_scanTableWidget->height() + ui.controlTabWidget->tabBar()->height();
+	ui.controlTabWidget->setFixedHeight(d_scanTableWidget->height() + ui.controlTabWidget->tabBar()->height());
 	setFixedHeight(ui.controlTabWidget->height() + ui.motorControlGroupBox->height() + 
 		ui.acceleratorContainerwidget->height() + 2);
 	updateGeometry();

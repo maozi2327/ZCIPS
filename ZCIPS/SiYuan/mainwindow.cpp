@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "mainwindow.h"
 #include "../CTScan/ctscanexport.h"
-
+#include "qmainwindow.h"
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {

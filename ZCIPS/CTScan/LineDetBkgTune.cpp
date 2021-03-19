@@ -41,9 +41,8 @@ bool LineDetBkgTune::setGenerialFileHeader()
 
 void LineDetBkgTune::saveFile()
 {
-	d_fileName = QString("bkg.org");
-	saveOrgFile(d_lineDetNetWork->getRowList(), d_fileName);
-	d_lineDetImageProcess->createBkgDat(d_fileName);
+	saveOrgFile(d_lineDetNetWork->getRowList(), d_orgName);
+	d_lineDetImageProcess->createBkgDat(d_orgName, d_filePath);
 }
 
 void LineDetBkgTune::saveTempFile(LineDetList * _listHead)

@@ -23,7 +23,7 @@ public:
 	CT3Scan(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork, 
 		const SetupData* _setupData, int _lineDetIndex);
 	~CT3Scan();
-	bool setScanParameter(float _layers, int _matrix, float _view,
+	bool setScanParameter(float _layer, int _matrix, float _view,
 		int _sampleTime, float _angle);
 };
 

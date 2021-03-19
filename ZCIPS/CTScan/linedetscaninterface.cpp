@@ -24,12 +24,17 @@ LineDetScanInterface::~LineDetScanInterface()
 
 }
 
+void LineDetScanInterface::setFileName(const QString& _orgName, const QString& _destPath)
+{
+	d_orgName = _orgName; 
+	d_filePath = _destPath;
+}
+
 bool LineDetScanInterface::beginScan()
 {
 	if (canScan())
 	{
-		d_scanThread.reset(new Thread(std::bind(&LineDetScanInterface::scanThread, this),
-			std::ref(d_deadThreadRun)));
+		d_scanThread.reset(new Thread(std::bind(&LineDetScanInterface::scanThread, this), std::ref(d_deadThreadRun)));
 		d_scanThread->detach();
 		return true;
 	}
@@ -71,34 +76,45 @@ void LineDetScanInterface::scanThread()
 			if (d_controller->readSaveStatus())
 			{
 				saveFile();
-				break;
+
+				if (scanFinished())
+				{
+					emit scanThreadQuitSignal(0);
+					return;
+				}
 			}
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
+
+		emit scanThreadQuitSignal(1);
 	}
 	else
-		;
+		emit scanThreadQuitSignal(2);
 }
 
 void LineDetScanInterface::saveOrgFile(LineDetList* _List, const QString& _fileName)
 {
-	QString fileFullName(d_orgPath + d_fileName);
+	QString fileFullName(_fileName);
 	d_ictHeader.DataFormat.TotalLines = d_lineDetNetWork->getListItemNum();
 	auto ret = d_lineDetImageProcess->saveOrgFile(_fileName, &d_ictHeader, _List, 1);
 }
 
+bool LineDetScanInterface::scanFinished()
+{
+	return true;
+}
+
 bool LineDetScanInterface::setGenerialFileHeader()
 {
-	d_ictHeader.MainVersion = MainVersion23;						//定义数据文件头主版本号
-	d_ictHeader.SubVersion = SubVersion23;							//定义数据文件头次版本号
-	d_ictHeader.DataFormat.DataType = LONGDATA;						//数据类型: 长整型
-	d_ictHeader.DataFormat.appendColAtRow = 2;						//每行附加数据个数
+	d_ictHeader.MainVersion = MainVersion23;
+	d_ictHeader.SubVersion = SubVersion23;
+	d_ictHeader.DataFormat.DataType = LONGDATA;
+	d_ictHeader.DataFormat.appendColAtRow = 2;
 	strcpy_s(d_ictHeader.SystemParameter.ModelOfCT, d_setupData->szDeviceModel);//CT设备型号
 	d_ictHeader.DataFormat.dataColAtRow
 		= d_setupData->lineDetData[d_lineDetIndex].NumberOfSystemHorizontalDetector;
 
-	//设置射线源参数
 	if (d_rayType == RayType::Accelerator)
 	{
 		d_ictHeader.SystemParameter.RaySort = 0;
