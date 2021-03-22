@@ -77,7 +77,6 @@ bool CT3Scan::setScanParameter(float _layer, int _matrix, float _view,
 //		;
 //}
 
-
 void CT3Scan::sendCmdToControl()
 {
 	CT23ScanCmdData	cmdData, *pCmdData;

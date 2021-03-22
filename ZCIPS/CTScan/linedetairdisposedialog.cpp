@@ -5,7 +5,6 @@
 #include <regex>
 
 const unsigned int FILEHEAD = 0XAAAAAAA0;
-LineDetAirDisposeDialog* LineDetAirDisposeDialog::d_ref = nullptr;
 
 LineDetAirDisposeDialog::LineDetAirDisposeDialog(const QString& _orgPath, QWidget *parent)
 	: QDialog(parent), d_airFileDirectory(_orgPath)
@@ -18,7 +17,7 @@ LineDetAirDisposeDialog::LineDetAirDisposeDialog(const QString& _orgPath, QWidge
 
 LineDetAirDisposeDialog::~LineDetAirDisposeDialog()
 {
-	d_ref = nullptr;
+
 }
 
 struct HeadData

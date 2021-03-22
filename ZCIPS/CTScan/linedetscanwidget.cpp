@@ -231,7 +231,7 @@ void LineDetScanWidget::on_bkgTuneButton_clicked()
 	emit bkgTuneSignal();
 }
 
-void on_loadTuneDataButton_clicked()
+void LineDetScanWidget::on_loadTuneDataButton_clicked()
 {
 	emit loadTuneDataSignal();
 }

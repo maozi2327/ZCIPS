@@ -3,13 +3,15 @@
 
 extern const std::map<QString, Axis> AxisNameMap =
 {
-	{QString::fromLocal8Bit("ObjRotation"), Axis::objRotation},
+	{ QString::fromLocal8Bit("ObjRotation"), Axis::objRotation},
 	{ QString::fromLocal8Bit("ObjTranslation"), Axis::objTranslation },
 	{ QString::fromLocal8Bit("ObjRadial"), Axis::objRadial },
 	{ QString::fromLocal8Bit("RayLayer"), Axis::rayLayer },
 	{ QString::fromLocal8Bit("DetLayer"), Axis::detLayer },
 	{ QString::fromLocal8Bit("DetTranslation"), Axis::detTranslation },
-	{ QString::fromLocal8Bit("DetRadial"), Axis::detRadial }
+	{ QString::fromLocal8Bit("DetRadial"), Axis::detRadial },
+	{ QString::fromLocal8Bit("RayTranslation"), Axis::rayTranslation },
+	{ QString::fromLocal8Bit("RayRadial"), Axis::rayRadial }
 };
 
 extern const std::map<Axis, AxisData> AxisDataMap
@@ -20,7 +22,9 @@ extern const std::map<Axis, AxisData> AxisDataMap
 	{Axis::rayLayer, AxisData{QString::fromLocal8Bit("∑÷≤„1"), "rayLayer"}},
 	{Axis::detLayer, AxisData{QString::fromLocal8Bit("∑÷≤„2"), "detLayer"}},
 	{Axis::detTranslation, AxisData{QString::fromLocal8Bit("ÃΩ≤‚∆Ω“∆"), "detTranslation"}},
-	{Axis::detRadial, AxisData{QString::fromLocal8Bit("ÃΩ≤‚æ∂œÚ"), "detRadial"}}
+	{Axis::detRadial, AxisData{QString::fromLocal8Bit("ÃΩ≤‚æ∂œÚ"), "detRadial"}},
+	{Axis::rayTranslation, AxisData{QString::fromLocal8Bit("…‰œﬂ∆Ω“∆"), "rayTranslation"}},
+	{Axis::rayRadial, AxisData{QString::fromLocal8Bit("…‰œﬂæ∂œÚ"), "rayRadial"}}
 };
 
 extern const std::map<Axis, AxisPosEnum> AxisNamePosMap
@@ -31,7 +35,9 @@ extern const std::map<Axis, AxisPosEnum> AxisNamePosMap
 	{Axis::rayLayer, AxisPosEnum::rayLayer},
 	{Axis::detLayer, AxisPosEnum::detLayer},
 	{Axis::detTranslation, AxisPosEnum::detTranslation},
-	{Axis::detRadial, AxisPosEnum::detRadial}
+	{Axis::detRadial, AxisPosEnum::detRadial},
+	{Axis::rayTranslation, AxisPosEnum::rayTranslation},
+	{Axis::rayRadial, AxisPosEnum::rayRadial}
 };
 
 extern const std::map<Axis, AxisZeroEnum> AxisNameZeroMap
@@ -42,5 +48,7 @@ extern const std::map<Axis, AxisZeroEnum> AxisNameZeroMap
 	{Axis::rayLayer, AxisZeroEnum::rayLayer},
 	{Axis::detLayer, AxisZeroEnum::detLayer},
 	{Axis::detTranslation, AxisZeroEnum::detTranslation},
-	{Axis::detRadial, AxisZeroEnum::detRadial}
+	{Axis::detRadial, AxisZeroEnum::detRadial},
+	{Axis::rayTranslation, AxisZeroEnum::rayTranslation},
+	{Axis::rayRadial, AxisZeroEnum::rayRadial}
 };

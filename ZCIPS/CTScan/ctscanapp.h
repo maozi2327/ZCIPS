@@ -5,7 +5,7 @@
 #include "../Public/headers/setupdata.h"
 #include "../Public/util/logmacro.h"
 #include "ctscanexport.h"
-
+#include "applicationSettingData.h"
 
 class SetupDataParser;
 class RayPanelMotion;
@@ -26,6 +26,7 @@ class ImageDialogManager;
 class AxisStatusWidget;
 class AxisZeroCoordinationDialog;
 class AxisStatusDialog;
+class FilePathSettingDialog;
 
 class CTScanApp : public CTScanInterface
 {
@@ -63,6 +64,8 @@ private:
 	std::map<std::pair<int, int>, LineDetScanManager*> d_lineDetScanManagerMap;
 	std::map<std::pair<int, int>, PanelDetScanManager*> d_panelDetScanManagerMap;
 
+	ApplicationSettingData d_appSettingData;
+	const QString d_appSettingDataFileName{QString::fromLocal8Bit("appSettingData.data")};
 	std::map<Axis, AxisData> d_axisDataMap;
 	MsgListBoxDialog* d_msg;			//消息对话框无父窗口
 	CTScanWidget* d_mainWidget;
@@ -80,6 +83,7 @@ private:
 	QMenuBar* d_menuBar;
 	QMenu* d_systemMenu;
 	QAction* d_initiliseSystemAction;
+	QAction* d_filePathSettingAction;
 	QMenu* d_rayDetSwitchMenu;
 	std::map<std::pair<int, int>, QAction*> d_lineDetRayActions;
 	std::map<std::pair<int, int>, QAction*> d_panelDetRayActions;
@@ -92,6 +96,9 @@ private:
 	QAction* d_lineDetectorAction;
 	QAction* d_autoAlignLayerAction;
 	QAction* d_laserInterferometerAction;
+	
+	QString d_orgPath;
+	QString d_disposedFilePath;
 public:
 	void setMiddleWidget(QWidget* _widget);
 	void setDownWidget(QWidget* _widget);
@@ -102,9 +109,11 @@ public:
 	virtual QMenuBar* getMenuBar();
 private:
 	void buildMenuBar();
-
+	bool saveAppSettingData();
+	bool getAppSettingDataFromFile();
 private slots:
 	void on_initiliseSystemAction_triggered();
+	void on_filePathSettingAction_triggered();
 	void on_rayDetAction_triggered();
 	void on_axisStatusAction_triggered();
 	void on_axisZeroCoordinateAction_triggered();

@@ -111,7 +111,11 @@
 		<Axis Name="ObjTranslation"/>
 		<Axis Name="ObjRadial"/>
 		<Axis Name="RayLayer"/>
+		<Axis Name="RayTranslation"/>
+		<Axis Name="RayRadial"/>
 		<Axis Name="DetLayer"/>
+		<Axis Name="DetTranslation"/>
+		<Axis Name="DetRadial"/>
 	</AxisDefinition>
 	<ScanModeSection>
 		<CT2>

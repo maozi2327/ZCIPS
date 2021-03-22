@@ -46,6 +46,12 @@ AxisStatusDialog::AxisStatusDialog(ControllerInterface* _controller,
 		d_gridLayout->addWidget(itr.second->d_ELn, row, column++);
 		d_gridLayout->addWidget(itr.second->d_zeroFound, row, column++);
 		++row;
+		QFrame* line = new QFrame(this);
+		line->setObjectName(QStringLiteral("line"));
+		line->setFrameShape(QFrame::HLine);
+		line->setFrameShadow(QFrame::Sunken);
+		d_gridLayout->addWidget(line, row, 0, 1, column);
+		++row;
 	}
 	
 	ui.setupUi(this);

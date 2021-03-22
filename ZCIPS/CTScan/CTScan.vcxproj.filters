@@ -207,6 +207,15 @@
     <ClCompile Include="linedetfilenamedialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="filepathsettingdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="newlinedetbkgtunedialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\util\legalinput.cpp">
+      <Filter>public\utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\lib\tinyxml2.h">
@@ -314,6 +323,12 @@
     <ClInclude Include="fixedthreadpool.h">
       <Filter>public\utility</Filter>
     </ClInclude>
+    <ClInclude Include="applicationSettingData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\util\legalinput.h">
+      <Filter>public\utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="..\Public\util\serialportutil.h">
@@ -412,6 +427,12 @@
     <QtMoc Include="linedetfilenamedialog.h">
       <Filter>public</Filter>
     </QtMoc>
+    <QtMoc Include="filepathsettingdialog.h">
+      <Filter>public</Filter>
+    </QtMoc>
+    <QtMoc Include="newlinedetbkgtunedialog.h">
+      <Filter>public</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="conescanwidget.ui">
@@ -463,6 +484,12 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="linedetfilenamedialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="filepathsettingdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="newlinedetbkgtunedialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

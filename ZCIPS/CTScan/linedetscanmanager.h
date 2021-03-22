@@ -14,9 +14,11 @@ class ControllerInterface;
 class LineDetNetWork;
 class CT3TemplateDialog;
 class LineDetAirDisposeDialog;
+class AddModifyAirDisposeDialog;
 class LineDetScanManager;
 class LineDetScanWidget;
 class LinedetFileNameDialog;
+class LineDetAirTune;
 
 class LineDetScanManager : public QObject
 {
@@ -33,10 +35,10 @@ private:
 	std::unique_ptr<LineDetScanInterface> d_scan;
 	CT3Data d_ct3Data;
 	LineDetAirDisposeDialog* d_airDisposeDialog;
+	AddModifyAirDisposeDialog* d_newLineDetAirDisposeDialog;
 	CT3TemplateDialog* d_ct3TemplateDialog;
 	Ct3TemplateData d_ct3TemplateDataItem;
 	LineDetScanWidget* d_lineDetScanWidget;
-	AddModifyAirDisposeDialog* d_newAirDialog;
 	std::unique_ptr<LineDetScanInterface> d_airTuneScan;
 	int d_objectNumber;
 	int d_fileNumber;

@@ -124,18 +124,12 @@
 enum class Axis
 {
 	objRotation = 0,
-#ifdef TABLETRANSLATION
 	objTranslation = 1,
-#endif 
-#ifdef RAYLAYER
 	rayLayer = 3,
-#endif
-#ifdef DETLAYER
 	detLayer = 4,
-#endif
-#ifdef TABLERADIAL
 	objRadial = 5,
-#endif
+	rayRadial = 9,
+	rayTranslation = 10,
 	detRadial = 11,
 	detTranslation = 12
 };
@@ -143,37 +137,25 @@ enum class Axis
 enum class AxisPosEnum
 {
 	objRotation = 0,
-#ifdef TABLETRANSLATION
 	objTranslation = 1,
-#endif 
-#ifdef RAYLAYER
 	rayLayer = 3,
-#endif
-#ifdef DETLAYER
 	detLayer = 4,
-#endif
-#ifdef TABLERADIAL
 	objRadial = 5,
-#endif
 	detRadial = 8,
-	detTranslation = 9
+	detTranslation = 9,
+	rayRadial = 10,
+	rayTranslation = 11,
 };
 
 enum class AxisZeroEnum
 {
 	objRotation = 0,
-#ifdef TABLETRANSLATION
 	objTranslation = 1,
-#endif 
-#ifdef RAYLAYER
 	rayLayer = 3,
-#endif
-#ifdef DETLAYER
 	detLayer = 4,
-#endif
-#ifdef TABLERADIAL
 	objRadial = 5,
-#endif
+	rayRadial = 11,
+	rayTranslation = 12,
 	detRadial = 13,
 	detTranslation = 14
 };

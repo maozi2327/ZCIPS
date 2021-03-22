@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>470</height>
+    <height>478</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -139,7 +139,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="ct3Tab">
       <attribute name="title">

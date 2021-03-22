@@ -24,6 +24,7 @@
 #include "axisstatusdialog.h"
 #include "../PanelDetector/panel.h"
 #include "linedetdebugdialog.h"
+#include "filepathsettingdialog.h"
 
 QString str(QCoreApplication::applicationDirPath());
 
@@ -134,6 +135,7 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 		this, &CTScanApp::switchToLineWidgetSlot);
 
 	buildMenuBar();
+	getAppSettingDataFromFile();
 	LOG_INFO("软件启动");
 }
 
@@ -208,6 +210,11 @@ void CTScanApp::buildMenuBar()
 	d_initiliseSystemAction->setText(QString::fromLocal8Bit("初始化"));
 	d_systemMenu->addAction(d_initiliseSystemAction);
 
+	d_filePathSettingAction = new QAction(this);
+	d_filePathSettingAction->setObjectName(QStringLiteral("filePathSettingAction"));
+	d_filePathSettingAction->setText(QString::fromLocal8Bit("图像文件保存路径"));
+	d_systemMenu->addAction(d_filePathSettingAction);
+
 	d_rayDetSwitchMenu = new QMenu(d_systemMenu);
 	d_rayDetSwitchMenu->setTitle(QString::fromLocal8Bit("射线源-探测器组合切换"));
 	d_systemMenu->addAction(d_rayDetSwitchMenu->menuAction());
@@ -245,6 +252,7 @@ void CTScanApp::buildMenuBar()
 	d_viewMenu->addAction(d_axisStatusAction);
 
 	connect(d_initiliseSystemAction, &QAction::triggered, this, &CTScanApp::on_initiliseSystemAction_triggered);
+	connect(d_filePathSettingAction, &QAction::triggered, this, &CTScanApp::on_filePathSettingAction_triggered);
 	connect(d_axisStatusAction, &QAction::triggered, this, &CTScanApp::on_axisStatusAction_triggered);
 
 	//调试菜单
@@ -286,6 +294,41 @@ void CTScanApp::buildMenuBar()
 		connect(d_laserInterferometerAction, &QAction::triggered, this, &CTScanApp::on_laserInterferometerAction_triggered);
 	}
 }
+
+
+bool CTScanApp::saveAppSettingData()
+{
+	QFile file;
+	file.setFileName(d_appSettingDataFileName);
+
+	if (!file.open(QIODevice::WriteOnly))
+	{
+		LOG_ERROR("打开应用设置文件失败");
+		return false;
+	}
+
+	file.write((char*)&d_appSettingData, sizeof(d_appSettingData));
+	return true;
+}
+
+bool CTScanApp::getAppSettingDataFromFile()
+{
+	QFile file;
+	file.setFileName(d_appSettingDataFileName);
+
+	if (!file.open(QIODevice::ReadOnly))
+	{
+		LOG_ERROR("打开应用设置文件失败");
+		return false;
+	}
+
+	auto byteArray = file.readAll();
+	memcpy(&d_appSettingData, byteArray.data(), sizeof(d_appSettingData));
+	d_orgPath = QString::fromLocal8Bit(d_appSettingData.orgPath);
+	d_disposedFilePath = QString::fromLocal8Bit(d_appSettingData.disposeFilePath);
+	return true;
+}
+
 void CTScanApp::on_axisZeroCoordinateAction_triggered()
 {
 	if(d_axisZeroCoordinationDialog == nullptr)
@@ -294,10 +337,12 @@ void CTScanApp::on_axisZeroCoordinateAction_triggered()
 
 	d_axisZeroCoordinationDialog->exec();
 }
+
 void CTScanApp::on_axisSpeedAction_triggered()
 {
 
 }
+
 void CTScanApp::on_lineDetectorAction_triggered()
 {
 	LineDetDebugDialog dlg(d_lineDetNetWorkMap[0].get(), d_setupData->lineDetData[0].nChnnelMask, 
@@ -305,6 +350,7 @@ void CTScanApp::on_lineDetectorAction_triggered()
 		d_setupData->lineDetData[0].IntegralTime, d_setupData->lineDetData[0].AmplifyMultiple);
 	dlg.exec();
 }
+
 void CTScanApp::on_autoAlignLayerAction_triggered()
 {
 }
@@ -315,6 +361,21 @@ void CTScanApp::on_laserInterferometerAction_triggered()
 void CTScanApp::on_initiliseSystemAction_triggered()
 {
 	d_controller->initialiseController();
+}
+
+void CTScanApp::on_filePathSettingAction_triggered()
+{
+	FilePathSettingDialog dialog(d_orgPath, d_disposedFilePath, nullptr);
+	int ret = dialog.exec();
+
+	if (ret == QDialog::Accepted)
+	{
+		QByteArray byteArray = d_orgPath.toLocal8Bit();
+		strcpy(d_appSettingData.orgPath, byteArray.data());
+		byteArray = d_disposedFilePath.toLocal8Bit();
+		strcpy(d_appSettingData.disposeFilePath, byteArray.data());
+		saveAppSettingData();
+	}
 }
 
 void CTScanApp::on_rayDetAction_triggered()

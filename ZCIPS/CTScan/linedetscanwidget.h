@@ -51,7 +51,6 @@ private slots:
 	void on_airTuneButton_clicked();
 	void updateControlsSlot();
 
-
 public slots:
 	void updateCT3Progresser(int _progress);
 
