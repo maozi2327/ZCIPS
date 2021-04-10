@@ -16,7 +16,6 @@ public:
 	virtual bool intialise();
 protected:
 	virtual void scanThread();
-	virtual bool loadAirData();
 
 private:
 	void sendCmdToController();

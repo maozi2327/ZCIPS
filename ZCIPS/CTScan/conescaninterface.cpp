@@ -79,6 +79,34 @@ bool ConeScanInterface::checkMemory()
 	return allImageSize < getDiskFreeSpace(d_fileFolder);
 }
 
+bool ConeScanInterface::setCommonScanParameter(int _graduation, int _framesPerGraduation, int _round, int _posTime, int _cycleTime, unsigned short _gainFactor, float _orientInc, float _slicePos, float _sod, float _sdd)
+{
+	d_graduationCount = 0;
+	d_graduation = _graduation;
+	d_framesPerGraduation = _framesPerGraduation;
+	d_posTime = _posTime;
+	d_orientInc = _orientInc;
+	d_slicePos = _slicePos;
+	d_round = _round;
+	d_imageList.clear();
+	d_sod = _sod;
+	d_sdd = _sdd;
+	d_scanProc = 0;
+	d_cycleTime = _cycleTime;
+	d_gainFactor = _gainFactor;
+	d_scanTime = d_posTime * d_framesPerGraduation * d_graduation * d_round / 1000;
+	return true;
+}
+
+void ConeScanInterface::detachScanProcessThread()
+{
+	d_scanThreadRun = true;
+	d_scanThread.reset(new Thread(std::bind(&ConeScanInterface::scanThread, this), std::ref(d_scanThreadRun)));
+	d_scanThread->detach();
+	d_imageProcessThread.reset(new Thread(std::bind(&ConeScanInterface::imageProcessThread, this), std::ref(d_imageProcessThreadRun)));
+	d_imageProcessThread->detach();
+}
+
 void ConeScanInterface::frameProcessCallback(unsigned short * _image)
 {
 	unsigned short* memory = new unsigned short[d_width * d_height];
@@ -133,17 +161,6 @@ bool ConeScanInterface::canScan()
 	if (!d_panel->getReady())
 	{
 		LOG_ERROR("探测器未就绪");
-		return false;
-	}
-
-	return true;
-}
-
-bool ConeScanInterface::loadBkgData()
-{
-	if(!d_imageProcess->loadBkgData(QString("bkg.tif")))
-	{
-		LOG_ERROR("锥束扫描加载空气文件失败！");
 		return false;
 	}
 
@@ -230,58 +247,6 @@ bool ConeScanInterface::makeParameterText()
 	};
 
 	return true;
-
-	//d_parameterText[index++] = ";  扫描参数\n";
-	//d_parameterText[index++] = ";--------------------------------------------;\n";
-	//d_parameterText[index++] = ";--------------------------------------------;\n";
-
-	//d_parameterText[index++] = ";  探测器参数\n";
-	//d_parameterText[index++] = ";--------------------------------------------;\n";
-	//d_parameterText[index++] = "[DETECTORS]\n";
-	//d_parameterText[index++] = makeFormatQString("Width=%d\t\t\t;探测器横向单元数量\n", d_width);
-	//d_parameterText[index++] = makeFormatQString("Height=%d\t\t\t;探测器纵向单元数量\n", d_height);
-	//d_parameterText[index++] = makeFormatQString("UnitSize=%.6f\t\t\t;探测器单元宽度（mm）\n", d_panel->getPixelSize());
-	//d_parameterText[index++] = "Binning=1;Binning方式:1-1X1,2-2X2,3-4X4,4-1X2,5-,6-1X4\n";
-	//d_parameterText[index++] = makeFormatQString("SampleTime = %.3f\t\t\t; 采样积分时间（秒）\n", float(d_panel->getSampleTime()) / 1000);
-	//d_parameterText[index++] = makeFormatQString("FrameCnt=%d\t\t\t;单分度采样帧数\n", d_framesPerGraduation);
-	//d_parameterText[index++] = "DataType=INT16\t\t\t;采集数据类型，INT16，INT32，FLOAT\n\n";
-
-	//d_parameterText[index++] = (";--------------------------------------------;\n");
-	//d_parameterText[index++] = (";  扫描几何参数\n");
-	//d_parameterText[index++] = (";  以转轴为z轴，垂直z轴的射线为y轴（方向指向射线源），建立全局坐标系；\n");
-	//d_parameterText[index++] = (";  探测器水平方向为u轴，垂直方向为v轴，建立局部坐标系；\n");
-	//d_parameterText[index++] = (";  局部坐标系绕全局系z轴旋转。\n");
-	//d_parameterText[index++] = (";--------------------------------------------;\n");
-	//d_parameterText[index++] = ("[GEOMETRY]\n");
-	//d_parameterText[index++] = makeFormatQString("SOD=%.1f\t\t\t;射线源焦点到旋转轴的实际距离（mm）\n", d_controller->readAxisPostion(Axis::objRadial));
-	//d_parameterText[index++] = makeFormatQString("SDD=%.1f\t\t\t;射线源焦点到探测器的实际距离（mm）\n", d_controller->readAxisPostion(Axis::detRadial));
-	//d_parameterText[index++] = makeFormatQString("thetaY=%.2f\t\t\t;探测器绕y轴的旋转角度（度）\n", 0.0f);
-	//d_parameterText[index++] = makeFormatQString("thetaX=%.2f\t\t\t;探测器绕x轴的旋转角度（度）\n", 0.0f);
-	//d_parameterText[index++] = makeFormatQString("thetaZ=%.2f\t\t\t;探测器绕z轴的旋转角度（度）\n", 0.0f);
-	//d_parameterText[index++] = makeFormatQString("uo_mm=%.1f\t\t\t;中心探测器水平坐标（mm）\n", d_panel->getPixelSize() * d_width / 2);
-	//d_parameterText[index++] = makeFormatQString("vo_mm=%.1f\t\t\t;中心探测器垂直坐标（mm）\n", d_panel->getPixelSize() * d_height / 2);
-	//d_parameterText[index++] = makeFormatQString("graduation=%d\t\t\t;分度数\n", d_graduation);
-	//d_parameterText[index++] = makeFormatQString("Angle00000=%d\t\t\t;0号投影的角度\n", d_orientInc);
-	//d_parameterText[index++] = makeFormatQString("…\t\t\t\t; 1-%04u号投影的角度\n", d_graduation);
-	//d_parameterText[index++] = makeFormatQString("Angle%04u=%d\t\t\t;%04u号投影的角度\n\n",	d_graduation, d_orientInc + 360, d_graduation);
-
-	//d_parameterText[index++] = (";---------------------\n");
-	//d_parameterText[index++] = (";  重建图像参数\n");
-	//d_parameterText[index++] = (";---------------------\n");
-	//d_parameterText[index++] = ("[IMAGE PARAMETER]\n");
-	//d_parameterText[index++] = makeFormatQString("Width=%d\t\t\t;重建图像的宽度或直径（像素）\n", 800);
-	//d_parameterText[index++] = makeFormatQString("StartLayer=%d\t\t\t;重建图像的起始层（像素）\n", 0);
-	//d_parameterText[index++] = makeFormatQString("Height=%d\t\t\t;重建图像的高度或层数（像素）\n", 800);
-	//d_parameterText[index++] = makeFormatQString("SkipGraduation=%d\t\t\t;分度跳跃数\n", 1);
-	//d_parameterText[index++] = makeFormatQString("SkipHorizontal=%d\t\t\t;探测器水平方向跳跃数\n", 0);
-	//d_parameterText[index++] = makeFormatQString("SkipVertical =%d\t\t\t;探测器垂直方向跳跃数\n", 0);
-	//d_parameterText[index++] = makeFormatQString("rotAngle=%d\t\t\t;重建起始角度（°）\n", 0);
-	//d_parameterText[index++] = makeFormatQString("FirstSection=%d\t\t\t;\n", 100);
-	//d_parameterText[index++] = makeFormatQString("LastSection=%d\t\t\t;\n", 800);
-	//d_parameterText[index++] = makeFormatQString("Filename=\n");
-	//d_parameterText[index++] = makeFormatQString("Image Directory=%s\t\t\t;\n", "C:\\");
-	//d_parameterText[index++] = makeFormatQString("Sigma=%.6f\t\t\t;\n", 2.0);
-	//return true;
 }
 
 void ConeScanInterface::setFileName(const QString& _orgName, const QString& _destPath)
@@ -312,17 +277,6 @@ bool ConeScanInterface::stopScan()
 bool ConeScanInterface::beginScan(int _graduation, int _framesPerGraduation, int _round, int _posTime, int _cycleTime,
 	unsigned short _gainFactor, float _orientInc, float _slicePos, float _sod, float _sdd)
 {
-	d_graduationCount = 0;
-	d_graduation = _graduation;
-	d_framesPerGraduation = _framesPerGraduation;
-	d_posTime = _posTime;
-	d_orientInc = _orientInc;
-	d_slicePos = _slicePos;
-	d_round = _round;
-	d_imageList.clear();
-	d_sod = _sod;
-	d_sdd = _sdd;
-
 	//if (!canScan())
 	//	return false;
 
@@ -334,15 +288,9 @@ bool ConeScanInterface::beginScan(int _graduation, int _framesPerGraduation, int
 
 	//if (!loadAirData())
 	//	return false;
+	setCommonScanParameter(_graduation, _framesPerGraduation, _round, _posTime, _cycleTime, _gainFactor, _orientInc, _slicePos, _sod, _sdd);
 	sendCmdToController();
-	d_scanThread.reset(new Thread(std::bind(&ConeScanInterface::scanThread, this), std::ref(d_scanThreadRun)));
-	d_scanThread->detach();
-	d_imageProcessThread.reset(new Thread(std::bind(&ConeScanInterface::imageProcessThread, this), std::ref(d_imageProcessThreadRun)));
-	d_imageProcessThread->detach();
-	d_scanProc = 0;
-	d_cycleTime = _cycleTime;
-	d_gainFactor = _gainFactor;
-	d_scanTime = d_posTime * d_framesPerGraduation * d_graduation * d_round / 1000;
+	detachScanProcessThread();
 	return true;
 }
 

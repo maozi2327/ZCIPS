@@ -23,7 +23,7 @@ public:
 	PanelDetScanManager(int _rayId, int _panelDetId, const std::vector<ScanMode>& _scanMode, 
 		SetupData* _setupData, Panel* _panel, ControllerInterface* _controller, ImageDialogManager* _imageWidgetManager, 
 		const QString& _tunedDirectory, const QString& _orgDirectory, const QString& _tunedBkgDirectory,
-		const QString& _tunedAirDirectory, const QString& _defectFileName, QWidget *widgetParent = nullptr, QObject *objectParent = nullptr);
+		const QString& _tunedAirDirectory, const QString& _tunedConeJointAirDirectory, const QString& _defectFileName, QWidget *widgetParent = nullptr, QObject *objectParent = nullptr);
 
 	~PanelDetScanManager();
 
@@ -51,9 +51,15 @@ private:
 
 	QString d_tunedBkgDirectory;
 	QString d_tunedAirDirectory;
+
+	//面阵空气命名规则 空气名 + “_55AA5A_” + 背景名 + “_" + "0/1.tif”
+	QString d_tunedConeJointAirDirectory;
 	int d_fileNumber;
 	QString d_fileNameComment;
 
+	//面阵空气扫描的空气文件名
+	QString d_airFileNameA;
+	QString d_airFileNameB;
 public:
 	QWidget* getWidget();
 	void updateObjectNameNumber(const QString& _objectName, const QString& _objectNumber);
@@ -61,6 +67,7 @@ public:
 	void updatePanelStatus(bool readyToScan);
 private slots:
 	void coneScanBeginSlot();
+	void coneJointScanBeginSlot();
 	//void scanProgressUpdatedSlot();
 	void frameShotSlot();
 	void coneScanStopSlot();
@@ -68,6 +75,7 @@ private slots:
 	void bkgTuneSlot();
 	void airTuneSlot();
 	void loadTuneDataSlot();
+	void loadConeJointScanTuneDataSlot();
 	void scanProgressSlot(int _framesAcquiredThisRound, int _framesThisRound, int _framesAcquiredAll, int _framesALL, QString _message);
 	void showImageSlot(unsigned short* _image, int _width, int _height);
 

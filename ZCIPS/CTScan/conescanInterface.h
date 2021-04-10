@@ -63,7 +63,7 @@ class ConeScanInterface : public QObject
 private:
 	;
 protected:
-	//传入的保存org图片文件夹的全路径名字，
+	//传入的保存org图片文件夹的全路径名字，不包含最后的斜杠'/'
 	QString d_orgName;
 	//传入的保存校正后文件夹的文件夹的全路径名字
 	QString d_tunedFilePath;
@@ -130,13 +130,14 @@ protected:
 	virtual void imageProcessThread();
 	virtual bool canScan();
 	virtual void sendCmdToController() = 0;
-	virtual bool loadBkgData();
-	virtual bool loadAirData() = 0;
 	virtual bool writeParameterFile(const QString& _path);
 	virtual bool makeParameterText();
 	virtual bool saveFile(unsigned short* _image);
 	virtual void createFileName(QString& _orgFileName, QString& _tunedFileName);
 	bool checkMemory();
+	bool setCommonScanParameter(int _graduation, int _framesPerGraduation, int _round, int _posTime, int _cycleTime,
+		unsigned short _gainFactor, float _orientInc, float _slicePos, float _sod, float _sdd);
+	void detachScanProcessThread();
 public:
 	ConeScanInterface(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _ctTune, bool _bkgTuneFlag, 
 		bool _airTuneFlag, bool _defectTuneFlag, PanDetData _pandetData);
@@ -145,7 +146,6 @@ public:
 	virtual void setFileName(const QString& _orgName, const QString& _destPath);
 	virtual void setTuneFlag(bool _bkgFlag, bool _airFlag, bool _defectFlag, bool _averageFlag);
 	virtual bool stopScan();
-	virtual bool intialise() = 0;
 	virtual bool beginScan(int _graduation, int _framesPerGraduation, int _round, int _posTime, int _cycleTime, 
 		unsigned short _gainFactor, float _orientInc, float _slicePos, float _sod, float _sdd);
 	virtual void getScanProgress(int& _thisRound, int& _allProgress, QString& imagesCollectedAndSpaceOccupied);

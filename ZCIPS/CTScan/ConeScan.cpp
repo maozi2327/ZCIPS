@@ -70,17 +70,6 @@ void ConeScan::scanThread()
 	}
 }
 
-bool ConeScan::loadAirData()
-{
-	if (!d_imageProcess->loadAirData(QString("air.tif")))
-	{
-		LOG_ERROR("锥束扫描加载空气文件失败！");
-		return false;
-	}
-
-	return true;
-}
-
 bool ConeScan::intialise()
 {
 	return false;

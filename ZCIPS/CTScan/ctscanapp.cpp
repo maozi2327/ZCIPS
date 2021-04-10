@@ -112,14 +112,16 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 		d_panelDetScanModeMap[{ matrixItr.Ray, matrixItr.Det }].push_back(ScanMode::CONE_JOINT_ROT_SCAN);
 
 	d_tunedPanelBkgPath = d_workDir + QString::fromLocal8Bit("correctedPanel/bkg/");
-	d_tunedPanelAirPath = d_workDir + QString::fromLocal8Bit("correctedPanel/air/");
+	d_tunedPanelAirPath = d_workDir + QString::fromLocal8Bit("correctedPanel/air/normal/");
+	d_tunedPanelConeJointAirPath = d_workDir + QString::fromLocal8Bit("correctedPanel/air/coneJoint/");
 	d_defectFileName = d_workDir + QString::fromLocal8Bit("defect.dat");
 
 	for (auto& mode : d_panelDetScanModeMap)
 	{
 		auto manager = new PanelDetScanManager(mode.first.first, mode.first.second,
 			d_panelDetScanModeMap[mode.first], d_setupData.get(), d_panelDetMap[d_setupData->panDetData[mode.first.second].ID].get(), 
-			d_controller.get(), d_imageWidgetManager.get(), d_tunedFilePath, d_orgPath, d_tunedPanelBkgPath, d_tunedPanelAirPath, d_defectFileName, nullptr);
+			d_controller.get(), d_imageWidgetManager.get(), d_tunedFilePath, d_orgPath, d_tunedPanelBkgPath, d_tunedPanelAirPath, 
+			d_tunedPanelConeJointAirPath,d_defectFileName, nullptr);
 		d_panelDetScanManagerMap[mode.first] = manager;
 		connect(manager, &PanelDetScanManager::objectNameNumberChangedSignal, this, &CTScanApp::objectNameNumberChangedSlot);
 	}

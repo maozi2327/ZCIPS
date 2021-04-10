@@ -71,7 +71,10 @@ unsigned short ConeScanWidget::getGainFactor(const QString & _text)
 
 void ConeScanWidget::on_coneScanBeginSampleButton_clicked()
 {
-	emit coneScanBeginSignal();
+	if (ui.tabWidget->currentWidget() == ui.coneScanTab)
+		emit coneScanBeginSignal();
+	else if (ui.tabWidget->currentWidget() == ui.coneJointScanTab)
+		emit coneJointScanBeginSignal();
 }
  
 void ConeScanWidget::on_frameShotButton_clicked()
@@ -102,4 +105,9 @@ void ConeScanWidget::on_airTuneButton_clicked()
 void ConeScanWidget::on_loadTuneDataButton_clicked()
 {
 	emit loadTuneDataSignal();
+}
+
+void ConeScanWidget::on_coneJointLoadTuneDataButton_clicked()
+{
+	emit loadConeJointTuneDataSignal();
 }

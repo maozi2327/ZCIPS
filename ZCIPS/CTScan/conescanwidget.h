@@ -36,8 +36,11 @@ private slots:
 	void on_bkgTuneButton_clicked();
 	void on_airTuneButton_clicked();
 	void on_loadTuneDataButton_clicked();
+	void on_coneJointLoadTuneDataButton_clicked();
 signals:
 	void coneScanBeginSignal();
+	void coneJointScanBeginSignal();
+	void loadConeJointTuneDataSignal();
 	void frameShotSignal();
 	void coneScanStopSignal();
 	void previewSignal();

@@ -663,7 +663,7 @@
       <zorder>orientIncEdit_2</zorder>
       <zorder>coneScanFrameAverageStaticLabel_3</zorder>
      </widget>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="coneJointScanTab">
       <attribute name="title">
        <string>面阵平移</string>
       </attribute>
@@ -764,6 +764,9 @@
          </property>
          <property name="editable">
           <bool>true</bool>
+         </property>
+         <property name="currentText">
+          <string>50</string>
          </property>
         </widget>
        </item>
@@ -909,6 +912,9 @@
            <height>16777215</height>
           </size>
          </property>
+         <property name="text">
+          <string>0</string>
+         </property>
         </widget>
        </item>
        <item row="6" column="0">
@@ -950,6 +956,9 @@
            <width>80</width>
            <height>16777215</height>
           </size>
+         </property>
+         <property name="text">
+          <string>0</string>
          </property>
         </widget>
        </item>

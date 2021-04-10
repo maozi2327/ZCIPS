@@ -111,6 +111,7 @@ private:
 	QString d_tunedFilePath;
 	QString d_tunedPanelBkgPath;
 	QString d_tunedPanelAirPath;
+	QString d_tunedPanelConeJointAirPath;
 	QString d_defectFileName;
 
 	QString d_objectName;

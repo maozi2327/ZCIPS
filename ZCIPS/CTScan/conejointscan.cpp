@@ -7,9 +7,9 @@
 
 
 ConeJointScan::ConeJointScan(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _ctTune, bool _bkgTuneFlag,
-	bool _airTuneFlag, bool _defectTuneFlag, PanDetData _pandetData) 
+	bool _airTuneFlag, bool _defectTuneFlag, PanDetData _pandetData, const QString& _airFileNameA, const QString& _airFileNameB)
 	: ConeScanInterface(_panel, _controller, _ctTune, _bkgTuneFlag, _airTuneFlag, _defectTuneFlag, _pandetData)
-	, d_sampleCount(0)
+	, d_sampleCount(0), d_airFileNameA(_airFileNameA), d_airFileNameB(_airFileNameB)
 {
 
 }
@@ -18,6 +18,7 @@ ConeJointScan::ConeJointScan(Panel* _panel, ControllerInterface* _controller, Pa
 ConeJointScan::~ConeJointScan()
 {
 }
+
 
 void ConeJointScan::scanThread()
 {
@@ -28,33 +29,42 @@ void ConeJointScan::scanThread()
 
 	while (d_scanThreadRun)
 	{
+		printf("%d\n", d_scanProc);
+
 		switch (d_scanProc) 
 		{
-		case 4:
+		case 0:
 			//延时1s，因为上面一步发出onstartnextscan后，ctrlSysSts.s.waitNextScan可能还没有更新
 			//还处在waitNextScan为true等待下位机发送定位到下个扫描位置阶段，而不是等待启动旋转阶段，因此延时等待下位机更新后继续
 			//如果下位机定位到扫描位置，waitNextScan为true,下位机延时2s后开始旋转扫描采集，
 			if (d_controller->readReadyStatus()) 
 			{
+				if (d_scanTime == 0)
+					d_imageProcess->loadAirData(d_airFileNameA);
+				else if(d_scanTime == 1)
+					d_imageProcess->loadAirData(d_airFileNameB);
+
 				d_panel->beginExTriggerAcquire(frameCallback, d_cycleTime, 2);
-				d_scanProc = 20;
+				d_scanProc = 8;
 			}
 			break;
 		case 8:
 			d_controller->startNextScan();
 			std::this_thread::sleep_for(std::chrono::seconds(2));
-			d_scanProc = 5;
+			d_scanProc = 12;
+			break;
 		case 12:
 			if (d_controller->readSaveStatus()) 
-				d_scanProc = 10;
+				d_scanProc = 14;
+
 			break;
 		case 14:
 			if (d_graduationCount >= d_graduation)
 			{
-				if (++d_sampleCount == d_round) 
+				if (++d_sampleCount == d_round)
 					d_scanProc = 16;
-				else 
-					d_scanProc = 4;
+				else
+					d_scanProc = 0;
 			}
 			break;
 		case 16:
@@ -62,8 +72,8 @@ void ConeJointScan::scanThread()
 			d_panel->stopAcquire();
 
 			spliceThread = 	std::thread(
-				std::bind(&PanelImageProcess::dataSplice, std::placeholders::_1, std::placeholders::_1, std::placeholders::_1, std::placeholders::_1),
-				d_pathA, d_pathB, d_pathDest, std::ref(d_spliceProgress));
+				std::bind(&PanelImageProcess::dataSplice, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5),
+				d_imageProcess, d_pathA, d_pathB, d_pathDest, std::ref(d_spliceProgress));
 
 			spliceThread.detach();
 			d_scanProc = 20;
@@ -86,6 +96,7 @@ void ConeJointScan::createFileName(QString& _orgFileName, QString& _tunedFileNam
 		QString orgPath = d_orgName.left(d_orgName.lastIndexOf('/') + 1);
 		QString timeName = getTimeWithUnderline();
 		d_pureDirectoryName = timeName + d_orgName.right(d_orgName.length() - d_orgName.lastIndexOf('_')) + QString::fromLocal8Bit("/");
+		d_orgName = orgPath + d_pureDirectoryName;
 		QDir dir;
 		QString currentOrgPath, currentTunedPath;
 
@@ -108,7 +119,7 @@ void ConeJointScan::createFileName(QString& _orgFileName, QString& _tunedFileNam
 
 	QString index;
 	index.sprintf("%04d", int(d_graduationCount % d_graduation));
-	_orgFileName = d_orgName + d_pureDirectoryName + QString::number(d_sampleCount) + QString::fromLocal8Bit("/") + index + QString::fromLocal8Bit(".tif");
+	_orgFileName = d_orgName + QString::number(d_sampleCount) + QString::fromLocal8Bit("/") + index + QString::fromLocal8Bit(".tif");
 	_tunedFileName = d_tunedFilePath + d_pureDirectoryName + QString::number(d_sampleCount) + QString::fromLocal8Bit("/") + index + QString::fromLocal8Bit(".tif");
 }
 
@@ -135,3 +146,44 @@ void ConeJointScan::sendCmdToController()
 	cmdData.stsBit.s.coneHelix = 0;
 	d_controller->sendToControl(CMD_CONEJOINT_SCAN, (char*)(&cmdData), sizeof(ConeJointScanCmdData), false);
 }
+
+bool ConeJointScan::makeParameterText()
+{
+	ConeScanInterface::makeParameterText();
+	auto itr = std::find(d_parameterText.begin(), d_parameterText.end(), QString::fromLocal8Bit("[GEOMETRY]\n"));
+	QString panelTransPos = makeFormatQString("Translation=%.3f\t\t\t;转台旋转加平移拼接扫描平移距离\n", d_detTransSpace);
+	d_parameterText.insert(itr, panelTransPos);
+	return false;
+}
+
+bool ConeJointScan::beginScan(int _graduation, int _framesPerGraduation, int _round, int _posTime, int _cycleTime,
+	unsigned short _gainFactor, float _orientInc, float _slicePos, float _sod, float _sdd, float _detTranStart, float _detTranSpace)
+{
+	setCommonScanParameter(_graduation, _framesPerGraduation, _round, _posTime, _cycleTime, _gainFactor, _orientInc, _slicePos, _sod, _sdd);
+	d_detTransStart = _detTranStart;
+	d_detTransSpace = _detTranSpace;
+	d_scanTime = 0;
+	sendCmdToController();
+	detachScanProcessThread();
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

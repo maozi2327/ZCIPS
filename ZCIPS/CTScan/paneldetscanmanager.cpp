@@ -12,17 +12,18 @@
 #include "newpaneldetairtunedialog.h"
 #include "panelairtune.h"
 #include "loadtunedatadialog.h"
+#include "conejointscan.h"
 
 PanelDetScanManager::PanelDetScanManager(int _rayId, int _panelDetId, const std::vector<ScanMode>& _scanMode, 
 	SetupData* _setupData, Panel* _panel, ControllerInterface* _controller, ImageDialogManager* _imageWidgetManager,
 	const QString& _tunedDirectory, const QString& _orgDirectory, const QString& _tunedBkgDirectory,
-	const QString& _tunedAirDirectory, const QString& _defectFileName, QWidget *widgetParent, QObject *objectParent)
+	const QString& _tunedAirDirectory, const QString& _tunedConeJointAirDirectory, const QString& _defectFileName, QWidget *widgetParent, QObject *objectParent)
 	: QObject(objectParent)
 	, d_rayNum(_rayId), d_detNum(_panelDetId), d_panel(_panel), d_controller(_controller), d_imageWidgetManager(_imageWidgetManager)
 	, d_setupData(_setupData), d_coneScanWidget(new ConeScanWidget(_panel, _panel->getWidget(), widgetParent)), d_imageDialogHandle(nullptr)
 	, d_panelImageProcess(new PanelImageProcess(_panel->getPanelSize().first, _panel->getPanelSize().second))
 	, d_orgDirectory(_orgDirectory), d_tunedFileDirectory(_tunedDirectory), d_tunedBkgDirectory(_tunedBkgDirectory), d_tunedAirDirectory(_tunedAirDirectory)
-	, d_defectFileName(_defectFileName)
+	, d_tunedConeJointAirDirectory(_tunedConeJointAirDirectory), d_defectFileName(_defectFileName)
 {
 	for (auto& scanMode : _scanMode)
 	{
@@ -47,13 +48,15 @@ PanelDetScanManager::PanelDetScanManager(int _rayId, int _panelDetId, const std:
 	}
 
 	connect(d_coneScanWidget, &ConeScanWidget::coneScanBeginSignal,	this, &PanelDetScanManager::coneScanBeginSlot);
+	connect(d_coneScanWidget, &ConeScanWidget::coneJointScanBeginSignal, this, &PanelDetScanManager::coneJointScanBeginSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::frameShotSignal,	this, &PanelDetScanManager::frameShotSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::coneScanStopSignal, this, &PanelDetScanManager::coneScanStopSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::previewSignal, this, &PanelDetScanManager::previewSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::bkgTuneSignal, this, &PanelDetScanManager::bkgTuneSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::airTuneSignal, this, &PanelDetScanManager::airTuneSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::loadTuneDataSignal, this, &PanelDetScanManager::loadTuneDataSlot);
-
+	connect(d_coneScanWidget, &ConeScanWidget::loadConeJointTuneDataSignal, this, &PanelDetScanManager::loadConeJointScanTuneDataSlot);
+	
 	d_panelImageProcess->loadDefectData(d_defectFileName);
 }
 
@@ -109,6 +112,36 @@ void PanelDetScanManager::coneScanBeginSlot()
 //	if (dynamic_cast<ConeScan*>(d_scan.get()))
 //		d_coneScanWidget->setConeScanProgress(allProgress, msg);
 //}
+//TODO_DJ：文件存在function.h messageBox
+//TODO_DJ：加载背景数据
+void PanelDetScanManager::coneJointScanBeginSlot()
+{
+	d_panel->stopAcquire();
+	bool correctFlag = d_coneScanWidget->ui.allTuneCheckBox->isChecked();
+	QString fileNumber{ QString::fromLocal8Bit("55AA5A") };
+
+	if (!getFileNameFromDialog(d_objectName, d_objectNumber, fileNumber, d_fileNameComment))
+		return;
+
+	QString orgFileName = d_orgDirectory + QDateTime::currentDateTime().date().toString(Qt::ISODate) + '/' +
+		d_objectName + '/' + d_objectNumber + '/' + fileNumber + QString::fromLocal8Bit("_") + d_fileNameComment;
+	QString destFilePath = d_tunedFileDirectory + QDateTime::currentDateTime().date().toString(Qt::ISODate) + '/' +
+		d_objectName + '/' + d_objectNumber + '/';
+	PanDetData panDetData = d_setupData->panDetData[d_detNum];
+	d_scan.reset(new ConeJointScan(d_panel, d_controller, d_panelImageProcess.get(), correctFlag, correctFlag, correctFlag, 
+		panDetData, d_airFileNameA, d_airFileNameB));
+	d_scan->setFileName(orgFileName, destFilePath);
+	int cycleTime = d_panel->getSampleTimeSet();
+	auto graduationTime = d_panel->caculateExTriggerSampleTime(cycleTime);
+	int graduation = d_coneScanWidget->ui.coneScanGraduationComboBox->currentText().toInt();
+	int framesPerGraduation = d_coneScanWidget->ui.coneScanframesComboBox->currentText().toInt();
+	float oriencInc = d_coneScanWidget->ui.orientIncEdit->text().toFloat();
+	auto gainFactor = d_panel->getGainFactorSet();
+	float slicePos = d_coneScanWidget->ui.slicePosEdit->text().toFloat();
+	connect(d_scan.get(), &ConeScanInterface::scanProgressSignal, this, &PanelDetScanManager::scanProgressSlot);
+	static_cast<ConeJointScan*>(d_scan.get())->beginScan(graduation, framesPerGraduation, 1, graduationTime, cycleTime, gainFactor, oriencInc, slicePos,
+		d_controller->readAxisPostion(Axis::objRadial), d_controller->readAxisPostion(Axis::detRadial), -50, 50);
+}
 
 void PanelDetScanManager::frameShotSlot()
 {
@@ -188,6 +221,21 @@ void PanelDetScanManager::loadTuneDataSlot()
 	{
 		d_panelImageProcess->loadBkgData(bkgName);
 		d_panelImageProcess->loadAirData(airName);
+	}
+}
+
+void PanelDetScanManager::loadConeJointScanTuneDataSlot()
+{
+	QString airName, bkgName;
+	LoadTuneDataDialog loadTuneDataDialog(d_tunedBkgDirectory, d_tunedConeJointAirDirectory, airName, bkgName);
+
+	if (loadTuneDataDialog.exec() == QDialog::Accepted)
+	{
+		bkgName = bkgName.left(bkgName.lastIndexOf("_")) + QString::fromLocal8Bit(".tif");
+		d_panelImageProcess->loadBkgData(bkgName);
+		QString namePerfix = airName.left(airName.lastIndexOf("_") + 1);
+		d_airFileNameA = namePerfix + QString::fromLocal8Bit("0.tif");
+		d_airFileNameB = namePerfix + QString::fromLocal8Bit("1.tif");
 	}
 }
 
