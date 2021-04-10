@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "PESiPanel.h"
+#include "../Public/util/Thread.h"
+#include "../Public/util/messagebox.h"
+
 #pragma comment(lib, "./public/lib/xisl.lib")
 
 #define ACQ_SNAP 8
@@ -18,10 +21,11 @@ PESiPanel::PESiPanel()
 	)
 	, Panel()
 	, d_PESiDetBufferSize(0), d_PESiDetAcqBuffer(nullptr), d_frameCount(0), d_sampleMode(SampleMode::wrongTrigger), d_cycleTime(0), d_gainFactor(10)
+	, d_connectThread(new Thread(std::bind(&PESiPanel::connectPanel, this), std::ref(d_deadThreadRun))), d_deadThreadRun(true), d_connected(false)
 {
 	d_widget = new PEsiPanelWidget();
 	ptrPESiPanel = this;
-	connectPanel();
+	d_connectThread->detach();
 	connect(d_widget, &PEsiPanelWidget::setCycleTimeSignal, this, &PESiPanel::setCycleTimeSlot);
 	connect(d_widget, &PEsiPanelWidget::setGainFactorSignal, this, &PESiPanel::setGainFactorSlot);
 }
@@ -43,124 +47,144 @@ void OnEndPESiDetAcqCallback(HACQDESC hAcqDesc)
 
 bool PESiPanel::connectPanel()
 {
-	unsigned int uiNumSensors;			// 探测器个数
-	unsigned int iRet;
-
-	if ((iRet = Acquisition_EnumSensors(&uiNumSensors, 1, FALSE)) != HIS_ALL_OK)
+	while (d_deadThreadRun)
 	{
-		LOG_ERROR("%s失败！错误码%d", "Acquisition_EnumSensors", iRet);
-		return false;
-	}
-
-	ACQDESCPOS Pos = 0;
-	HACQDESC hAcqDesc = NULL;
-
-	do
-	{
-		if ((iRet = Acquisition_GetNextSensor(&Pos, &hAcqDesc)) != HIS_ALL_OK)
+		if (d_connected)
 		{
-			LOG_ERROR("%s失败！错误码%d", "Acquisition_GetNextSensor", iRet);
+			std::this_thread::sleep_for(std::chrono::seconds(3));
+			continue;
+		}
+
+		unsigned int uiNumSensors;			// 探测器个数
+		unsigned int iRet;
+
+		if ((iRet = Acquisition_EnumSensors(&uiNumSensors, 1, FALSE)) != HIS_ALL_OK)
+		{
+			LOG_ERROR("%s失败！错误码%d", "Acquisition_EnumSensors", iRet);
 			return false;
 		}
-	} 
-	while (Pos != 0);
-	
-	UINT nChannelType;
-	int nChannelNr;
-	
-	if ((iRet = Acquisition_GetCommChannel(hAcqDesc, &nChannelType, &nChannelNr)) != HIS_ALL_OK) 
-	{
-		LOG_ERROR("%s失败！错误码%d", "Acquisition_GetCommChannel", iRet);
-		return false;
-	}
 
-	if (nChannelType == HIS_BOARD_TYPE_ELTEC_XRD_FGX ||
-		nChannelType == HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto)
-	{
-		CHwHeaderInfo Info;
-		CHwHeaderInfoEx InfoEx; // new Header 1621
+		ACQDESCPOS Pos = 0;
+		HACQDESC hAcqDesc = NULL;
 
-		if ((iRet = Acquisition_GetHwHeaderInfoEx(hAcqDesc, &Info, &InfoEx)) == HIS_ALL_OK) 
+		do
 		{
-			if (Info.dwHeaderID == 14 && InfoEx.wCameratype >= 1) {
-				unsigned short *pOffsetBufferBinning1 = NULL, *pOffsetBufferBinning2 = NULL;
-				WORD wBinning = 1;
-				int timings = 8;
-				// create lists to receive timings for different binning modes
-				double* m_pTimingsListBinning1;
-				double* m_pTimingsListBinning2;
-				m_pTimingsListBinning1 = (double*)malloc(timings * sizeof(double));
-				m_pTimingsListBinning2 = (double*)malloc(timings * sizeof(double));
+			if ((iRet = Acquisition_GetNextSensor(&Pos, &hAcqDesc)) != HIS_ALL_OK)
+			{
+				LOG_ERROR("%s失败！错误码%d", "Acquisition_GetNextSensor", iRet);
+				return false;
+			}
+		} while (Pos != 0);
 
-				//  set detector timing and gain
-				Acquisition_SetCameraMode(hAcqDesc, 0);
-				Acquisition_SetCameraGain(hAcqDesc, 1);
-				// set detector to default binning mode
-				Acquisition_SetCameraBinningMode(hAcqDesc, wBinning);
-				// get int times for selected binning mode
-				Acquisition_GetIntTimes(hAcqDesc, m_pTimingsListBinning1, &timings);
+		UINT nChannelType;
+		int nChannelNr;
+
+		if ((iRet = Acquisition_GetCommChannel(hAcqDesc, &nChannelType, &nChannelNr)) != HIS_ALL_OK)
+		{
+			LOG_ERROR("%s失败！错误码%d", "Acquisition_GetCommChannel", iRet);
+			return false;
+		}
+
+		if (nChannelType == HIS_BOARD_TYPE_ELTEC_XRD_FGX ||
+			nChannelType == HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto)
+		{
+			CHwHeaderInfo Info;
+			CHwHeaderInfoEx InfoEx; // new Header 1621
+
+			if ((iRet = Acquisition_GetHwHeaderInfoEx(hAcqDesc, &Info, &InfoEx)) == HIS_ALL_OK)
+			{
+				if (Info.dwHeaderID == 14 && InfoEx.wCameratype >= 1) {
+					unsigned short *pOffsetBufferBinning1 = NULL, *pOffsetBufferBinning2 = NULL;
+					WORD wBinning = 1;
+					int timings = 8;
+					// create lists to receive timings for different binning modes
+					double* m_pTimingsListBinning1;
+					double* m_pTimingsListBinning2;
+					m_pTimingsListBinning1 = (double*)malloc(timings * sizeof(double));
+					m_pTimingsListBinning2 = (double*)malloc(timings * sizeof(double));
+
+					//  set detector timing and gain
+					Acquisition_SetCameraMode(hAcqDesc, 0);
+					Acquisition_SetCameraGain(hAcqDesc, 1);
+					// set detector to default binning mode
+					Acquisition_SetCameraBinningMode(hAcqDesc, wBinning);
+					// get int times for selected binning mode
+					Acquisition_GetIntTimes(hAcqDesc, m_pTimingsListBinning1, &timings);
+				}
 			}
 		}
-	}
-	//获取探测器类型及编号
-	LOG_INFO("channel type : %d  ChannelNr : %d", nChannelType, nChannelNr);
-	
-	switch (nChannelType)
-	{
-	case HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto:
-		LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto:", nChannelType);
-		break;
-	case HIS_BOARD_TYPE_ELTEC_XRD_FGX:
-		LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_XRD_FGX:", nChannelType);
-		break;
-	case HIS_BOARD_TYPE_ELTEC:
-		LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC:", nChannelType);
-		break;
-	case HIS_BOARD_TYPE_ELTEC_GbIF:
-		LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_GbIF:", nChannelType);
-		break;
-	case HIS_BOARD_TYPE_ELTEC_EMBEDDED:
-		LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_EMBEDDED:", nChannelType);
-		break;
-	default:
-		LOG_INFO("%s%d", "Unknown ChanelType::", nChannelType);
-		break;
-	}
-	//获取探测器配置
-	if ((iRet = Acquisition_GetConfiguration(hAcqDesc, 0, &d_height, &d_width, 0,
-											0, 0, 0, 0, 0, 0)) != HIS_ALL_OK) 
-	{
-		LOG_ERROR("%s失败！错误码%d", "Acquisition_GetConfiguration", iRet);
-		return false;
+		//获取探测器类型及编号
+		LOG_INFO("channel type : %d  ChannelNr : %d", nChannelType, nChannelNr);
+
+		switch (nChannelType)
+		{
+		case HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto:
+			LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_XRD_FGE_Opto:", nChannelType);
+			break;
+		case HIS_BOARD_TYPE_ELTEC_XRD_FGX:
+			LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_XRD_FGX:", nChannelType);
+			break;
+		case HIS_BOARD_TYPE_ELTEC:
+			LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC:", nChannelType);
+			break;
+		case HIS_BOARD_TYPE_ELTEC_GbIF:
+			LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_GbIF:", nChannelType);
+			break;
+		case HIS_BOARD_TYPE_ELTEC_EMBEDDED:
+			LOG_INFO("%s%d", "HIS_BOARD_TYPE_ELTEC_EMBEDDED:", nChannelType);
+			break;
+		default:
+			LOG_INFO("%s%d", "Unknown ChanelType::", nChannelType);
+			break;
+		}
+		//获取探测器配置
+		unsigned int width, height;
+		if ((iRet = Acquisition_GetConfiguration(hAcqDesc, 0, &width, &height, 0,
+			0, 0, 0, 0, 0, 0)) != HIS_ALL_OK)
+		{
+			LOG_ERROR("%s失败！错误码%d", "Acquisition_GetConfiguration", iRet);
+			return false;
+		}
+
+		if (width != d_width || height != d_height)
+		{
+			messageBox(QString::fromLocal8Bit("面阵探测器像素配置错误！"), QString::fromLocal8Bit("请重新配置探测器像素数量！"));
+			break;
+		}
+
+		d_frameSize = d_width * d_height * sizeof(unsigned short);
+
+		if ((iRet = Acquisition_SetCallbacksAndMessages(hAcqDesc, NULL, 0,
+			0, ::OnEndPESiDetFrameCallback, ::OnEndPESiDetAcqCallback)) != HIS_ALL_OK)		//设置采集回调函数
+		{
+			LOG_ERROR("%s失败！错误码%d", "Acquisition_SetCallbacksAndMessages", iRet);
+			return false;
+		}
+
+		if ((iRet = Acquisition_SetCameraTriggerMode(hAcqDesc, 1)) == HIS_ALL_OK)
+		{
+			LOG_INFO("%s失败！错误码%d", "Acquisition_GetConfiguration", iRet);
+		}
+		else
+		{
+			LOG_ERROR("%s失败！错误码%d", "Acquisition_SetCameraTriggerMode", iRet);
+			return false;
+		}
+
+		d_connected = true;
+
+		hPESiAcqDesc = hAcqDesc;
 	}
 
-	d_frameSize = d_width * d_height * sizeof(unsigned short);
-
-	if ((iRet = Acquisition_SetCallbacksAndMessages(hAcqDesc, NULL, 0,
-		0, ::OnEndPESiDetFrameCallback, ::OnEndPESiDetAcqCallback)) != HIS_ALL_OK)		//设置采集回调函数
-	{
-		LOG_ERROR("%s失败！错误码%d", "Acquisition_SetCallbacksAndMessages", iRet);
-		return false;
-	}
-
-	if ((iRet = Acquisition_SetCameraTriggerMode(hAcqDesc, 1)) == HIS_ALL_OK)
-	{
-		LOG_INFO("%s失败！错误码%d", "Acquisition_GetConfiguration", iRet);
-	}
-	else
-	{
-		LOG_ERROR("%s失败！错误码%d", "Acquisition_SetCameraTriggerMode", iRet);
-		return false;
-	}
-
-	hPESiAcqDesc = hAcqDesc;
 	return true;
 }
 void PESiPanel::OnEndPESiDetFrameCallback(HACQDESC hAcqDesc)
 {
-	d_copyBuffer = (unsigned char*)malloc(d_frameSize);
-	memcpy(d_copyBuffer, d_PESiDetAcqBuffer + d_frameSize * d_frameCount, d_frameSize);
-	d_imageProcCallback((unsigned short*)d_copyBuffer);
+	QString time = QDateTime::currentDateTime().time().toString();
+	QByteArray byte = time.toLocal8Bit();
+	printf("%s\n", byte.data());
+	//TODO_DJ:调用回调函数为空时
+	d_imageProcCallback((unsigned short*)(d_PESiDetAcqBuffer + d_frameSize * d_frameCount));
 
 	if (d_sampleMode == SampleMode::softTrigger)
 	{
@@ -168,9 +192,18 @@ void PESiPanel::OnEndPESiDetFrameCallback(HACQDESC hAcqDesc)
 			d_PESiContinusSingleMode == PESICON_SINGLE_MODE::Single && d_frameCount != d_frames)
 			Acquisition_SetFrameSync(hAcqDesc);
 	}
-
-	if (++d_frameCount == d_frames)
-		d_frameCount = 0;
+}
+int PESiPanel::getFramesSet()
+{
+	return d_widget->ui.singleShotFramesSpinBox->value();
+}
+int PESiPanel::getSampleTimeSet()
+{
+	return d_widget->ui.cycleTimeEdit->text().toInt();
+}
+int PESiPanel::getGainFactorSet()
+{
+	return d_gainFactor;
 }
 void PESiPanel::OnEndPESiDetAcqCallback(HACQDESC hAcqDesc)
 {
@@ -186,11 +219,11 @@ int PESiPanel::getSampleTime()
 }
 bool PESiPanel::getConnected()
 {
-	return false;
+	return d_connected;
 }
 size_t PESiPanel::getFrameSize()
 {
-	return size_t();
+	return d_width * d_height * sizeof(unsigned short);
 }
 bool PESiPanel::setCycleTime(int _milliseconds)
 {
@@ -231,7 +264,7 @@ bool PESiPanel::setBinMode(BinMode _binMode)
 }
 bool PESiPanel::setSampleMode(SampleMode _sampleMode, int _cycleTime)
 {
-	if (d_sampleMode == _sampleMode && d_cycleTime == _cycleTime)
+	if (d_sampleMode == SampleMode::softTrigger && _sampleMode == SampleMode::softTrigger && d_cycleTime == _cycleTime)
 		return true;
 
 	unsigned int iRet;
@@ -264,11 +297,13 @@ bool PESiPanel::setSampleMode(SampleMode _sampleMode, int _cycleTime)
 			return false;
 		}
 
-		if ((iRet = Acquisition_SetFrameSyncMode(hPESiAcqDesc, unsigned long(_sampleMode))) == HIS_ALL_OK)
+		if ((iRet = Acquisition_SetFrameSyncMode(hPESiAcqDesc, d_sampleModeMap[_sampleMode])) != HIS_ALL_OK)
 		{
 			LOG_ERROR("%s失败！错误码%d", "Acquisition_SetTriggerOutSignalOptions", iRet);
-			d_sampleMode = _sampleMode;
+			return false;
 		}
+
+		d_sampleMode = _sampleMode;
 	}
 	else 
 	{
@@ -283,22 +318,22 @@ bool PESiPanel::setGainFactor(int _gainFactor)
 {
 	unsigned short iRet;
 	//TODO：面板未连接时，会因为hPESiAcqDesc句柄错误而导致异常
-	//if (_gainFactor == d_gainFactor)
-	//	return true;
+	if (_gainFactor == d_gainFactor)
+		return true;
 
-	//if ((iRet = Acquisition_SetCameraGain(hPESiAcqDesc, _gainFactor)) == HIS_ALL_OK)
-	//{
-	//	LOG_INFO("设置探测增益:%d", _gainFactor);
-	//	d_gainFactor = _gainFactor;
-	//	return true;
-	//}
-	//else
-	//{
-	//	LOG_ERROR("%s失败！错误码%d", "Acquisition_SetCameraGain", iRet);
-	//	return false;
-	//}
-	return false;
+	if ((iRet = Acquisition_SetCameraGain(hPESiAcqDesc, _gainFactor)) == HIS_ALL_OK)
+	{
+		LOG_INFO("设置探测增益:%d", _gainFactor);
+		d_gainFactor = _gainFactor;
+		return true;
+	}
+	else
+	{
+		LOG_ERROR("%s失败！错误码%d", "Acquisition_SetCameraGain", iRet);
+		return false;
+	}
 }
+//TODO_DJ：关掉拍片对话框后仍然在采集
 //TODO_DJ:如果单次采集分配的内存很大，则在采集完成或者停止采集后清空d_PESiDetAcqBuffer
 bool PESiPanel::beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames, 
 	int _cycleTime, int _gainFactor)
@@ -308,6 +343,12 @@ bool PESiPanel::beginSoftwareTriggerAcquire(std::function<void(unsigned short*)>
 	return beginAcquire(SampleMode::softTrigger, _cycleTime, _frames);
 }
 
+bool PESiPanel::beginPreview(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime, int _gainFactor)
+{
+	setFrameCallback(_imageProcessCallBack);
+	d_PESiContinusSingleMode = PESICON_SINGLE_MODE::Continus;
+	return beginAcquire(SampleMode::softTrigger, _cycleTime, 1, true);
+}
 bool PESiPanel::beginExTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime, 
 	int _gainFactor)
 {
@@ -318,11 +359,11 @@ bool PESiPanel::beginExTriggerAcquire(std::function<void(unsigned short*)> _imag
 
 void PESiPanel::stopAcquire()
 {
+	//启动扫描前调用该函数，避免面板按照之前的模式继续扫描
 	if(d_sampleMode == SampleMode::exTrigger)
 		Acquisition_Abort(hPESiAcqDesc);
-
-	Acquisition_SetFrameSyncMode(hPESiAcqDesc, HIS_SYNCMODE_FREE_RUNNING);
-	d_sampleMode = SampleMode::freeRunning;
+	//Acquisition_SetFrameSyncMode(hPESiAcqDesc, HIS_SYNCMODE_FREE_RUNNING);
+	//d_sampleMode = SampleMode::freeRunning;
 }
 
 bool PESiPanel::setFrames(int _frames)
@@ -355,6 +396,7 @@ bool PESiPanel::setPanelSize(int _width, int _height)
 {
 	d_width = _width;
 	d_height = _height;
+	d_frameSize = d_width * d_height * sizeof(unsigned short);
 	return true;
 }
 
@@ -387,8 +429,12 @@ void PESiPanel::setGainFactorSlot(QString _text)
 
 	setGainFactor(gain);
 }
+void PESiPanel::detectorConnectedSlot()
+{
+	
+}
 
-bool PESiPanel::beginAcquire(SampleMode _sampleMode, int _cycleTime, int _frames)
+bool PESiPanel::beginAcquire(SampleMode _sampleMode, int _cycleTime, int _frames, bool realTime)
 {
 	unsigned int iRet;
 	unsigned long dwDemoParam = ACQ_SNAP;
@@ -406,7 +452,7 @@ bool PESiPanel::beginAcquire(SampleMode _sampleMode, int _cycleTime, int _frames
 	d_frames = _frames;
 
 	//分配采集内存,设置缓冲区
-	if (d_frameSize != d_PESiDetBufferSize)
+	if (d_frameSize * d_frames != d_PESiDetBufferSize)
 	{
 		if (d_PESiDetAcqBuffer != nullptr)
 			SAFE_DELETE(d_PESiDetAcqBuffer);
@@ -428,7 +474,12 @@ bool PESiPanel::beginAcquire(SampleMode _sampleMode, int _cycleTime, int _frames
 	if(_sampleMode == SampleMode::exTrigger)
 		bHisSeqFlag = HIS_SEQ_CONTINUOUS;
 	else if (_sampleMode == SampleMode::softTrigger)
-		bHisSeqFlag = HIS_SEQ_ONE_BUFFER;
+	{
+		if(realTime)
+			bHisSeqFlag = HIS_SEQ_CONTINUOUS;
+		else
+			bHisSeqFlag = HIS_SEQ_ONE_BUFFER;
+	}
 
 	//NOTEPAD
 	//使用HIS_SEQ_CONTINUOUS外触发时脉冲停止会如果不调用

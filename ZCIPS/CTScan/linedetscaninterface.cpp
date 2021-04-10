@@ -12,9 +12,9 @@ ICT_HEADER23 LineDetScanInterface::d_ictHeader;
 std::chrono::minutes LineDetScanInterface::d_intervalForSaveTempFile = std::chrono::minutes(30);
 
 LineDetScanInterface::LineDetScanInterface(ControllerInterface * _controller, LineDetNetWork* _lineDetNetWork,
-	const SetupData* _setupData, int _lineDetIndex)
-	: d_controller(_controller), d_lineDetNetWork(_lineDetNetWork), d_setupData(_setupData)
-	, d_lineDetIndex(_lineDetIndex)
+	const SetupData* _setupData, int _lineDetIndex, LineDetImageProcess* _lineDetImageProcess)
+	: d_controller(_controller), d_lineDetNetWork(_lineDetNetWork), d_setupData(_setupData), d_scanThread(nullptr)
+	, d_lineDetIndex(_lineDetIndex), d_lineDetImageProcess(_lineDetImageProcess)
 {
 
 }
@@ -26,37 +26,42 @@ LineDetScanInterface::~LineDetScanInterface()
 
 void LineDetScanInterface::setFileName(const QString& _orgName, const QString& _destPath)
 {
-	d_orgName = _orgName; 
+	d_orgName = _orgName;
 	d_filePath = _destPath;
 }
 
 bool LineDetScanInterface::beginScan()
 {
-	if (canScan())
-	{
-		d_scanThread.reset(new Thread(std::bind(&LineDetScanInterface::scanThread, this), std::ref(d_deadThreadRun)));
-		d_scanThread->detach();
-		return true;
-	}
+	if (!canScan())
+		return false;
 
-	return false;
+	if (d_scanThread)
+		d_scanThread->stopThread();
+
+	caculateParemeterAndSetGenerialFileHeader();
+	sendCmdToControl();
+	d_imageScaned = 0;
+	d_samplesBefore = 0;
+	d_lineDetNetWork->clearRowList();
+	d_scanThread.reset(new Thread(std::bind(&LineDetScanInterface::scanThread, this), std::ref(d_deadThreadRun)));
+	d_scanThread->detach();
+	return true;
 }
 
 void LineDetScanInterface::stopScan()
 {
+	d_controller->stopAll();
 	d_lineDetNetWork->stopAcquire(true);
 	d_scanThread->stopThread();
 }
 
+//TODO_DJ：清除save标志
 void LineDetScanInterface::scanThread()
 {
 	if (d_lineDetNetWork->startExtTrigAcquire())
 	{
 		static std::chrono::steady_clock::time_point last_time;
 		last_time = d_start_time = std::chrono::steady_clock::now();
-		setGenerialFileHeader();
-		sendCmdToControl();
-		d_lineDetNetWork->clearRowList();
 		std::this_thread::sleep_for(std::chrono::seconds(3));
 
 		while (d_deadThreadRun)
@@ -71,20 +76,34 @@ void LineDetScanInterface::scanThread()
 				last_time = now;
 			}
 
-			emit(signalGraduationCount(100 * d_lineDetNetWork->getGraduationCount() / d_allGraduationSample));
+			int graduationCount = d_lineDetNetWork->getGraduationCount();
+			emit(samplePercentCountSignal(float(100) * graduationCount / d_currentScanTotalSamples, 
+				float(100) * (d_samplesBefore + graduationCount) / d_allScanTotalSamples));
 
 			if (d_controller->readSaveStatus())
 			{
 				saveFile();
+				d_controller->clearSaveFlag();
+				d_samplesBefore = d_samplesBefore + graduationCount;
 
 				if (scanFinished())
 				{
 					emit scanThreadQuitSignal(0);
 					return;
 				}
+				else
+				{
+					d_lineDetNetWork->clearRowList();
+					std::this_thread::sleep_for(std::chrono::seconds(3));
+				}
+			}
+			else if (d_controller->readWaitNextScanStatus())
+			{
+				d_controller->startNextScan();
+				std::this_thread::sleep_for(std::chrono::seconds(3));
 			}
 
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 
 		emit scanThreadQuitSignal(1);
@@ -105,7 +124,7 @@ bool LineDetScanInterface::scanFinished()
 	return true;
 }
 
-bool LineDetScanInterface::setGenerialFileHeader()
+bool LineDetScanInterface::caculateParemeterAndSetGenerialFileHeader()
 {
 	d_ictHeader.MainVersion = MainVersion23;
 	d_ictHeader.SubVersion = SubVersion23;
@@ -115,20 +134,21 @@ bool LineDetScanInterface::setGenerialFileHeader()
 	d_ictHeader.DataFormat.dataColAtRow
 		= d_setupData->lineDetData[d_lineDetIndex].NumberOfSystemHorizontalDetector;
 
-	if (d_rayType == RayType::Accelerator)
-	{
-		d_ictHeader.SystemParameter.RaySort = 0;
-		d_ictHeader.SystemParameter.RayEngery = d_setupData->acceleratorData[d_AccIndex].rayEnergy;
-		d_ictHeader.SystemParameter.RayDosage = d_setupData->acceleratorData[d_AccIndex].rayDoseRate;
-		d_ictHeader.SystemParameter.SynchFrequency = d_setupData->acceleratorData[d_AccIndex].syncFreqDefine[d_accFrecIndex];
-	}
-	else if (d_rayType == RayType::Tube)
-	{
-		d_ictHeader.SystemParameter.RaySort = 0;
-		d_ictHeader.SystemParameter.RayEngery = d_setupData->acceleratorData[d_AccIndex].rayEnergy;
-		d_ictHeader.SystemParameter.RayDosage = d_setupData->acceleratorData[d_AccIndex].rayDoseRate;
-		d_ictHeader.SystemParameter.SynchFrequency = 250;
-	}
+	//TODO_DJ:
+	//if (d_rayType == RayType::Accelerator)
+	//{
+	//	d_ictHeader.SystemParameter.RaySort = 0;
+	//	d_ictHeader.SystemParameter.RayEngery = d_setupData->acceleratorData[d_AccIndex].rayEnergy;
+	//	d_ictHeader.SystemParameter.RayDosage = d_setupData->acceleratorData[d_AccIndex].rayDoseRate;
+	//	d_ictHeader.SystemParameter.SynchFrequency = d_setupData->acceleratorData[d_AccIndex].syncFreqDefine[d_accFrecIndex];
+	//}
+	//else if (d_rayType == RayType::Tube)
+	//{
+	//	d_ictHeader.SystemParameter.RaySort = 0;
+	//	d_ictHeader.SystemParameter.RayEngery = d_setupData->acceleratorData[d_AccIndex].rayEnergy;
+	//	d_ictHeader.SystemParameter.RayDosage = d_setupData->acceleratorData[d_AccIndex].rayDoseRate;
+	//	d_ictHeader.SystemParameter.SynchFrequency = 250;
+	//}
 
 	//设置探测器参数
 	d_ictHeader.SystemParameter.AmplifyMultiple = d_setupData->lineDetData[d_lineDetIndex].AmplifyMultiple;
@@ -230,7 +250,7 @@ void LineDetScanInterface::CalculateView_ValidDetector(float _diameter)
 
 		if (leftMiddle == rightMiddle)
 			Nv = 2 * (int)(beta / 2 / delta) + 1;
-		else															//探测器不通过扇面中心线， 有效探测器设置为偶数
+		else															//探测器不通过扇面中心线，有效探测器设置为偶数
 			Nv = 2 * (int)(beta / 2 / delta);
 
 		if (Nv > realSysDetectorNum)

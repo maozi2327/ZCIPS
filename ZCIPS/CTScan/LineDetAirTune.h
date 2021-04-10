@@ -5,17 +5,13 @@ class LineDetAirTune :
 {
 protected:
 	virtual void saveFile();
-	virtual bool setGenerialFileHeader();
-	virtual void scanThread();
+	virtual bool caculateParemeterAndSetGenerialFileHeader();
 	virtual void sendCmdToControl();
-	virtual bool checkScanAble();
-	virtual bool canScan();
 	virtual void saveTempFile(LineDetList* _listHead) override;
 public:
 	LineDetAirTune(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWor,
-		const SetupData* _setupData, int _lineDetIndex);
+		const SetupData* _setupData, int _lineDetIndex, LineDetImageProcess* _lineDetImageProcess);
 	~LineDetAirTune();
-	virtual void stopScan(); 
-	virtual bool beginScan();
+	virtual void stopScan();
 };
 

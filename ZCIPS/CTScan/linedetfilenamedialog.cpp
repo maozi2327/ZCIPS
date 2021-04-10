@@ -17,6 +17,11 @@ LineDetFileNameDialog::~LineDetFileNameDialog()
 
 }
 
+void LineDetFileNameDialog::on_cancelButton_clicked()
+{
+	reject();
+}
+
 void LineDetFileNameDialog::on_okButton_clicked()
 {
 	d_objectName = ui.objectNameEdit->text();

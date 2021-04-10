@@ -260,14 +260,13 @@ enum{
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //CD系列工业CT通用命令字定义                                
-enum{
-	CMD_NULL								= -1,			//无命令
+enum {
+	CMD_NULL = -1,			//无命令
 
-    CMD_POWER_CTRL							= 0x00,			//电源控制									0x00
+	CMD_POWER_CTRL = 0x00,			//电源控制									0x00
 	CMD_OFF_BEAM,											//停止射线源出束							0x01
-	CMD_RESTART_DET,										//new ctscan新增
 
-	CMD_POLL_STATUS							= 0x10,			//查询底层控制器状态						0x10
+	CMD_POLL_STATUS = 0x10,			//查询底层控制器状态						0x10
 	CMD_UPLOAD_CONTROL_SYSTEM_STATUS,              			//上传控制系统状态							0x11
 //	CMD_UPLOAD_RAY_STATUS,                      			//上传射线源控制器状态
 	CMD_DOWNLOAD_WORKZERO,                      			//下载工作零位								0x12
@@ -290,45 +289,47 @@ enum{
 	CMD_DOWNLOAD_AXIS_SPEED,								//下载运动轴设定速度						0x23
 	CMD_UPLOAD_AXIS_SPEED,									//上传运动轴设定速度						0x24
 
-	CMD_STOP								= 0x30,         //中断现行操作								0x30
+	CMD_STOP = 0x30,         //中断现行操作								0x30
 	CMD_SEEK_ABS_ZERO,										//运动初始化(各运动初始化)					0x31
 	CMD_SEEK_AXIS_ABS_ZERO,									//单轴初始化								0x32
 	CMD_GOTO_WORK_ZERO,										//运动回零(各运动从当前位置返回工作零位)	0x33
- 	CMD_AXIS_GOTO_WORK_ZERO,                    			//指定坐标返回工作零位						0x34
+	CMD_AXIS_GOTO_WORK_ZERO,                    			//指定坐标返回工作零位						0x34
 	CMD_AXIS_REL_MOVE,										//单轴相对移动(EL有效时停止)				0x35
-    CMD_AXIS_ABS_MOVE,										//单轴绝对移动(EL有效时停止)				0x36
-    CMD_AXIS_CONT_MOVE,										//单轴连续运动(EL有效时停止)				0x37
+	CMD_AXIS_ABS_MOVE,										//单轴绝对移动(EL有效时停止)				0x36
+	CMD_AXIS_CONT_MOVE,										//单轴连续运动(EL有效时停止)				0x37
 	CMD_AXIS_GOTO_SDP,                          			//单轴运动到SD+								0x38
 	CMD_AXIS_GOTO_SDN,                          			//单轴运动到SD-								0x39
 	CMD_AXIS_GOTO_ELP,                          			//单轴运动到EL+								0x3a
 	CMD_AXIS_GOTO_ELN,                          			//单轴运动到EL-								0x3b
-    CMD_SLICE_REL_MOVE,										//分层坐标相对移动(以探测器轴为基准)		0x3c
-    CMD_SLICE_ABS_MOVE,										//分层坐标绝对移动(以探测器轴为基准)		0x3d
-    CMD_SLICE_CONT_MOVE,									//分层坐标连续移动							0x3e
-    CMD_SLICE_THICKNESS_ADJUST,								//断层厚度调节								0x3f
-    CMD_COLLIMATOR_SWITCH,									//准直器选择								0x40
+	CMD_SLICE_REL_MOVE,										//分层坐标相对移动(以探测器轴为基准)		0x3c
+	CMD_SLICE_ABS_MOVE,										//分层坐标绝对移动(以探测器轴为基准)		0x3d
+	CMD_SLICE_CONT_MOVE,									//分层坐标连续移动							0x3e
+	CMD_SLICE_THICKNESS_ADJUST,								//断层厚度调节								0x3f
+	CMD_COLLIMATOR_SWITCH,									//准直器选择								0x40
 	CMD_SET_RADIAL_POS,                                     //设置径向位置								0x41
 	CMD_DIAGNICS,                               			//运动系统诊断								0x42
 	//2017.02.18更新
-    CMD_SLICE_STODLASER_ABS_MOVE,							//测距：射线源激光对准探测器上测距面后绝对移动(以探测器轴为基准)	0x43
-    CMD_SAIMDLASER_AUTOCALM_MOVE,							//找准：射线源激光对准探测器上接收器后自动校准运动(保持探测器轴不动)	0x44
+	CMD_SLICE_STODLASER_ABS_MOVE,							//测距：射线源激光对准探测器上测距面后绝对移动(以探测器轴为基准)	0x43
+	CMD_SAIMDLASER_AUTOCALM_MOVE,							//找准：射线源激光对准探测器上接收器后自动校准运动(保持探测器轴不动)	0x44
 	//2017.03.02更新
 	CMD_LASER_MEASURING_MOVE,								//配合激光干涉仪测精度运动					0x45
-    CMD_SAIMDLASER_GOTO_LAST_POS,							//找准：将射线平移、射线升降、探测平移、探测升降定位至前次激光对准接收器的位置	0x46
+	CMD_SAIMDLASER_GOTO_LAST_POS,							//找准：将射线平移、射线升降、探测平移、探测升降定位至前次激光对准接收器的位置	0x46
 	//2017.04.26更新
-    CMD_SLICE_OFFSET_ABS_MOVE,								//分层偏移运动绝对移动(升降轴)				0x47
+	CMD_SLICE_OFFSET_ABS_MOVE,								//分层偏移运动绝对移动(升降轴)				0x47
 	CMD_TO_TRANS_POS,										//去运输位：将射线单元及探测单元共6轴定位至运输位置	0x48
 	//2017.09.26更新
-    CMD_DET_SELECT,											//线阵/面阵切换命令							0x49
-
-	CMD_CT_SCAN								= 0x60,			//CT扫描									0x60
+	CMD_DET_SELECT,											//线阵/面阵切换命令							0x49
+	CMD_RAY_SELECT,											//线阵/面阵切换命令							0x4A
+	CMD_RAYDET_TRANSLATION_ABS_MOVE,
+	CMD_RAYDET_TRANSLATION_REL_MOVE,
+	CMD_CT_SCAN = 0x60,			//CT扫描									0x60
 	CMD_LARGEVIEW_SCAN,                                     //大视场CT扫描								0x61
 	CMD_DR_SCAN,                                			//DR扫描									0x62
 	CMD_NEXT_SCAN,                  						//启动下一层CT扫描/2代平移					0x63
 	CMD_HELIX_SCAN,											//螺旋CT扫描								0x64
 	CMD_LOCAL_SCAN,											//局部扫描									0x65
 	CMD_CONE_SCAN,											//锥束扫描									0x66
-	CMD_BACK_BEG_POS,										//运动返回扫描前位置(扫描前需记录各坐标位置)0x67
+	CMD_BACK_BEGIN_POS,										//运动返回扫描前位置(扫描前需记录各坐标位置)0x67
 	CMD_RAY_TUNE,											//射线(空气)校正(固定采集512个数据)			0x68
 	CMD_BKG_TUNE,											//背景校正(固定采集512个数据)				0x69
 	CMD_CAL_LAYER_ZERO,                                     //分层零点标定								0x6a
@@ -341,21 +342,27 @@ enum{
 
 	CMD_CONE_LARGE_VIEW_SCAN,								//锥束大视场扫描							0x6f
 	CMD_HELIX_POINT_SCAN,									//锥束螺旋点位扫描							0x70
+	//20181008更新
+	CMD_CONEJOINT_SCAN,                                     //锥束面阵拼接扫描							    0x71
+	CMD_CONEJOINT_ROT_SCAN,                                 //锥束平移拼接扫描							    0x72
+	CMD_CONEJOINT_POS,                                      //锥束平移拼接扫描定位							    0x73
+	CMD_POS_ALL_AXIS,                                      //锥束平移拼接扫描定位							    0x74
+	CMD_RESTART_LINE_DET,
 
-	CMD_DOWNLOAD_COORDINATE_LAMP_ENHANCE	= 0x80,			//向增强型现场控制单元下传坐标值(浮点格式),指示灯状态
-    CMD_DOWNLOAD_LAMP_FACILITY,								//向简易型现场控制单元下传指示灯状态
+	CMD_DOWNLOAD_COORDINATE_LAMP_ENHANCE = 0x80,			//向增强型现场控制单元下传坐标值(浮点格式),指示灯状态
+	CMD_DOWNLOAD_LAMP_FACILITY,								//向简易型现场控制单元下传指示灯状态
 
-    CMD_DOOR_OPENorCLOSE					= 0x90,			//送料/防护门控制命令						0x90
+	CMD_DOOR_OPENorCLOSE = 0x90,			//送料/防护门控制命令						0x90
 	CMD_MARK,											    //标记单元控制							0x93
-	
+
 	//工件小车控制命令
-	CMD_POLL_STATUS_OV						= 0xA0,			//工件小车查询系统状态
+	CMD_POLL_STATUS_OV = 0xA0,			//工件小车查询系统状态
 	CMD_SET_ABS_ZERO_OV,									//工件小车位置清零
 	CMD_FLATCAR_MOVE_OV,									//工件小车运动控制
 	CMD_RESET_FREQ_CONVTER_OV,								//工件小车故障复位
-	
+
 	//调平系统控制命令
-	CMD_STOP_TP								= 0xB0,			//调平系统终止现行操作
+	CMD_STOP_TP = 0xB0,			//调平系统终止现行操作
 	CMD_POLL_STATUS_TP,										//调平系统查询系统状态
 	CMD_POWER_OFF_TP,										//调平系统断电控制
 	CMD_POWER_ON_TP,										//调平系统上电控制
@@ -370,6 +377,7 @@ enum{
 	CMD_1PLAT_RETURN,										//平台撤收：1-探测器平台；2-加速器平台；
 	CMD_RESET_AXES_ALARM									//清除电机轴报警；
 };
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 ////CD系列工业CT通用状态字定义
@@ -619,7 +627,9 @@ union SysStatus{
 		//2017.09.26增加
 		BYTE	changingDet						:1;			//切换探测器状态				0-停止		1-正在切换
 		BYTE	panDet_Inuse			        :1;			//探测器使用状态				0-当前使用线阵	1-当前使用面阵
-		BYTE									:4; 		//保留
+		BYTE	changingRay						:1;			//探测器使用状态				0-当前使用线阵	1-当前使用面阵
+		BYTE	rayinUse						:1;			//
+		BYTE									:2; 		//保留
 		 
 		//*********************status7: 16 bits*****************************
 		//此16位称为控制系统状态
@@ -976,7 +986,6 @@ struct HelixScanCmdData{
 struct ConeScanCmdData{
 	ConeStsBit	stsBit;										//命令状态位 
 	WORD	projectionAmount;							    //投影次数PN
-	//WORD	sampleTime;										//投影采样时间Tp(4-2000ms)
 	float 	sampleTime;										//投影采样时间Tp(4-2000ms)
 	WORD	frame;											//帧数
 	short	orientInc;									   	//分度方位角增量(度,0-360)
@@ -989,6 +998,24 @@ struct ConeScanCmdData{
 	BYTE	bCrossEquAngle;								//交错扫描用等间距/等角度标志(0-等间距，1-等角度)
 	BYTE	bEnableDetYMove;							//探测器平移轴运动与否(0-不运动，1-运动)
 };					
+
+struct ConeJointScanCmdData {
+	ConeStsBit	stsBit;										//命令状态位 
+	WORD	projectionAmount;							    //投影次数PN
+	float 	sampleTime;										//投影采样时间Tp(4-2000ms)
+	WORD	frame;											//帧数
+	short	orientInc;									   	//分度方位角增量(度,0-360)
+	BYTE	b180Scan;									    //180度扫描标志(0-360度;1-180度)
+	WORD	circleAmount;								   	//分度圆周数CN
+	float	centerOffset;								//回转中心偏移(mm)
+	float	firstLayerOffset;							   	//第1层偏移(mm)
+	float	detTransStart;								//面阵平移起点
+	float	detTransSpace;								//面阵平移间距
+	float	objRadialPos;								//面阵平移起点
+	float	detRadialPos;								//面阵平移间距
+	BYTE	detTransTimes;								//面阵平移次数
+	BYTE	bSkipAirTune;									//是否跳过空气校正
+};
 
 //分层零点标定命令CMD_CAL_LAYER_ZERO参数字结构
 struct CalAxisZeroCmdData{

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "axisstatusdialog.h"
 #include "controllerinterface.h"
+int AxisStatusDialog::d_dialogCounter = 0;
 
 AxisStatusDialog::AxisStatusDialog(ControllerInterface* _controller, 
 	const std::map<Axis, AxisData>& _axisDataMap, QWidget *parent)
@@ -13,12 +14,12 @@ AxisStatusDialog::AxisStatusDialog(ControllerInterface* _controller,
 	for (auto& itr : _axisDataMap)
 	{
 		auto controlsCombo = new AxisStatusControls(itr.second.axisCaption, 20,
-			50, 50, 20, this);
+			50, 50, 50, this);
 		d_axisStatusControls.insert({ itr.first, controlsCombo });
 	}
 	
 	d_gridLayout = new QGridLayout(this);
-	auto title = new AxisStatusControls(QString::fromLocal8Bit("ÖáÃû³Æ"), 20, 50, 50, 20, this);
+	auto title = new AxisStatusControls(QString::fromLocal8Bit("ÖáÃû³Æ"), 20, 50, 50, 50, this);
 	int row = 0, column = 0;
 	d_gridLayout->addWidget(title->d_name, row, column++);
 	title->d_coordinate->setText(QString::fromLocal8Bit("×ø±ê")); 
@@ -58,10 +59,17 @@ AxisStatusDialog::AxisStatusDialog(ControllerInterface* _controller,
 	d_timer = new QTimer(this);
 	d_timer->start(200);
 	connect(d_timer, &QTimer::timeout, this, &AxisStatusDialog::updateSlot);
+	++d_dialogCounter;
 }
 
 AxisStatusDialog::~AxisStatusDialog()
 {
+	--d_dialogCounter;
+}
+
+int AxisStatusDialog::getDialogCounter()
+{
+	return d_dialogCounter;
 }
 
 void AxisStatusDialog::updateSlot()

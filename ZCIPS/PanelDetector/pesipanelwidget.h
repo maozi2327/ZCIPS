@@ -10,11 +10,9 @@ class PEsiPanelWidget : public QWidget
 public:
 	PEsiPanelWidget(QWidget *parent = Q_NULLPTR);
 	~PEsiPanelWidget();
-
-
 private:
 	Ui::PEsiPanelWidget ui;
-
+	friend class PESiPanel;
 private slots:
 	void on_cycleTimeEdit_returnPressed();
 	void on_gainComboBox_currentIndexChanged(const QString& _text);

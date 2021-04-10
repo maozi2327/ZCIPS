@@ -7,84 +7,101 @@
     <x>0</x>
     <y>0</y>
     <width>375</width>
-    <height>161</height>
+    <height>131</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>FilePathSettingDialog</string>
   </property>
-  <widget class="QLineEdit" name="orgPathEdit">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>30</y>
-     <width>261</width>
-     <height>20</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="orgPathButton">
-   <property name="geometry">
-    <rect>
-     <x>310</x>
-     <y>30</y>
-     <width>41</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>选择</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="disposedFilePathEdit">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>90</y>
-     <width>261</width>
-     <height>20</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="disposedFilePathButton">
-   <property name="geometry">
-    <rect>
-     <x>310</x>
-     <y>90</y>
-     <width>41</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>选择</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="okButton">
-   <property name="geometry">
-    <rect>
-     <x>70</x>
-     <y>130</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>确定</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="cancelButton">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>130</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>取消</string>
-   </property>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLineEdit" name="orgPathEdit"/>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="orgPathButton">
+       <property name="text">
+        <string>选择</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLineEdit" name="tunedFilePathEdit"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="disposedFilePathButton">
+       <property name="text">
+        <string>选择</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="okButton">
+       <property name="text">
+        <string>确定</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancelButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>取消</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

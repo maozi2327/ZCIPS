@@ -6,8 +6,8 @@
 #include "LineDetNetWork.h"
 
 LineDetBkgTune::LineDetBkgTune(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork,
-	const SetupData* _setupData, int _lineDetIndex)
-	: LineDetScanInterface(_controller, _lineDetNetWork, _setupData, _lineDetIndex)
+	const SetupData* _setupData, int _lineDetIndex, LineDetImageProcess* _lineDetImageProcess)
+	: LineDetScanInterface(_controller, _lineDetNetWork, _setupData, _lineDetIndex, _lineDetImageProcess)
 {
 }
 
@@ -21,9 +21,9 @@ void LineDetBkgTune::sendCmdToControl()
 	d_controller->sendToControl(CMD_BKG_TUNE, nullptr, 0, false);
 }
 
-bool LineDetBkgTune::setGenerialFileHeader()
+bool LineDetBkgTune::caculateParemeterAndSetGenerialFileHeader()
 {
-	LineDetScanInterface::setGenerialFileHeader();
+	LineDetScanInterface::caculateParemeterAndSetGenerialFileHeader();
 
 	d_ictHeader.ScanParameter.SampleTime = float(d_sampleTime) / 1000;
 	d_ictHeader.ScanParameter.SetupSynchPulseNumber
@@ -31,7 +31,7 @@ bool LineDetBkgTune::setGenerialFileHeader()
 	d_ictHeader.ScanParameter.NumberOfGraduation = TUNE_PROJECTIONS;
 	d_ictHeader.ScanParameter.Azimuth = 0;
 	d_ictHeader.ScanParameter.NumberofValidVerticalDetector = d_channelNum;
-	d_allGraduationSample = d_ictHeader.ScanParameter.ViewDiameter = TUNE_PROJECTIONS;
+	d_currentScanTotalSamples = d_ictHeader.ScanParameter.ViewDiameter = TUNE_PROJECTIONS;
 	d_ictHeader.ScanParameter.Pixels = TUNE_PROJECTIONS;
 	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
 	d_ictHeader.ScanParameter.NumberOfInterpolation = 1;

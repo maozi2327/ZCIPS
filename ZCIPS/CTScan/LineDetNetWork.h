@@ -152,6 +152,7 @@ class LineDetNetWork : public QObject
 	Q_OBJECT
 private:
 	QTimer* d_timer;
+	RowList d_dataList;
 	std::unique_ptr<TcpServer> d_server;
 	enum DataType
 	{
@@ -177,7 +178,8 @@ private:
 
 	int d_dataSizePerPulse;
 	int d_channelNum;
-	RowList d_dataList;
+	int d_graduationCount;
+	int d_lastGraduation;
 	bool setParameterAfterConnect(SOCKET _sock);
 	void pocessData(char* _package, int _size);
 

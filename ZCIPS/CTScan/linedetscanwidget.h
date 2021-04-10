@@ -9,7 +9,7 @@
 
 struct CT3Data;
 class CT3TemplateDialog;
-class LineDetAirDisposeDialog;
+class LineDetAirTuneDialog;
 
 class LineDetScanWidget : public QWidget
 {
@@ -22,7 +22,7 @@ public:
 	void initiliseCt3Controls(const CT3Data& _data);
 	void initiliseCt2Controls(const CT2Data& _data);
 	void initiliseDrControls(const DrScanData& _data);
-	float getLayer();
+	std::pair<std::vector<float>, bool> getLayer();
 	void enableScan(bool _sts);
 	void setScanButtonToolTip(const QString& _tip);
 protected:
@@ -43,17 +43,17 @@ private slots:
 	void on_Ct3StartButton_clicked();
 	void on_saveDirButton_clicked();
 	void on_ct3MultiLayerComboBox_currentIndexChanged(const QString& _text);
-	void on_ct3LayerPosLineEdit_returnd();
+	void on_ct3LayerPosLineEdit_returnPressed();
 	void on_stopButton_clicked();
 	void on_ct3LoadTemplateButton_clicked();
 	void on_bkgTuneButton_clicked();
 	void on_loadTuneDataButton_clicked();
 	void on_airTuneButton_clicked();
 	void updateControlsSlot();
+	void on_ct3LayerPosListWidget_itemDoubleClicked(QListWidgetItem* _item);
 
 public slots:
-	void updateCT3Progresser(int _progress);
-
+	void updateCT3ProgresserSlot(int _currentSamplePercent, int _allSamplePercent);
 signals:
 	void readyToScanSignal(bool _sts);
 	void ct3ScanSignal();

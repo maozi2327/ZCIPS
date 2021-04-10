@@ -2,56 +2,72 @@
 #include "panelframeshot.h"
 #include "../PanelDetector/panel.h"
 #include "../PanelImageProcess/panelimageprocess.h"
+#include "../public/util/functions.h"
 
-PanelFrameShot::PanelFrameShot(Panel* _panel, PanelImageProcess* _panelImageProcess, QObject *parent)
-	: QObject(parent), d_panel(_panel), d_imageProcess(_panelImageProcess)
-	, d_frames(0), d_frameCount(0)
+
+//保存 工件名称，编号，日期，时间，宽度，高度到dicom文件
+PanelFrameShot::PanelFrameShot(Panel* _panel, PanelImageProcess* _panelImageProcess, bool _bkgTuneFlag,
+	bool _airTuneFlag, bool _defectTuneFlag, QObject *parent)
+	: PanelFrameSamleInterface(_panel, _panelImageProcess, parent)
+	, d_airTuneFlag(_airTuneFlag), d_bkgTuneFlag(_bkgTuneFlag), d_defectTuneFlag(_defectTuneFlag)
 {
-
 }
 
 PanelFrameShot::~PanelFrameShot()
 {
 }
 
-void PanelFrameShot::frameShotCallback(unsigned short * _image)
-{
-	auto width = d_panel->getPanelSize().first;
-	auto height = d_panel->getPanelSize().second;
-	d_imageProcess->saveSingleBitmapDataToFile(_image, QString(""), width, height);
-	emit imageAcquiredSignal(_image, width, height);
-	//free(_image);
 
-	//NOTEPAD
-	//导致下一次采集程序响应很慢Acquisition_Acquire_Image
-	//NOTEPAD
-	//if (++d_frameCount == d_frames)
-	//	d_panel->stopAcquire();
+void PanelFrameShot::beginPreview(int _cycleTime, unsigned short _gainFactor)
+{
+	std::function<void(unsigned short*)> callBack = std::bind(&PanelFrameShot::previewCallback, this, std::placeholders::_1);
+	//d_panel->setFrameCallback(callBack);
+	d_panel->beginPreview(callBack, _cycleTime, _gainFactor);
+}
+
+void PanelFrameShot::setDicomInfo(const QString & _objectName, const QString & _objectNumber)
+{
+	d_objectName = _objectName;
+	d_objectNumber = _objectNumber;
 }
 
 void PanelFrameShot::previewCallback(unsigned short * _image)
 {
 }
 
-void PanelFrameShot::beginAcquire(int _frames, int _cycleTime, unsigned short _gainFactor)
+void PanelFrameShot::saveFile()
 {
-	//DEBUG：测试图像缩放新增
-	emit imageAcquiredSignal(nullptr, 2048, 2048);
-	//DEBUG：测试图像缩放新增
+	QDir  dir;
+	QString orgPath = d_orgName.left(d_orgName.lastIndexOf('/') + 1);
 
-	//DEBUG：测试图像缩放被注释掉
-	//d_frames = _frames;
-	//d_frameCount = 0;
-	//std::function<void(unsigned short*)> callBack = std::bind(
-	//	&PanelFrameShot::frameShotCallback, this, std::placeholders::_1);
-	//d_panel->setFrameCallback(callBack);
-	//d_panel->beginSoftwareTriggerAcquire(callBack, _frames, _cycleTime, _gainFactor);
-	//DEBUG：测试图像缩放
-}
+	if (!dir.exists(orgPath))
+		dir.mkpath(d_orgName.left(d_orgName.lastIndexOf('/') + 1));
 
-void PanelFrameShot::beginPreview(int _cycleTime)
-{
-	std::function<void(unsigned short*)> callBack = std::bind(
-		&PanelFrameShot::previewCallback, this, std::placeholders::_1);
-	d_panel->setFrameCallback(callBack);
+	if (!dir.exists(d_filePath))
+		dir.mkpath(d_filePath);
+
+	QString timeName = getTimeWithUnderline();
+	d_orgName = orgPath + timeName + d_orgName.right(d_orgName.length() - d_orgName.lastIndexOf('_'));
+	QString tunedFileName = d_filePath + timeName + d_orgName.right(d_orgName.length() - d_orgName.lastIndexOf('_'));
+
+	//TODO_DJ：添加旋转或者对称标志到配置文件
+	d_imageProcess->mirrorYDataToData(d_outputBuff, d_height, d_width);
+	//d_orgName = QString::fromLocal8Bit("D:\\image-000002.dcm");
+
+	if (d_saveOrg)
+		//d_imageProcess->saveSingleBitmapDataToFile(d_outputBuff, d_orgName, d_height, d_width);
+		d_imageProcess->saveSingleBitmapDataToDicomFile(d_outputBuff, d_orgName, d_height, d_width, d_objectName, d_objectNumber);
+	
+	if (d_defectTuneFlag)
+		d_imageProcess->bkgAirDefectTuneDataToDicomFile(d_outputBuff, tunedFileName, d_height, d_width, d_objectName, d_objectNumber);
+		//d_imageProcess->bkgAirDefectTuneDataToFile(d_outputBuff, tunedFileName, d_height, d_width);
+	else if (d_airTuneFlag)
+		d_imageProcess->bkgAirTuneDataToFile(d_outputBuff, tunedFileName, d_height, d_width);
+	else
+	{
+		if (d_saveOrg)
+			QFile::copy(d_orgName, tunedFileName);
+		else
+			d_imageProcess->saveSingleBitmapDataToFile(d_outputBuff, tunedFileName, d_height, d_width);
+	}
 }

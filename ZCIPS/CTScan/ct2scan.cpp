@@ -13,8 +13,8 @@
 
 
 Ct2Scan::Ct2Scan(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWor, 
-	const SetupData* _setupData, int _lineDetIndex)
-	: LineDetScanInterface(_controller, _lineDetNetWor, _setupData, _lineDetIndex)
+	const SetupData* _setupData, int _lineDetIndex, LineDetImageProcess* _lineDetImageProcess)
+	: LineDetScanInterface(_controller, _lineDetNetWor, _setupData, _lineDetIndex, _lineDetImageProcess)
 {
 }
 
@@ -52,7 +52,7 @@ void Ct2Scan::saveFile()
 	QString orgName = d_orgName.left(d_orgName.lastIndexOf('.')) + number + QString::fromLocal8Bit(".org");
 	saveOrgFile(d_lineDetNetWork->getRowList(), orgName);
 	QFile::copy(d_airFile, d_installDirectory + "air.dat");
-	d_lineDetImageProcess->ct3Dispose(orgName, d_orgName.left(d_orgName.lastIndexOf('/') + 1));
+	d_lineDetImageProcess->ct3Tune(orgName, d_orgName.left(d_orgName.lastIndexOf('/') + 1));
 
 	if (d_graduationCount == d_imageAmount)
 	{
@@ -105,9 +105,9 @@ void Ct2Scan::sendCmdToControl()
 	d_controller->sendToControl(CMD_CT_SCAN, (char*)(&cmdData), sizeof(CT23ScanCmdData), false);
 }
 
-bool Ct2Scan::setGenerialFileHeader()
+bool Ct2Scan::caculateParemeterAndSetGenerialFileHeader()
 {
-	LineDetScanInterface::setGenerialFileHeader();
+	LineDetScanInterface::caculateParemeterAndSetGenerialFileHeader();
 
 	d_ictHeader.ScanParameter.SampleTime = float(d_sampleTime) / 1000;
 	d_ictHeader.ScanParameter.SetupSynchPulseNumber
@@ -121,12 +121,10 @@ bool Ct2Scan::setGenerialFileHeader()
 	d_ictHeader.ScanParameter.Pixels = d_matrix;
 	CalculateView_ValidDetector(d_view);
 	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
-	d_ictHeader.ScanParameter.NumberOfInterpolation =
-		(float)d_matrix / d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector + 1;
 
 	d_ictHeader.ScanParameter.ScanMode = static_cast<char>(ScanMode::CT3_SCAN);
 	CalculateView_ValidDetector(d_view);
-	d_allGraduationSample = d_ictHeader.ScanParameter.NumberOfInterpolation * d_matrix;
+	d_currentScanTotalSamples = d_ictHeader.ScanParameter.NumberOfInterpolation * d_matrix;
 	int N = d_ictHeader.ScanParameter.NumberOfSystemHorizontalDetector;
 	float d = PI * d_ictHeader.ScanParameter.HorizontalSectorAngle / (180 * (N - 1));
 	d *= d_ictHeader.ScanParameter.SourceDetectorDistance;

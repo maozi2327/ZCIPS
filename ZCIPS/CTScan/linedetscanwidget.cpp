@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "linedetscanwidget.h"
 #include "CT3TemplateDialog.h"
-#include "linedetairdisposedialog.h"
+#include "linedetairtunedialog.h"
 #include "scantemplate.h"
 
 LineDetScanWidget::LineDetScanWidget(QWidget *parent)
@@ -10,6 +10,7 @@ LineDetScanWidget::LineDetScanWidget(QWidget *parent)
 	ui.setupUi(this);
 	initiliseControls();
 	setFixedHeight(470);
+	ui.ct3LayerPosListWidget->setSortingEnabled(true);
 }
 
 LineDetScanWidget::~LineDetScanWidget()
@@ -102,14 +103,26 @@ void LineDetScanWidget::initiliseDrControls(const DrScanData& _data)
 	ui.drRatioComboBox->addItem(QString::fromLocal8Bit("等比例"));
 	ui.drRatioComboBox->addItem(QString::fromLocal8Bit("不等比例"));
 }
-float LineDetScanWidget::getLayer()
+std::pair<std::vector<float>, bool> LineDetScanWidget::getLayer()
 {
-	float layer = 0;
+	std::pair<std::vector<float>, bool> layer;
 
-	if (ui.ct3MultiLayerComboBox->currentText() == QString::fromLocal8Bit("单层"))
-		layer = ui.ct3LayerPosLineEdit->text().toFloat();
-	else
-		layer = ui.ct3LayerPosListWidget->item(0)->text().toFloat();
+	if (ui.ct3MultiLayerComboBox->currentText() == QString::fromLocal8Bit("多层等间距"))
+	{
+		int totalLayers = ui.ct3LayerNumLineEdit->text().toInt();
+		layer.second = true;
+
+		for (int i = 0; i != totalLayers; ++i)
+			layer.first.push_back(ui.ct3LayerPosLineEdit->text().toFloat() + i * ui.ct3LayerSpaceLineEdit->text().toFloat());
+	}
+	else if (ui.ct3MultiLayerComboBox->currentText() == QString::fromLocal8Bit("多层不等间距"))
+	{
+		int totalLayers = ui.ct3LayerPosListWidget->count();
+		layer.second = false;
+
+		for (int i = 0; i != totalLayers; ++i)
+			layer.first.push_back(ui.ct3LayerPosListWidget->item(i)->text().toFloat());
+	}
 
 	return layer;
 }
@@ -199,17 +212,18 @@ void LineDetScanWidget::on_saveDirButton_clicked()
 void LineDetScanWidget::on_ct3MultiLayerComboBox_currentIndexChanged(const QString& _text)
 {
 	if (_text == QString::fromLocal8Bit("多层等间距"))
-		switchCt3MultilayerEquallayerShowHide(MULTILAYER);
-	else if (_text == QString::fromLocal8Bit("多层不等间距"))
 		switchCt3MultilayerEquallayerShowHide(EQUALLAYER);
+	else if (_text == QString::fromLocal8Bit("多层不等间距"))
+		switchCt3MultilayerEquallayerShowHide(MULTILAYER);
 }
 
-void LineDetScanWidget::on_ct3LayerPosLineEdit_returnd()
+void LineDetScanWidget::on_ct3LayerPosLineEdit_returnPressed()
 {
-	//QString valueText = ui.ct3LayerPosLineEdit->text();
-	//bool succeed = false;
-	//auto value = valueText.toDouble(&succeed);
-
+	QString valueText = ui.ct3LayerPosLineEdit->text();
+	bool succeed = false;
+	auto value = valueText.toDouble(&succeed);
+	
+	ui.ct3LayerPosListWidget->addItem(valueText);
 	//if (!succeed)
 	//	return;
 
@@ -246,9 +260,15 @@ void LineDetScanWidget::updateControlsSlot()
 
 }
 
-void LineDetScanWidget::updateCT3Progresser(int _progress)
+void LineDetScanWidget::on_ct3LayerPosListWidget_itemDoubleClicked(QListWidgetItem* _item)
 {
-	ui.Ct3ScanNowProgressBar->setValue(_progress);
+	ui.ct3LayerPosListWidget->removeItemWidget(_item);
+}
+
+void LineDetScanWidget::updateCT3ProgresserSlot(int _currentSamplePercent, int _allSamplePercent)
+{
+	ui.Ct3ScanNowProgressBar->setValue(_currentSamplePercent);
+	ui.Ct3ScanAllProgressBar->setValue(_allSamplePercent);
 }
 
 void LineDetScanWidget::showMotorTable()

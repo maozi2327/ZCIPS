@@ -10,19 +10,16 @@ static in_addr hostAddr;
 
 LineDetNetWork::LineDetNetWork(unsigned short _port, unsigned long _fifoMask, unsigned short _channelDepth, unsigned short _delayTime,
 	unsigned short _sampleTime, unsigned short _ampSize, std::vector<unsigned int> _blockModuleVec, int _detNum)
-	: d_server(
-		new TcpServer(4, 4, 0
-		, [this](SOCKET _sock){ return setParameterAfterConnect(_sock); }
-		, [this](char* _char, int _size) { pocessData(_char, _size); }
-		, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), 4000)
-	)
-	, d_fifoMask(_fifoMask), d_channelDepth(_channelDepth)
+	: d_fifoMask(_fifoMask), d_channelDepth(_channelDepth)
 	, d_delayTime(_delayTime), d_sampleTime(_sampleTime), d_ampSize(_ampSize)
 	, d_netWorkBuffer(new char[2u << 12]), d_bytesReceived(0), d_blockModuleMap(_blockModuleVec)
 	, d_isScanning(false), d_connected(false)
 	, d_detNum(_detNum)
 {
-	caculateChannel();
+	caculateChannel(); 
+	d_server.reset(
+		new TcpServer(4, 4, 0, [this](SOCKET _sock) { return setParameterAfterConnect(_sock); },
+			[this](char* _char, int _size) { pocessData(_char, _size); }, (hostAddr.S_un.S_addr = INADDR_ANY, hostAddr), 4000));
 	//d_netWorkCheckThread.reset
 	//(
 	//	new Thread
@@ -76,6 +73,7 @@ bool LineDetNetWork::setParameterAfterConnect(SOCKET _sock)
 	if(setsockopt(_sock, SOL_SOCKET, SO_SNDBUF, (char*)(&val), sizeof(int)) == SOCKET_ERROR)
 		return false;
 
+	//TODO_DJ:启动的时候挂了
 	if (!ARMTest()) return false;
 	if (!ChannelSelect()) return false;
 	if (!ChannelDepthSet()) return false;
@@ -197,6 +195,7 @@ bool LineDetNetWork::caculateChannel()
 bool LineDetNetWork::StartCI()
 {
 	CMD_STRUCT cmdInfo{ 16, CMD_START_CI, 0, 0 };
+	d_graduationCount = 0;
 
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
 		return true;
@@ -312,6 +311,8 @@ bool LineDetNetWork::startExtTrigAcquire()
 	d_dataList.clear();
 	d_recvType = DATA;
 	d_isScanning = false;
+	d_graduationCount = 0;
+	d_lastGraduation = -1;
 	CMD_STRUCT cmdInfo{ 16, CMD_INTERNAL_COLLECT, 1, 0 };
 
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
@@ -326,6 +327,7 @@ bool LineDetNetWork::startInternalTrigAcquire(int _mode, unsigned long* _data)
 	d_recvType = INTERNAL_COLLECT;
 	d_internalCollectTempData = _data;
 	d_isScanning = false;
+	d_graduationCount = 0;
 	CMD_STRUCT cmdInfo{ 16, CMD_INTERNAL_COLLECT, _mode, 0 };
 
 	if (d_server->sendSyn((char*)(&cmdInfo), sizeof(cmdInfo)) == sizeof(cmdInfo))
@@ -391,7 +393,7 @@ int LineDetNetWork::getListItemNum()
 
 int LineDetNetWork::getGraduationCount()
 {
-	return 0;
+	return d_graduationCount;
 }
 
 int LineDetNetWork::CollectUsefulData(char * _buff, int _size)
@@ -399,6 +401,7 @@ int LineDetNetWork::CollectUsefulData(char * _buff, int _size)
 	int pulseNum = (_size - sizeof(int)) / d_dataSizePerPulse; //前面四个字节是数据长度
 	int smallBS = (d_channelDepth + 3) * sizeof(unsigned int); //分度号+脉冲号+数据+校验和
 	int smallBD = d_channelDepth * sizeof(unsigned int);
+
 	for (int pulseIndex = 0; pulseIndex != pulseNum; ++pulseIndex)
 	{
 		memmove(_buff, _buff + sizeof(unsigned int), 2 * sizeof(unsigned int));
@@ -437,6 +440,12 @@ int LineDetNetWork::CollectUsefulData(char * _buff, int _size)
 		if(d_recvType == INTERNAL_COLLECT)
 			memcpy(d_internalCollectTempData, dataHead + 2, d_channelNum * sizeof(unsigned long));
 
+		if (*item != d_lastGraduation)
+		{
+			++d_graduationCount;
+			d_lastGraduation = *item;
+		}
+
 		d_dataList.push_back(item);
 	}
 
@@ -450,6 +459,7 @@ LineDetList * LineDetNetWork::getRowList()
 
 void LineDetNetWork::clearRowList()
 {
+	d_graduationCount = 0;
 	d_dataList.clear();
 }
 

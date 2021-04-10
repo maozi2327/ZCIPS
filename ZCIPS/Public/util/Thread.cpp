@@ -29,10 +29,9 @@ void Thread::detach()
 	d_thread->detach();
 }
 
-
 void Thread::stopThread()
 {
-	if (d_threadRun)
+	if (!d_threadFinished)
 	{
 		d_threadRun = false;
 		std::unique_lock<std::mutex> lock(d_mutex);

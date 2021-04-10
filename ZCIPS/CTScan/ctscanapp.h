@@ -23,10 +23,14 @@ class LineDetScanManager;
 class PanelDetScanManager;
 class LineDetImageProcess;
 class ImageDialogManager;
-class AxisStatusWidget;
+class AxisControlwidget;
 class AxisZeroCoordinationDialog;
 class AxisStatusDialog;
 class FilePathSettingDialog;
+class TipDialog;
+class ColimateController;
+class ColimateZeroAjustDialog;
+class ColimateControlDialog;
 
 class CTScanApp : public CTScanInterface
 {
@@ -47,14 +51,13 @@ private slots:
 	void switchToPanelWidgetSlot(int _rayId, int _detId);
 	void switchToLineWidgetSlot(int _rayId, int _detId);
 protected:
-
+	
 private:
 	std::unique_ptr<SetupData> d_setupData;
 	std::unique_ptr<ConfigData> d_configData;
 	std::unique_ptr<SetupDataParser> d_setupDataPaser;
 	std::unique_ptr<ImageDialogManager> d_imageWidgetManager;
 	std::unique_ptr<ControllerInterface> d_controller;
-	std::unique_ptr<ConeScanWidget> d_panle1Det1ScanWidget;
 	std::unique_ptr<LineDetImageProcess> d_lineDetImageProcess;
 	//std::unique_ptr<MsgListBoxDialog> d_msg;			//消息对话框无父窗口
 	std::map<int, std::unique_ptr<LineDetNetWork>> d_lineDetNetWorkMap;
@@ -75,16 +78,22 @@ private:
 	QSystemTrayIcon* d_tray;
 	QString	d_workDir;
 	QWidget* d_upperWidget;
-	AxisStatusWidget* d_axisStatusWidget;
+	AxisControlwidget* d_axisStatusWidget;
+	TipDialog* d_tipDialog;
 	AxisZeroCoordinationDialog* d_axisZeroCoordinationDialog = nullptr;
 	AxisStatusDialog* d_axisStatusDialog = nullptr;
 	bool d_debugSystem = true;
-
+	QTimer* d_timer;
+	ColimateController* d_colimateController = nullptr;
+	ColimateControlDialog* d_colimateControlDialog = nullptr;
+	
 	QMenuBar* d_menuBar;
 	QMenu* d_systemMenu;
 	QAction* d_initiliseSystemAction;
 	QAction* d_filePathSettingAction;
 	QMenu* d_rayDetSwitchMenu;
+	QAction* d_colimateControlAction;
+
 	std::map<std::pair<int, int>, QAction*> d_lineDetRayActions;
 	std::map<std::pair<int, int>, QAction*> d_panelDetRayActions;
 
@@ -96,9 +105,16 @@ private:
 	QAction* d_lineDetectorAction;
 	QAction* d_autoAlignLayerAction;
 	QAction* d_laserInterferometerAction;
+	QAction* d_colimateZeroAjustAction;
 	
 	QString d_orgPath;
-	QString d_disposedFilePath;
+	QString d_tunedFilePath;
+	QString d_tunedPanelBkgPath;
+	QString d_tunedPanelAirPath;
+	QString d_defectFileName;
+
+	QString d_objectName;
+	QString d_objectNumber;
 public:
 	void setMiddleWidget(QWidget* _widget);
 	void setDownWidget(QWidget* _widget);
@@ -116,9 +132,13 @@ private slots:
 	void on_filePathSettingAction_triggered();
 	void on_rayDetAction_triggered();
 	void on_axisStatusAction_triggered();
+	void on_colimateControlAction_triggered();
 	void on_axisZeroCoordinateAction_triggered();
 	void on_axisSpeedAction_triggered();
 	void on_lineDetectorAction_triggered();
 	void on_autoAlignLayerAction_triggered();
 	void on_laserInterferometerAction_triggered();
+	void on_colimateZeroAjustAction_triggered();
+	void updateSystemStatusSlot();
+	void objectNameNumberChangedSlot(const QString& _objectName, const QString& _objectNumber);
 };

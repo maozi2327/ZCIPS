@@ -5,19 +5,32 @@
 
 bool legalInputFloatOnly(const QString& _input)
 {
-	QRegExp exp(QString::fromLocal8Bit(""));
+	QRegExp exp(QString::fromLocal8Bit("^(\\d+)(\\.\\d+)?$"));
 
-	if(_input.contains())
+	if (exp.exactMatch(_input))
+		return true;
+
+	return false;
 }
 
 bool legalInputIntegerOnly(const QString& _input)
 {
+	QRegExp exp(QString::fromLocal8Bit("^[1-9]\\d*$"));
 
+	if (exp.exactMatch(_input))
+		return true;
+
+	return false;
 }
 
 bool legalInputNoneSpecialChar(const QString& _input)
 {
+	QRegExp exp(QString::fromLocal8Bit("[\\\\/:*\\?<>|]"));
 
+	if (_input.contains(exp))
+		return false;
+
+	return true;
 }
 
 

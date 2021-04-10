@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "messagebox.h"
+#include <qmessagebox.h>
 
 int messageBox(const QString& text, const QString& infoText)
 {

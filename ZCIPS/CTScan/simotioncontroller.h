@@ -110,6 +110,8 @@ private:
 	int d_bytesReceived;
 	void getAixsValueAndNotify(std::map<Axis, float>& _value, char* _data, int _axisNum, int _typeCode);
 	void fillInCmdStructAndFillCmdList(int _cmd, char* _data, int _size, bool _consist);
+	int d_rayId;
+	int d_detId;
 protected:
 	virtual bool sendCmd();
 	virtual void setConnectdSts(); 
@@ -130,11 +132,16 @@ public:
 	virtual bool axisSeekZero(Axis _axis);
 	virtual bool axisAbsMove(Axis _axis, float _pos);
 	virtual bool axisRelMove(Axis _axis, float _pos);
-	virtual bool sliceMove(float _pos);
+	virtual bool sliceAbsMove(float _pos);
+	virtual bool sliceRelMove(float _pos);
+	virtual bool translationRelMove(float _pos);
+	virtual bool translationAbsMove(float _pos);
+
 
 	virtual bool readReadyStatus();
 	virtual bool readSaveStatus();
 	virtual bool readWaitNextScanStatus();
+	virtual bool clearSaveFlag();
 	virtual bool readIdleStatus();
 	virtual std::map<Axis, float> readAxisSpeed();
 	virtual float readAxisPostion(Axis _axis);
@@ -142,7 +149,9 @@ public:
 	virtual std::map<Axis, float> readAxisWorkZero();
 	virtual std::map<Axis, AxisCoordinateSwitchStatus> readAxisStatus();
 
+	virtual bool startNextScan();
 	virtual void getSystemStatus();
+	virtual void getControlfSystemStatus();
 	virtual void getAxisPosition();
 	virtual void getAxisSpeed();
 	virtual void getAxisWorkZero();
@@ -154,6 +163,9 @@ public:
 	
 	virtual void sendToControl(int _cmd, char * _data, int _size, bool _consist);
 	virtual void decodePackages(char* _package, int _size);
-	virtual void restartLineDet(int _detNum);
+	virtual void restartLineDet(int _detNum); 
+	virtual void switchRayDetCouple(int _couple);
+	virtual void sendRayDetCoupleStatus(int _rayId, int _detId);
+	virtual std::map<improtantStatus, bool>  readImportantStatus();
 };
 

@@ -69,7 +69,7 @@
       <OutputFile>$(OutDir)\$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;PanelDll.lib;PanelImageProcess.lib;Qt5Networkd.lib;Qt5SerialPortd.lib;$(SolutionDir)Public\lib\CtDispose.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;PanelDector.lib;PanelImageProcess.lib;Qt5Networkd.lib;Qt5SerialPortd.lib;$(SolutionDir)Public\lib\CtDispose.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <QtMoc>
       <OutputFile>%(RelativeDir)\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
@@ -137,10 +137,13 @@
     <ClCompile Include="..\Public\util\tcpserver.cpp" />
     <ClCompile Include="..\Public\util\thread.cpp" />
     <ClCompile Include="acceleratorwidget.cpp" />
+    <ClCompile Include="axiscontrolwidget.cpp" />
     <ClCompile Include="axisstatusdialog.cpp" />
-    <ClCompile Include="axisstatuswidget.cpp" />
     <ClCompile Include="axiszerocoordinationdialog.cpp" />
-    <ClCompile Include="conecontinusscan.cpp" />
+    <ClCompile Include="colimatecontroldialog.cpp" />
+    <ClCompile Include="colimatecontroller.cpp" />
+    <ClCompile Include="colimatezeroajustdialog.cpp" />
+    <ClCompile Include="conejointscan.cpp" />
     <ClCompile Include="conescan.cpp" />
     <ClCompile Include="conescaninterface.cpp" />
     <ClCompile Include="conescanwidget.cpp" />
@@ -161,7 +164,8 @@
     <ClCompile Include="imageprocess.cpp" />
     <ClCompile Include="imagedialog.cpp" />
     <ClCompile Include="imagedialogmanager.cpp" />
-    <ClCompile Include="linedetairdisposedialog.cpp" />
+    <ClCompile Include="leisaibac332e.cpp" />
+    <ClCompile Include="linedetairtunedialog.cpp" />
     <ClCompile Include="linedetairtune.cpp" />
     <ClCompile Include="linedetbkgtune.cpp" />
     <ClCompile Include="linedetdebugdialog.cpp" />
@@ -172,10 +176,16 @@
     <ClCompile Include="linedetscanmanager.cpp" />
     <ClCompile Include="linedetscanwidget.cpp" />
     <ClCompile Include="linescainterface.cpp" />
+    <ClCompile Include="loadtunedatadialog.cpp" />
     <ClCompile Include="msglistboxdialog.cpp" />
-    <ClCompile Include="addmodifyairdisposedialog.cpp" />
+    <ClCompile Include="newlinedetairtunedialog.cpp" />
     <ClCompile Include="newlinedetbkgtunedialog.cpp" />
+    <ClCompile Include="newpaneldetairtunedialog.cpp" />
+    <ClCompile Include="newpaneldetbkgtunedialog.cpp" />
+    <ClCompile Include="panelairtune.cpp" />
+    <ClCompile Include="panelbkgtune.cpp" />
     <ClCompile Include="paneldetscanmanager.cpp" />
+    <ClCompile Include="panelframesamleinterface.cpp" />
     <ClCompile Include="panelframeshot.cpp" />
     <ClCompile Include="qtwidgetaddtest.cpp" />
     <ClCompile Include="scantemplate.cpp" />
@@ -185,6 +195,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="tipdialog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\headers\commandqueue.h" />
@@ -195,7 +206,7 @@
     <ClInclude Include="..\Public\headers\panelimageprocess.h" />
     <ClInclude Include="..\Public\headers\setupdata.h" />
     <ClInclude Include="..\Public\lib\tinyxml2.h" />
-    <QtMoc Include="axisstatuswidget.h">
+    <QtMoc Include="tipdialog.h">
       <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;_CRT_SECURE_NO_WARNINGS;CTSCANDLL_LIB;_WINDLL</Define>
@@ -232,6 +243,29 @@
     </QtMoc>
     <ClInclude Include="..\Public\util\legalinput.h" />
     <ClInclude Include="applicationSettingData.h" />
+    <QtMoc Include="colimatecontroldialog.h">
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;_CRT_SECURE_NO_WARNINGS;CTSCANDLL_LIB;_WINDLL</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
+    </QtMoc>
+    <QtMoc Include="axiscontrolwidget.h">
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;_CRT_SECURE_NO_WARNINGS;CTSCANDLL_LIB;_WINDLL</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
+    </QtMoc>
+    <ClInclude Include="colimatecontroller.h" />
+    <QtMoc Include="colimatezeroajustdialog.h">
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;_CRT_SECURE_NO_WARNINGS;CTSCANDLL_LIB;_WINDLL</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
+    </QtMoc>
+    <ClInclude Include="conejointscan.h" />
     <ClInclude Include="fixedthreadpool.h" />
     <QtMoc Include="ctscanwidget.h">
       <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
@@ -275,7 +309,6 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
     </QtMoc>
-    <ClInclude Include="conecontinusscan.h" />
     <ClInclude Include="conescan.h" />
     <QtMoc Include="conescanInterface.h">
       <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
@@ -360,10 +393,19 @@
     <ClInclude Include="forwarddecleration.h" />
     <ClInclude Include="imageprocess.h" />
     <ClInclude Include="imagedialogmanager.h" />
-    <QtMoc Include="linedetairdisposedialog.h">
+    <QtMoc Include="linedetairtunedialog.h">
       <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
-      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
-      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;_CRT_SECURE_NO_WARNINGS;CTSCANDLL_LIB;_WINDLL</Define>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
+    </QtMoc>
+    <QtMoc Include="leisaibac332e.h">
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;_CRT_SECURE_NO_WARNINGS;CTSCANDLL_LIB;_WINDLL</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
     </QtMoc>
     <ClInclude Include="linedetairtune.h" />
     <ClInclude Include="linedetbkgtune.h" />
@@ -395,7 +437,7 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)</IncludePath>
     </QtMoc>
-    <QtMoc Include="addmodifyairdisposedialog.h">
+    <QtMoc Include="newlinedetairtunedialog.h">
       <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
@@ -430,6 +472,36 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
     </QtMoc>
+    <QtMoc Include="newpaneldetbkgtunedialog.h">
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;_CRT_SECURE_NO_WARNINGS;CTSCANDLL_LIB;_WINDLL</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
+    </QtMoc>
+    <QtMoc Include="newpaneldetairtunedialog.h">
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;_CRT_SECURE_NO_WARNINGS;CTSCANDLL_LIB;_WINDLL</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
+    </QtMoc>
+    <QtMoc Include="loadtunedatadialog.h">
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;_CRT_SECURE_NO_WARNINGS;CTSCANDLL_LIB;_WINDLL</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
+    </QtMoc>
+    <ClInclude Include="panelairtune.h" />
+    <QtMoc Include="panelframesamleinterface.h">
+      <OutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB;_CRT_SECURE_NO_WARNINGS;CTSCANDLL_LIB;_WINDLL</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtSerialPort;.\GeneratedFiles\$(ConfigurationName)\.</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">UNICODE;_UNICODE;WIN32;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;QT_SERIALPORT_LIB</Define>
+    </QtMoc>
+    <ClInclude Include="panelbkgtune.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="scantemplate.h" />
     <ClInclude Include="simotioncontroller.h" />
@@ -437,9 +509,14 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="Acceleratorwidget.ui" />
-    <QtUic Include="addmodifyairdisposedialog.ui" />
+    <QtUic Include="axiscontrolwidget.ui" />
+    <QtUic Include="colimatecontroldialog.ui">
+      <SubType>Designer</SubType>
+    </QtUic>
+    <QtUic Include="colimatezeroajustdialog.ui" />
+    <QtUic Include="loadtunedatadialog.ui" />
+    <QtUic Include="NewLineDetAirTuneDialog.ui" />
     <QtUic Include="axisstatusdialog.ui" />
-    <QtUic Include="axisstatuswidget.ui" />
     <QtUic Include="axiszerocoordinationdialog.ui" />
     <QtUic Include="conescanwidget.ui" />
     <QtUic Include="ct3AddModifyDialog.ui" />
@@ -457,13 +534,16 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
     </QtUic>
-    <QtUic Include="linedetairdisposedialog.ui" />
+    <QtUic Include="linedetairtunedialog.ui" />
     <QtUic Include="linedetdebugdialog.ui" />
     <QtUic Include="linedetfilenamedialog.ui" />
     <QtUic Include="linedetscanwidget.ui" />
     <QtUic Include="msglistboxdialog.ui" />
     <QtUic Include="newlinedetbkgtunedialog.ui" />
+    <QtUic Include="newpaneldetairtunedialog.ui" />
+    <QtUic Include="newpaneldetbkgtunedialog.ui" />
     <QtUic Include="qtwidgetaddtest.ui" />
+    <QtUic Include="tipdialog.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="ctscan.qrc" />

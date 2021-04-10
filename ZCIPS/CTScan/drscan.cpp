@@ -13,8 +13,8 @@
 
 
 DrScan::DrScan(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork, 
-	const SetupData* _setupData, int _lineDetIndex)
-	: LineDetScanInterface(_controller, _lineDetNetWork, _setupData, _lineDetIndex)
+	const SetupData* _setupData, int _lineDetIndex, LineDetImageProcess* _lineDetImageProcess)
+	: LineDetScanInterface(_controller, _lineDetNetWork, _setupData, _lineDetIndex, _lineDetImageProcess)
 {
 }
 
@@ -23,9 +23,9 @@ DrScan::~DrScan()
 {
 }
 
-bool DrScan::setGenerialFileHeader()
+bool DrScan::caculateParemeterAndSetGenerialFileHeader()
 {
-	LineDetScanInterface::setGenerialFileHeader();
+	LineDetScanInterface::caculateParemeterAndSetGenerialFileHeader();
 
 	d_ictHeader.ScanParameter.SampleTime = float(d_sampleTime) / 1000;
 	d_ictHeader.ScanParameter.SetupSynchPulseNumber
@@ -39,12 +39,10 @@ bool DrScan::setGenerialFileHeader()
 	d_ictHeader.ScanParameter.Pixels = d_matrix;
 	CalculateView_ValidDetector(d_view);
 	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
-	d_ictHeader.ScanParameter.NumberOfInterpolation =
-		(float)d_matrix / d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector + 1;
 
 	d_ictHeader.ScanParameter.ScanMode = static_cast<char>(ScanMode::DR_SCAN);
 	CalculateView_ValidDetector(d_view);
-	d_allGraduationSample = d_ictHeader.ScanParameter.NumberOfInterpolation * d_matrix;
+	d_currentScanTotalSamples = (d_ictHeader.ScanParameter.NumberOfInterpolation + 1) * d_matrix;
 	int N = d_ictHeader.ScanParameter.NumberOfSystemHorizontalDetector;
 	float d = PI * d_ictHeader.ScanParameter.HorizontalSectorAngle / (180 * (N - 1));
 	d *= d_ictHeader.ScanParameter.SourceDetectorDistance;
@@ -56,8 +54,8 @@ bool DrScan::setGenerialFileHeader()
 		return false;
 	}
 	
-	d_ictHeader.ScanParameter.FirstSectStartCoordinateOfDR = d_layer;
-	d_ictHeader.ScanParameter.CurrentLayerCoordinate = d_layer;
+	d_ictHeader.ScanParameter.FirstSectStartCoordinateOfDR = d_layerStartPoint;
+	d_ictHeader.ScanParameter.CurrentLayerCoordinate = d_layerStartPoint;
 	d_ictHeader.ScanParameter.SpaceBetweenLayer = d_layerLenth / (d_view / d_matrix) + 0.5;
 	d_ictHeader.ScanParameter.TotalLayers	= d_layerLenth / d_ictHeader.ScanParameter.SpaceBetweenLayer;
 
@@ -67,7 +65,7 @@ bool DrScan::setGenerialFileHeader()
 bool DrScan::setScanParameter(float _layer, int _matrix, float _view, int _sampleTime,
 	float _angle, float _layerLenth)
 {
-	d_layer = _layer;
+	d_layerStartPoint = _layer;
 	d_matrix = _matrix;
 	d_view = _view;
 	d_sampleTime = _sampleTime;
@@ -86,7 +84,7 @@ void DrScan::sendCmdToControl()
 	cmdData.stsBit.s.biDirScan = d_setupData->drScanData[d_lineDetIndex].drScanModeDefine;
 	cmdData.stsBit.s.btnStartScan = 0;
 	cmdData.stsBit.s.autoStopBeam = 0;
-	cmdData.interpolationAmount	= d_ictHeader.ScanParameter.NumberOfInterpolation;
+	cmdData.interpolationAmount	= d_ictHeader.ScanParameter.NumberOfInterpolation + 1;
 	cmdData.projectionAmount = d_ictHeader.ScanParameter.TotalLayers;
 	cmdData.angleAmount = 1;
 	cmdData.sampleTime	= 1000 * d_ictHeader.ScanParameter.SampleTime;
@@ -105,5 +103,5 @@ void DrScan::saveFile()
 {
 	saveOrgFile(d_lineDetNetWork->getRowList(), d_orgName);
 	QFile::copy(d_airFile, d_installDirectory + "air.dat");
-	d_lineDetImageProcess->ct3Dispose(d_orgName, d_filePath);
+	d_lineDetImageProcess->ct3Tune(d_orgName, d_filePath);
 }

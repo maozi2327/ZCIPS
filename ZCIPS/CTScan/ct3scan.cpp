@@ -13,8 +13,8 @@
 #include "filedb.h"
 
 CT3Scan::CT3Scan(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork,
-	const SetupData* _setupData, int _lineDetIndex)
-	: LineDetScanInterface(_controller, _lineDetNetWork, _setupData, _lineDetIndex)
+	const SetupData* _setupData, int _lineDetIndex, LineDetImageProcess* _lineDetImageProcess)
+	: LineDetScanInterface(_controller, _lineDetNetWork, _setupData, _lineDetIndex, _lineDetImageProcess)
 {
 	
 }
@@ -25,14 +25,14 @@ CT3Scan::~CT3Scan()
 		d_scanThread->stopThread();
 }
 
-bool CT3Scan::setScanParameter(float _layer, int _matrix, float _view, 
-	int _sampleTime, float _angle)
+bool CT3Scan::setScanParameter(std::vector<float> _layer, int _matrix, float _view,	int _sampleTime, float _angle, bool _ecqualLayer)
 {
 	d_layer = _layer;
 	d_matrix = _matrix;
 	d_view = _view;
 	d_sampleTime = _sampleTime;
 	d_angle = _angle;
+	d_ecqualLayer = _ecqualLayer;
 	return true;
 }
 
@@ -45,7 +45,7 @@ bool CT3Scan::setScanParameter(float _layer, int _matrix, float _view,
 //	{
 //		static std::chrono::steady_clock::time_point last_time;
 //		last_time = d_start_time = std::chrono::steady_clock::now();
-//		setGenerialFileHeader();
+//		caculateParemeterAndSetGenerialFileHeader();
 //		sendCmdToControl();
 //		d_lineDetNetWork->clearRowList();
 //		std::this_thread::sleep_for(std::chrono::seconds(3));
@@ -62,7 +62,7 @@ bool CT3Scan::setScanParameter(float _layer, int _matrix, float _view,
 //				last_time = now;
 //			}
 //
-//			emit(signalGraduationCount(100 * d_lineDetNetWork->getGraduationCount() / d_allGraduationSample));
+//			emit(signalGraduationCount(100 * d_lineDetNetWork->getGraduationCount() / d_currentScanTotalSamples));
 //
 //			if (d_controller->readSaveStatus())
 //			{
@@ -79,9 +79,9 @@ bool CT3Scan::setScanParameter(float _layer, int _matrix, float _view,
 
 void CT3Scan::sendCmdToControl()
 {
-	CT23ScanCmdData	cmdData, *pCmdData;
-	cmdData.stsBit.s.changeLayerSpace = 0;
-	cmdData.stsBit.s.czAmountInc1 = d_ictHeader.ScanParameter.InterpolationFlag 
+	char buf[256];
+	CT23ScanCmdData	cmdData;
+	cmdData.stsBit.s.czAmountInc1 = d_ictHeader.ScanParameter.InterpolationFlag
 		= d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
 	cmdData.stsBit.s.currentLayer = 1;
 	cmdData.stsBit.s1.physiInterpolation = d_setupData->lineDetData[d_lineDetIndex].PhysicsInterpolationFlag;
@@ -99,9 +99,40 @@ void CT3Scan::sendCmdToControl()
 	cmdData.centerOffset = 0;
 	cmdData.stsBit.s.btnStartScan = 0;
 	cmdData.stsBit.s.autoStopBeam = 0;
-	cmdData.firstLayerOffset = d_layer;
-	cmdData.layerSpace = 0;
-	d_controller->sendToControl(CMD_CT_SCAN, (char*)(&cmdData), sizeof(CT23ScanCmdData), false);
+	int dataSize = sizeof(cmdData);
+
+	if (d_layer.size() == 1 || d_ecqualLayer)
+	{
+		cmdData.stsBit.s.changeLayerSpace = 0;
+
+		if (!d_ecqualLayer)
+		{
+			cmdData.layerSpace = 0;
+			cmdData.stsBit.s.currentLayer = 1;
+		}
+		else
+		{
+			cmdData.layerSpace = d_layer[1] - d_layer[0];
+			cmdData.stsBit.s.currentLayer = 0;
+		}
+
+		cmdData.firstLayerOffset = d_layer[0];
+		memcpy(buf, &cmdData, sizeof(cmdData));
+	}
+	else
+	{
+		cmdData.stsBit.s.changeLayerSpace = 1;
+		cmdData.stsBit.s.currentLayer = 0;
+		memcpy(buf, &cmdData, sizeof(cmdData));
+		int i = 0;
+
+		for (auto layer : d_layer)
+			*(float*)(buf + sizeof(cmdData) - 2 * sizeof(float) + (i++) * sizeof(float)) = layer;
+
+		dataSize = dataSize - 2 * sizeof(float) + d_layer.size() * sizeof(float);
+	}
+
+	d_controller->sendToControl(CMD_CT_SCAN, buf, dataSize, false);
 }
 
 void CT3Scan::saveFile()
@@ -130,22 +161,21 @@ void CT3Scan::saveFile()
 	//从数据库中检索文件当天扫描的文件编号，如果有同名文件就当前最大编号+1，无同名文件就新建编号0000
 	//auto number = d_fileDB->getNumber(d_fileName);
 
-	QString orgDirectory;
-	QDir  logDir;
+	QDir  dir;
 	QString orgPath = d_orgName.left(d_orgName.lastIndexOf('/') + 1);
 
-	if (!logDir.exists(orgPath))
-		logDir.mkpath(d_orgName.left(d_orgName.lastIndexOf('/') + 1));
+	if (!dir.exists(orgPath))
+		dir.mkpath(d_orgName.left(d_orgName.lastIndexOf('/') + 1));
 
-	if (!logDir.exists(d_filePath))
-		logDir.mkpath(d_filePath);
+	if (!dir.exists(d_filePath))
+		dir.mkpath(d_filePath);
 
-	QDir dir(d_filePath);
-	int filesNumber = 0;
-	dir.setFilter(QDir::Dirs | QDir::Files);
-	dir.setSorting(QDir::DirsFirst);
-	int fileNumber = dir.count();
-	d_orgName = orgPath + QString::number(fileNumber + 1) + d_orgName.right(d_orgName.length() - d_orgName.lastIndexOf('_'));
+	//QDir dir(d_filePath);
+	//int filesNumber = 0;
+	//dir.setFilter(QDir::Dirs | QDir::Files);
+	//dir.setSorting(QDir::DirsFirst);
+	//int fileNumber = dir.count();
+	d_orgName = orgPath + getTimeWithUnderline() + d_orgName.right(d_orgName.length() - d_orgName.lastIndexOf('_'));
 	saveOrgFile(d_lineDetNetWork->getRowList(), d_orgName);
 
 	//TODO_DJ：保存ORG记录到数据库
@@ -159,8 +189,9 @@ void CT3Scan::saveFile()
 	
 	//拷贝空气文件到校正参数路径
 	QFile::copy(d_airFile, d_installDirectory + "air.dat");
-	d_lineDetImageProcess->ct3Dispose(d_orgName, d_filePath);
-
+	d_lineDetImageProcess->ct3Tune(d_orgName, d_filePath);
+	++d_imageScaned;
+	
 	//TODO_DJ：保存CT记录到数据库
 	//CT3Record ct3Record;
 	//ct3Record.path = d_filePath;
@@ -173,28 +204,24 @@ void CT3Scan::saveFile()
 	//TODO_DJ：保存CT记录到数据库
 }
 
-bool CT3Scan::setGenerialFileHeader()
+bool CT3Scan::caculateParemeterAndSetGenerialFileHeader()
 {
-	LineDetScanInterface::setGenerialFileHeader();
+	LineDetScanInterface::caculateParemeterAndSetGenerialFileHeader();
 
 	d_ictHeader.ScanParameter.SampleTime = float(d_sampleTime) / 1000;
 	d_ictHeader.ScanParameter.SetupSynchPulseNumber
 		= (WORD)(d_ictHeader.ScanParameter.SampleTime * d_ictHeader.SystemParameter.SynchFrequency);
-
 	d_ictHeader.ScanParameter.NumberOfGraduation = d_matrix;
 	d_ictHeader.ScanParameter.Azimuth = d_angle;
 	d_ictHeader.ScanParameter.NumberofValidVerticalDetector = d_channelNum;
 	//对无关参数设置默认值
 	d_ictHeader.ScanParameter.ViewDiameter = d_viewDiameter;
 	d_ictHeader.ScanParameter.Pixels = d_matrix;
-	CalculateView_ValidDetector(d_view);
 	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
-	d_ictHeader.ScanParameter.NumberOfInterpolation =
-		(float)d_matrix / d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector + 1;
-
 	d_ictHeader.ScanParameter.ScanMode = static_cast<char>(ScanMode::CT3_SCAN);
-	CalculateView_ValidDetector(d_view);
-	d_allGraduationSample = d_ictHeader.ScanParameter.NumberOfInterpolation * d_matrix;
+	d_ictHeader.ScanParameter.TotalLayers = d_layer.size();
+	d_currentScanTotalSamples = (d_ictHeader.ScanParameter.NumberOfInterpolation + 1) * d_matrix;
+	d_allScanTotalSamples = d_currentScanTotalSamples * d_layer.size();
 	int N = d_ictHeader.ScanParameter.NumberOfSystemHorizontalDetector;
 	float d = PI * d_ictHeader.ScanParameter.HorizontalSectorAngle / (180 * (N - 1));
 	d *= d_ictHeader.ScanParameter.SourceDetectorDistance;
@@ -215,11 +242,19 @@ bool CT3Scan::canScan()
 
 	if(!LineDetScanInterface::canScan())
 		return false;
-
-	if (!QFile::exists(d_airFile))
-		return false;
+	//TODO_DJ:
+	//if (!QFile::exists(d_airFile))
+	//	return false;
 
 	return true;
+}
+
+bool CT3Scan::scanFinished()
+{
+	if(d_imageScaned == d_layer.size())
+		return true;
+
+	return false;
 }
 
 void CT3Scan::saveTempFile(LineDetList* _listHead)

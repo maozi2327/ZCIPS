@@ -130,21 +130,21 @@ bool SetupDataParser::parsePanelDetData(tinyxml2::XMLElement * _element, int i)
 		else if (strcmp(element->Value(), "PandetType") == 0)
 			strcpy(localPanDetData.PandetType, element->GetText());
 		else if (strcmp(element->Value(), "horizontalPixels") == 0)
-			localPanDetData.horizontalPixels, atoi(element->GetText());
+			localPanDetData.horizontalPixels = atoi(element->GetText());
 		else if (strcmp(element->Value(), "verticalPixels") == 0)
-			localPanDetData.verticalPixels, atoi(element->GetText());
+			localPanDetData.verticalPixels = atoi(element->GetText());
 		else if (strcmp(element->Value(), "pixelBlockLeft") == 0)
-			localPanDetData.pixelBlockLeft, atoi(element->GetText());
+			localPanDetData.pixelBlockLeft = atoi(element->GetText());
 		else if (strcmp(element->Value(), "pixelBlockRight") == 0)
-			localPanDetData.pixelBlockRight, atoi(element->GetText());
+			localPanDetData.pixelBlockRight = atoi(element->GetText());
 		else if (strcmp(element->Value(), "pixelSize") == 0)
-			localPanDetData.pixelSize, atof(element->GetText());
+			localPanDetData.pixelSize = atof(element->GetText());
 		else if (strcmp(element->Value(), "pixelSize") == 0)
-			localPanDetData.pixelSize, atof(element->GetText());
+			localPanDetData.pixelSize = atof(element->GetText());
 		else if (strcmp(element->Value(), "rotAngle") == 0)
-			localPanDetData.rotAngle, char(*element->GetText());
+			localPanDetData.rotAngle = char(*element->GetText());
 		else if (strcmp(element->Value(), "mirror") == 0)
-			localPanDetData.mirror, char(*element->GetText());
+			localPanDetData.mirror = char(*element->GetText());
 	}
 
 	d_setupData->panDetData.push_back(localPanDetData);

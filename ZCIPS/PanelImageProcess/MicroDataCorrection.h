@@ -206,7 +206,7 @@ int _nCTCreateDefectData
 );
 
 /***********************************************************
-函数名：_nCTBKGCorrection
+函数名：_nCTBKGTuneion
 
 定义：  进行暗场校正
 

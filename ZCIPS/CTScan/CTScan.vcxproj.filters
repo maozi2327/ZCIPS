@@ -1,11 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
-      <Extensions>qrc;*</Extensions>
-      <ParseFiles>false</ParseFiles>
-    </Filter>
     <Filter Include="Form Files">
       <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
       <Extensions>ui</Extensions>
@@ -39,6 +34,11 @@
     </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{55a49b35-4a50-473f-9092-d3b2d2d3cbf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public\Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -88,9 +88,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="conescan.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="conecontinusscan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\util\functions.cpp">
@@ -147,14 +144,8 @@
     <ClCompile Include="ct3AddModifyDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="linedetairdisposedialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Public\util\messagebox.cpp">
       <Filter>public\utility</Filter>
-    </ClCompile>
-    <ClCompile Include="addmodifyairdisposedialog.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="scantemplate.cpp">
       <Filter>Source Files</Filter>
@@ -186,9 +177,6 @@
     <ClCompile Include="qtwidgetaddtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="axisstatuswidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Public\headers\machineType.cpp">
       <Filter>public\publicHeaders</Filter>
     </ClCompile>
@@ -215,6 +203,51 @@
     </ClCompile>
     <ClCompile Include="..\Public\util\legalinput.cpp">
       <Filter>public\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="newlinedetairtunedialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tipdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="colimatecontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="leisaibac332e.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="colimatecontroldialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="newpaneldetbkgtunedialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="panelframesamleinterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="panelbkgtune.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="panelairtune.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="newpaneldetairtunedialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="colimatezeroajustdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="loadtunedatadialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="linedetairtunedialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="axiscontrolwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="conejointscan.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -262,9 +295,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\util\logmacro.h">
       <Filter>public\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="conecontinusscan.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="conescan.h">
       <Filter>Header Files</Filter>
@@ -329,6 +359,18 @@
     <ClInclude Include="..\Public\util\legalinput.h">
       <Filter>public\utility</Filter>
     </ClInclude>
+    <ClInclude Include="colimatecontroller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="panelbkgtune.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="panelairtune.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="conejointscan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="..\Public\util\serialportutil.h">
@@ -379,12 +421,6 @@
     <QtMoc Include="floatacceleratordialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="linedetairdisposedialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="addmodifyairdisposedialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="ct3templatedialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -406,32 +442,62 @@
     <QtMoc Include="imagedialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="qtwidgetaddtest.h">
-      <Filter>public</Filter>
-    </QtMoc>
-    <QtMoc Include="axisstatuswidget.h">
-      <Filter>public</Filter>
-    </QtMoc>
-    <QtMoc Include="axiszerocoordinationdialog.h">
-      <Filter>public</Filter>
+    <QtMoc Include="newlinedetairtunedialog.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="axisstatusdialog.h">
-      <Filter>public</Filter>
+      <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="linedetdebugdialog.h">
-      <Filter>public</Filter>
+    <QtMoc Include="axiszerocoordinationdialog.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="drawwidget.h">
-      <Filter>public</Filter>
-    </QtMoc>
-    <QtMoc Include="linedetfilenamedialog.h">
-      <Filter>public</Filter>
+      <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="filepathsettingdialog.h">
-      <Filter>public</Filter>
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="linedetdebugdialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="linedetfilenamedialog.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="newlinedetbkgtunedialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="qtwidgetaddtest.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="tipdialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="leisaibac332e.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="colimatecontroldialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="newpaneldetairtunedialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="newpaneldetbkgtunedialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="panelframesamleinterface.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="colimatezeroajustdialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="loadtunedatadialog.h">
       <Filter>public</Filter>
+    </QtMoc>
+    <QtMoc Include="linedetairtunedialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="axiscontrolwidget.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -453,12 +519,6 @@
     <QtUic Include="ct3AddModifyDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="linedetairdisposedialog.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="addmodifyairdisposedialog.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="ct3templatedialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
@@ -466,9 +526,6 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="qtwidgetaddtest.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="axisstatuswidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="axiszerocoordinationdialog.ui">
@@ -490,6 +547,33 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="newlinedetbkgtunedialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="NewLineDetAirTuneDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="tipdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="colimatecontroldialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="newpaneldetbkgtunedialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="newpaneldetairtunedialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="colimatezeroajustdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="loadtunedatadialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="linedetairtunedialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="axiscontrolwidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

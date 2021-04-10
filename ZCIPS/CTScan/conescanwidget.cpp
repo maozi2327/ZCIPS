@@ -7,10 +7,17 @@ ConeScanWidget::ConeScanWidget(Panel* _panel, QWidget* _panelWidget, QWidget *pa
 	, d_panel(_panel), d_panelWidget(_panelWidget)
 {
 	ui.setupUi(this);
+	ui.panelWidget->setLayout(d_panelWidget->layout());
 	ui.coneScanGraduationComboBox->setCurrentText("256");
 	ui.coneScanframesComboBox->setCurrentText("1");
 	ui.orientIncEdit->setText("0");
-	d_initialHeight = minimumHeight();
+	//d_initialHeight = minimumHeight();
+	//d_panelWidget->setParent(ui.panelWidget);
+	//ui.panelWidget->setFixedSize(d_panelWidget->width(), d_panelWidget->height());
+	//setFixedHeight(ui.panelWidget->height() + height());
+	ui.airTuneCheckBox->setVisible(false);
+	ui.bkgTuneCheckBox->setVisible(false);
+	ui.defectTuneCheckBox->setVisible(false);
 }
 
 ConeScanWidget::~ConeScanWidget()
@@ -18,18 +25,11 @@ ConeScanWidget::~ConeScanWidget()
 
 }
 
-void ConeScanWidget::setPanelDetWidget()
+void ConeScanWidget::setConeScanProgress(int _progress, int _progressAll, const QString & _msg)
 {
-	d_panelWidget->setParent(ui.panelWidget);
-	ui.panelWidget->setFixedSize(d_panelWidget->width(), d_panelWidget->height());
-	setFixedHeight(ui.panelWidget->height() + d_initialHeight);
-	updateGeometry();
-}
-
-void ConeScanWidget::setConeScanProgress(float _progress, const QString & _msg)
-{
-	ui.coneScanAllProgressBar->setValue(_progress * 100);
-	ui.coneScanProgressStaticLabel->setText(_msg);
+	ui.coneScanProgressBar->setValue(_progress);
+	ui.coneScanAllProgressBar->setValue(_progressAll);
+	ui.scanMessageLabel->setText(_msg);
 }
 
 template<typename T>
@@ -81,5 +81,25 @@ void ConeScanWidget::on_frameShotButton_clicked()
 
 void ConeScanWidget::on_coneScanStopButton_clicked()
 {
-	emit stopControllerSignal();
+	emit coneScanStopSignal();
+}
+
+void ConeScanWidget::on_previewButton_clicked()
+{
+	emit previewSignal();
+}
+
+void ConeScanWidget::on_bkgTuneButton_clicked()
+{
+	emit bkgTuneSignal();
+}
+
+void ConeScanWidget::on_airTuneButton_clicked()
+{
+	emit airTuneSignal();
+}
+
+void ConeScanWidget::on_loadTuneDataButton_clicked()
+{
+	emit loadTuneDataSignal();
 }

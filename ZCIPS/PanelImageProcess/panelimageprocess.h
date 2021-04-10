@@ -1,7 +1,7 @@
 #pragma once
-
 #include "panelimageprocess_global.h"
-#include <QString>
+#include <memory>
+
 class PANELIMAGEPROCESS_EXPORT PanelImageProcess
 {
 private:
@@ -10,7 +10,7 @@ private:
 	bool loadTiff(const QString& _sourceFile, unsigned short*& _data);
 	bool saveTiff(const QString& _sourceFile);
 public:
-	PanelImageProcess();
+	PanelImageProcess(int _width, int _height);
 	~PanelImageProcess();
 
 	int createBkgFileToFile(const QString& _sourceFile, const QString& _destFile);
@@ -26,20 +26,26 @@ public:
 	int createAirDataToData(unsigned short** _sourceData, const QString& d_bkgFile,
 		int _line, int _column, int _frames);
 
-	int bkgCorrectFileToFile(const QString& _sourceFile, const QString& _destFile);
-	int bkgCorrectFileToData(const QString& _sourceFile);
-	int bkgCorrectDataToFile(unsigned short* _sourceData, const QString& _destFile, int _line, int _column);
-	int bkgCorrectDataToData(unsigned short* _sourceData, int _line, int _column);
+	int bkgTuneFileToFile(const QString& _sourceFile, const QString& _destFile);
+	int bkgTuneFileToData(const QString& _sourceFile);
+	int bkgTuneDataToFile(unsigned short* _sourceData, const QString& _destFile, int _line, int _column);
+	int bkgTuneDataToData(unsigned short* _sourceData, int _line, int _column);
 
-	int airCorrectFileToFile(const QString& _sourceFile, const QString& _destFile);
-	int airCorrectFileToData(const QString& _sourceFile);
-	int airCorrectDataToFile(unsigned short* _sourceData, const QString& _destFile, int _line, int _column);
-	int airCorrectDataToData(unsigned short* _sourceData, int _line, int _column);
+	int airTuneFileToFile(const QString& _sourceFile, const QString& _destFile);
+	int airTuneFileToData(const QString& _sourceFile);
+	int airTuneDataToFile(unsigned short* _sourceData, const QString& _destFile, int _line, int _column);
+	int airTuneDataToData(unsigned short* _sourceData, int _line, int _column);
 
-	int defectCorrectFileToFile(const QString& _sourceFile, const QString& _destFile);
-	int defectCorrectFileToData(const QString& _sourceFile);
-	int defectCorrectDataToFile(unsigned short* _sourceData, const QString& _destFile, int _line, int _column);
-	int defectCorrectDataToData(unsigned short* _sourceData, int _line, int _column);
+	int defectTuneFileToFile(const QString& _sourceFile, const QString& _destFile);
+	int defectTuneFileToData(const QString& _sourceFile);
+	int defectTuneDataToFile(unsigned short* _sourceData, const QString& _destFile, int _line, int _column);
+	int defectTuneDataToData(unsigned short* _sourceData, int _line, int _column);
+
+	int bkgAirTuneDataToData(unsigned short* _sourceData, int _line, int _column);
+	int bkgAirTuneDataToFile(unsigned short* _sourceData, const QString& _destFile, int _line, int _column);
+
+	int bkgAirDefectTuneDataToData(unsigned short* _sourceData, int _line, int _column);
+	int bkgAirDefectTuneDataToFile(unsigned short* _sourceData, const QString& _destFile, int _line, int _column);
 
 	int binProcessFileToFile(const QString& _sourceFile, const QString& _destFile, int _binWidth, int _binHeight);
 	int binProcessFileToData(const QString& _sourceFile, int _binWidth, int _binHeight);
@@ -55,6 +61,9 @@ public:
 	int rotateProcessDataToData(unsigned short* _sourceData, int _line, int _column,
 		int _iRotationType, int iRotationAngle);
 
+	int mirrorYDataToFile(unsigned short* _sourceData, const QString& _destFile, int _line,	int _column);
+	int mirrorYDataToData(unsigned short* _sourceData, int _line, int _column);
+
 	int mergeProcessFileToFile(const QString& _sourceFile, const QString& _destFile);
 	int mergeProcessFileToData(const QString& _sourceFile);
 	int mergeProcessDataToFile(unsigned short** _sourceData, const QString& _destFile, int _frames, int _line, int _column);
@@ -63,13 +72,17 @@ public:
 	bool saveMultiBitmapDataToFile(unsigned short* _sourceData, const QString& _destFile, int _frames, int _line, int _column);
 	bool saveSingleBitmapDataToFile(unsigned short* _sourceData, const QString& _destFile, int _line, int _column);
 	int dataSplice(const QString& _pathA, const QString& _pathB, const QString& _pathFinal, int& progress);
+
 	bool loadBkgData(const QString& d_bkgFileName);
 	bool loadAirData(const QString& d_airFileName);
 	bool loadDefectData(const QString& d_defectFileName);
-};
 
-class PANELIMAGEPROCESS_EXPORT PanelImageProcessFactory
-{
-public:
-	static std::unique_ptr<PanelImageProcess> getPanelImageProcess();
+	bool bkgAirDefectTuneDataToDicomFile(unsigned short* _sourceData, const QString& _destFile, int _line, int _column, const QString& d_objectName, const QString& _number);
+	bool saveSingleBitmapDataToDicomFile(unsigned short* _sourceData, const QString& _destFile, int _line, int _column, const QString& d_objectName, const QString& _number);
 };
+//
+//class PANELIMAGEPROCESS_EXPORT PanelImageProcessFactory
+//{
+//public:
+//	static std::unique_ptr<PanelImageProcess> getPanelImageProcess(int _width, int _height);
+//};

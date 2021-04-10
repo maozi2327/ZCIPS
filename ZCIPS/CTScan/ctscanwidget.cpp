@@ -16,7 +16,10 @@ CTScanWidget::CTScanWidget(QWidget* _upWidget, QWidget* _middleWidget, QWidget* 
 	layout1->addWidget(d_downWidget, 0, 0);
 	layout1->setMargin(0);
 	ui.motorControlGroupBox->setLayout(layout1);
+	auto high = d_downWidget->height();
 	ui.motorControlGroupBox->setFixedHeight(d_downWidget->height());
+
+	//ui.controlTabWidget->setFixedHeight(d_scanTableWidget->height() + ui.controlTabWidget->tabBar()->height());
 
 	d_layout = new QGridLayout;
 	d_layout->addWidget(this, 0, 0);
@@ -175,4 +178,3 @@ void CTScanWidget::closeEvent(QCloseEvent * event)
 {
 
 }
-

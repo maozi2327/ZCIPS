@@ -131,7 +131,9 @@ enum class Axis
 	rayRadial = 9,
 	rayTranslation = 10,
 	detRadial = 11,
-	detTranslation = 12
+	detTranslation = 12,
+	layer1layer2 = 1000,
+	rayTranslationDetTranslation = 2000,
 };
 
 enum class AxisPosEnum

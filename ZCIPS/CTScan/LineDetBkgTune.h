@@ -7,14 +7,14 @@ class LineDetBkgTune :
 {
 public:
 	LineDetBkgTune(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork,
-		const SetupData* _setupData, int _lineDetIndex);
+		const SetupData* _setupData, int _lineDetIndex, LineDetImageProcess* _lineDetImageProcess);
 	~LineDetBkgTune();
 
 private:
 	
 protected:
 	virtual void sendCmdToControl() override;
-	virtual bool setGenerialFileHeader() override;
+	virtual bool caculateParemeterAndSetGenerialFileHeader() override;
 	virtual void saveFile() override;
 	virtual void saveTempFile(LineDetList* _listHead) override;
 };

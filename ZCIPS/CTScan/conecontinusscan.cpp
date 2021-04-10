@@ -3,8 +3,8 @@
 #include "../PanelImageProcess/panelimageprocess.h"
 #include "controllerinterface.h"
 
-ConeContinusScan::ConeContinusScan(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _ctDispose):
-	ConeScanInterface(_panel, _controller, _ctDispose)
+ConeContinusScan::ConeContinusScan(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _ctTune):
+	ConeScanInterface(_panel, _controller, _ctTune)
 {
 }
 
@@ -27,8 +27,8 @@ void ConeContinusScan::scanThread(std::promise<bool>& _promise)
 		//if (d_isSaveOrg)
 		//	saveFile(imagePtr);
 
-		//if (d_isDispose)
-		//	;//d_ctDispose->dispose(imagePtr);
+		//if (d_isTune)
+		//	;//d_ctTune->tune(imagePtr);
 
 		//saveFile(imagePtr);
 		//free(imagePtr);

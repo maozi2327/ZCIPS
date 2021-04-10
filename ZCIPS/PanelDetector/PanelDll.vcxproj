@@ -195,7 +195,10 @@
     </QtUic>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Public\util\functions.cpp" />
     <ClCompile Include="..\Public\util\logmacro.cpp" />
+    <ClCompile Include="..\Public\util\messagebox.cpp" />
+    <ClCompile Include="..\Public\util\thread.cpp" />
     <ClCompile Include="panel.cpp" />
     <ClCompile Include="PESiPanel.cpp" />
     <ClCompile Include="pesipanelwidget.cpp" />

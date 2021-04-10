@@ -4,6 +4,7 @@
 #include <tuple>
 #include <map>
 #include "pesipanelwidget.h"
+class Thread;
 
 class PESiPanel : public Panel
 {
@@ -18,6 +19,7 @@ private:
 	size_t d_PESiDetBufferSize;
 	PESICON_SINGLE_MODE d_PESiContinusSingleMode;
 	PEsiPanelWidget* d_widget;
+	std::map<SampleMode, unsigned long> d_sampleModeMap{ {SampleMode::softTrigger, 1},  {SampleMode::exTrigger, 3} };
 protected:
 	std::function<void(unsigned short*)> d_imageProcCallback;
 	unsigned int d_width;
@@ -26,19 +28,23 @@ protected:
 	int d_frames;
 	int d_cycleTime;
 	int d_sampleTime;
-	const int d_exTriggerTimeMargin = 200;
+	const int d_exTriggerTimeMargin = 270 * 2;
 	int d_gainFactor;
 	size_t d_frameSize;
 	SampleMode d_sampleMode;
 	float d_pixelSize;
-
+	std::unique_ptr<Thread> d_connectThread;
+	std::atomic<bool> d_deadThreadRun;
+	bool d_connected;
 public:
 	PESiPanel();
 	~PESiPanel();
 	virtual bool setFrames(int _frames) override;
 	virtual void stopAcquire() override;
 	virtual bool connectPanel() override;
-	virtual bool beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames, int _cycleTime, int _gainFactor) override;
+	virtual bool beginSoftwareTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _frames, int _cycleTime, 
+		int _gainFactor) override;
+	virtual bool beginPreview(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime, int _gainFactor) override;
 	virtual bool beginExTriggerAcquire(std::function<void(unsigned short*)> _imageProcessCallBack, int _cycleTime, int _gainFactor) override;
 	virtual bool setBinMode(BinMode _binMode);
 	virtual bool setCycleTime(int _milliseconds) override;
@@ -56,11 +62,18 @@ public:
 	virtual QWidget* getWidget() override;
 	virtual void OnEndPESiDetAcqCallback(HACQDESC hAcqDesc);
 	virtual void OnEndPESiDetFrameCallback(HACQDESC hAcqDesc);			//声明每帧图像采集回调函数
+	virtual int getFramesSet();
+	virtual int getSampleTimeSet();
+	virtual int getGainFactorSet();
 public slots:
 	void setCycleTimeSlot(int _milliseconds);
 	void setGainFactorSlot(QString _text);
 
+private slots:
+	void detectorConnectedSlot();
+signals:
+	void detectorConnectedSignal();
 protected:
-	bool beginAcquire(SampleMode _sampleMode, int _cycleTime, int _frames);
+	bool beginAcquire(SampleMode _sampleMode, int _cycleTime, int _frames, bool realTime = false);
 };
 

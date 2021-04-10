@@ -20,7 +20,7 @@ class LineDetImageProcess;
 class LineDetList;
 class FileDB;
 class CT3TemplateDialog;
-class LineDetAirDisposeDialog;
+class LineDetAirTuneDialog;
 class LineDetScanManager;
 
 

@@ -11,7 +11,6 @@ PEsiPanelWidget::PEsiPanelWidget(QWidget *parent)
 	ui.singleShotFramesSpinBox->setValue(1);
 
 }
-
 PEsiPanelWidget::~PEsiPanelWidget()
 {
 }

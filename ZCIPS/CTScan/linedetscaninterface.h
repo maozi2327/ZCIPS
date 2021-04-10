@@ -40,13 +40,17 @@ protected:
 	float d_colimateSize;
 	float d_layerThickness;
 	float d_viewDiameter;
-	float d_layer;
 	float d_angle;
 	int d_matrix;
-	int d_allGraduationSample;
+	int d_currentScanTotalSamples;
+	int d_allScanTotalSamples;
 	float d_view;
 	int d_sampleTime;
 	int d_channelNum;
+	int d_imageScaned;
+	int d_currentSamples;
+	int d_samplesBefore;
+	bool d_saveOrg;
 
 	std::chrono::steady_clock::time_point d_start_time;
 	static std::chrono::minutes d_intervalForSaveTempFile;
@@ -62,7 +66,7 @@ protected:
 	virtual void scanThread();
 	virtual void saveOrgFile(LineDetList* _list, const QString& _fileName);
 	virtual bool scanFinished();
-	virtual bool setGenerialFileHeader();
+	virtual bool caculateParemeterAndSetGenerialFileHeader();
 	virtual void sendCmdToControl() = 0;
 	void CalculateView_ValidDetector(float _diameter);
 	virtual bool canScan();
@@ -70,14 +74,13 @@ protected:
 	virtual void saveTempFile(LineDetList* _listHead) = 0;
 	virtual void saveFile() = 0;
 signals:
-	void signalGraduationCount(int _count);
+	void samplePercentCountSignal(int _currentSamplePercent, int _allSamplePercent);
 	void scanThreadQuitSignal(int _sts);
 	LOGSIGNAL
 
-private slots:
 public:
 	LineDetScanInterface(ControllerInterface* _controller, LineDetNetWork* _lineDetNetWork, 
-		const SetupData* _setupData, int _lineDetIndex);
+		const SetupData* _setupData, int _lineDetIndex, LineDetImageProcess* _lineDetImageProcess);
 	virtual void setFileName(const QString& _orgName, const QString& _destPath);
 	virtual ~LineDetScanInterface();
 	virtual bool beginScan();

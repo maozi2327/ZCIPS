@@ -14,7 +14,7 @@ private:
 	std::unique_ptr<std::thread> d_thread;
 	std::function<void()> d_fun;
 	std::atomic<bool>& d_threadRun;
-	bool d_threadFinished;
+	std::atomic<bool> d_threadFinished;
 	void realThread();
 public:
 	Thread(std::function<void()> _function, std::atomic<bool>& _threadRun);

@@ -27,6 +27,7 @@
 			<IpAddress>192.168.2.120</IpAddress>
 			<nAcquireClientPort>4000</nAcquireClientPort>
 			<SourceDetectorDistance>1454</SourceDetectorDistance>
+			<StandartInterpolationFlag>1</StandartInterpolationFlag>
 			<Ct2GraduationAngle>12</Ct2GraduationAngle>
 		</LineDetData>
 	</LineDetSection>
@@ -34,12 +35,12 @@
 		<num>1</num>
 		<PanDetData>
 			<ID>0</ID>
-			<PandetType>PE1621</PandetType>
-			<horizontalPixels>2048</horizontalPixels>
-			<verticalPixels>2048</verticalPixels>
+			<PandetType>PE1611</PandetType>
+			<horizontalPixels>4096</horizontalPixels>
+			<verticalPixels>4096</verticalPixels>
 			<pixelBlockLeft>30</pixelBlockLeft>
 			<pixelBlockRight>30</pixelBlockRight>
-			<pixelSize>0.2</pixelSize>
+			<pixelSize>0.1</pixelSize>
 			<rotAngle>0</rotAngle>
 			<mirror>0</mirror>
 		</PanDetData>

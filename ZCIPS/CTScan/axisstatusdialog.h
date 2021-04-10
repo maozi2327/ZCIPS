@@ -14,6 +14,7 @@ public:
 	AxisStatusDialog(ControllerInterface* _controller, const std::map<Axis, AxisData>& _axisDataMap, 
 		QWidget *parent = Q_NULLPTR);
 	~AxisStatusDialog();
+	static int getDialogCounter();
 
 private:
 	Ui::AxisStatusDialog ui;
@@ -36,9 +37,9 @@ private:
 			, d_SDp(new QLabel(_parent)), d_SDn(new QLabel(_parent))
 			, d_zeroFound(new QLabel(_parent))
 		{
-			d_name->setFixedWidth(_nameWidth);
+			//d_name->setFixedWidth(_nameWidth);
 			d_name->setText(_name);
-			d_coordinate->setFixedWidth(_coordinateWidth);
+			//d_coordinate->setFixedWidth(_coordinateWidth);
 			d_ELp->setFixedWidth(_width);
 			d_ELp->setAlignment(Qt::AlignCenter);
 			d_ELn->setFixedWidth(_width);
@@ -56,6 +57,7 @@ private:
 	std::map<Axis, AxisStatusControls*> d_axisStatusControls;
 	QGridLayout* d_gridLayout;
 	QTimer* d_timer;
+	static int d_dialogCounter;
 
 private slots:
 	void updateSlot();

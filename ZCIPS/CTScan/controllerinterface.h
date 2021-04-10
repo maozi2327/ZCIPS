@@ -22,11 +22,26 @@ class ControllerInterface : public QObject
 
 signals:
 	void netWorkStsSginal(bool sts);
+
+
+public:
+	enum improtantStatus
+	{
+		network,
+		seekingZero,
+		collide,
+		changingRay,
+		sliceThickAdjusting,
+		rayDetCoupleNotSame,
+		changingDet,
+		busy
+	};
 protected:
 	std::map<Axis, float> d_axisSpeed;
 	std::map<Axis, float> d_axisPosition;
 	std::map<Axis, float> d_axisWorkZero;
 	const std::map<Axis, AxisData>& d_axisDataMap;
+	std::map<improtantStatus, bool> d_importantStatus;
 	bool d_connected;
 	int d_timeoutCount;
 	QTimer* d_timer;
@@ -45,12 +60,16 @@ public:
 	virtual bool axisSeekZero(Axis _axis) = 0;
 	virtual bool axisAbsMove(Axis _axis, float _pos) = 0;
 	virtual bool axisRelMove(Axis _axis, float _pos) = 0;
-	virtual bool sliceMove(float _pos) = 0;
-	
 
+	virtual bool translationRelMove(float _pos) = 0;
+	virtual bool translationAbsMove(float _pos) = 0;
+
+	virtual bool sliceAbsMove(float _pos) = 0;
+	virtual bool sliceRelMove(float _pos) = 0;
 	virtual bool readReadyStatus() = 0;
 	virtual bool readSaveStatus() = 0;
 	virtual bool readWaitNextScanStatus() = 0;
+	virtual bool clearSaveFlag() = 0;
 	virtual bool readIdleStatus() = 0;
 	virtual std::map<Axis, float> readAxisSpeed() = 0;
 	virtual float readAxisPostion(Axis _axis) = 0;
@@ -58,7 +77,9 @@ public:
 	virtual std::map<Axis, AxisCoordinateSwitchStatus> readAxisStatus() = 0;
 	virtual std::map<Axis, float> readAxisWorkZero() = 0;
 
+	virtual bool startNextScan() = 0;
 	virtual void getSystemStatus() = 0;
+	virtual void getControlfSystemStatus() = 0;
 	virtual void getAxisPosition() = 0;
 	virtual void getAxisSpeed() = 0;
 	virtual void getAxisWorkZero() = 0;
@@ -70,5 +91,9 @@ public:
 	virtual void sendToControl(int _cmd, char * _data, int _size, bool _consist) = 0;
 	virtual void decodePackages(char* _package, int _size) = 0;
 	virtual void restartLineDet(int _detNum) = 0;
+	virtual void switchRayDetCouple(int _couple) = 0;
+	virtual void sendRayDetCoupleStatus(int _rayId, int _detId) = 0;
+
+	virtual std::map<improtantStatus, bool> readImportantStatus() = 0;
 };
 

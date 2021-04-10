@@ -18,6 +18,7 @@ private:
 	QString& d_fileNumber;
 	QString& d_comment;
 
-private:
+private slots:
 	void on_okButton_clicked();
+	void on_cancelButton_clicked();
 };

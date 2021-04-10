@@ -77,6 +77,7 @@ BOOL PreventSetUnhandledExceptionFilter()
 	DWORD dwOrgEntryAddr = (DWORD)pOrgEntry;
 	dwOrgEntryAddr += 5; // add 5 for 5 op-codes for jmp far
 	void *pNewFunc = &MyDummySetUnhandledExceptionFilter;
+
 	DWORD dwNewEntryAddr = (DWORD)pNewFunc;
 	DWORD dwRelativeAddr = dwNewEntryAddr - dwOrgEntryAddr;
 	newJump[0] = 0xE9;  // JMP absolute
