@@ -56,14 +56,17 @@ bool DrScan::caculateParemeterAndSetGenerialFileHeader()
 	
 	d_ictHeader.ScanParameter.FirstSectStartCoordinateOfDR = d_layerStartPoint;
 	d_ictHeader.ScanParameter.CurrentLayerCoordinate = d_layerStartPoint;
-	d_ictHeader.ScanParameter.SpaceBetweenLayer = d_layerLenth / (d_view / d_matrix) + 0.5;
-	d_ictHeader.ScanParameter.TotalLayers	= d_layerLenth / d_ictHeader.ScanParameter.SpaceBetweenLayer;
 
+	if (std::abs(d_layerSpace - 0) < 0.001)
+		d_ictHeader.ScanParameter.SpaceBetweenLayer = d_view / d_matrix + 0.5;
+	else
+		d_ictHeader.ScanParameter.SpaceBetweenLayer = d_layerSpace;
+	
+	d_ictHeader.ScanParameter.TotalLayers	= d_layerLenth / d_ictHeader.ScanParameter.SpaceBetweenLayer;
 	return true;
 }
 
-bool DrScan::setScanParameter(float _layer, int _matrix, float _view, int _sampleTime,
-	float _angle, float _layerLenth)
+bool DrScan::setScanParameter(float _layer, int _matrix, float _view, int _sampleTime, float _angle, float _layerLenth, float _layerSpace)
 {
 	d_layerStartPoint = _layer;
 	d_matrix = _matrix;
@@ -71,6 +74,7 @@ bool DrScan::setScanParameter(float _layer, int _matrix, float _view, int _sampl
 	d_sampleTime = _sampleTime;
 	d_angle = _angle;
 	d_layerLenth = _layerLenth;
+	d_layerSpace = _layerSpace;
 	return true;
 }
 
@@ -101,7 +105,20 @@ void DrScan::sendCmdToControl()
 
 void DrScan::saveFile()
 {
-	saveOrgFile(d_lineDetNetWork->getRowList(), d_orgName);
+	saveOrgFile();
+
+	QDir dir;
+
+	if (!dir.exists(d_filePath))
+		dir.mkpath(d_filePath);
+
 	QFile::copy(d_airFile, d_installDirectory + "air.dat");
-	d_lineDetImageProcess->ct3Tune(d_orgName, d_filePath);
+	d_lineDetImageProcess->drTune(d_orgName, d_filePath);
+
+	if (!d_saveOrg)
+		QFile::remove(d_orgName);
+}
+
+void DrScan::saveTempFile(LineDetList * _listHead)
+{
 }

@@ -39,13 +39,21 @@ bool LineDetBkgTune::caculateParemeterAndSetGenerialFileHeader()
 	return true;
 }
 
-void LineDetBkgTune::saveFile()
-{
-	saveOrgFile(d_lineDetNetWork->getRowList(), d_orgName);
-	d_lineDetImageProcess->createBkgDat(d_orgName, d_filePath);
-}
-
 void LineDetBkgTune::saveTempFile(LineDetList * _listHead)
 {
 
+}
+
+void LineDetBkgTune::saveFile()
+{
+	saveOrgFile();
+	QDir dir;
+
+	if (!dir.exists(d_filePath))
+		dir.mkpath(d_filePath);
+
+	d_lineDetImageProcess->createBkgDat(d_orgName, d_filePath);
+
+	if (!d_saveOrg)
+		QFile::remove(d_orgName);
 }

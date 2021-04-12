@@ -201,9 +201,6 @@
     <ClCompile Include="newlinedetbkgtunedialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Public\util\legalinput.cpp">
-      <Filter>public\utility</Filter>
-    </ClCompile>
     <ClCompile Include="newlinedetairtunedialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -247,6 +244,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="conejointscan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="loadlinedettunedatadialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -355,9 +355,6 @@
     </ClInclude>
     <ClInclude Include="applicationSettingData.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\util\legalinput.h">
-      <Filter>public\utility</Filter>
     </ClInclude>
     <ClInclude Include="colimatecontroller.h">
       <Filter>Header Files</Filter>
@@ -499,6 +496,9 @@
     <QtMoc Include="axiscontrolwidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="loadlinedettunedatadialog.h">
+      <Filter>public</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="conescanwidget.ui">
@@ -574,6 +574,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="axiscontrolwidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="loadlinedettunedatadialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

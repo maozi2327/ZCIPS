@@ -37,9 +37,6 @@ private:
 	std::map<ScanMode, LineDetScanInterface*> d_scanMap;
 	std::unique_ptr<LineDetScanInterface> d_scan;
 	CT3Data d_ct3Data;
-	LineDetAirTuneDialog* d_airTuneDialog;
-	NewLineDetAirTuneDialog* d_newLineDetAirTuneDialog;
-	NewLineDetBkgTuneDialog* d_newLineDetBkgTuneDialog;
 	CT3TemplateDialog* d_ct3TemplateDialog;
 	Ct3TemplateData d_ct3TemplateDataItem;
 	LineDetScanWidget* d_lineDetScanWidget;
@@ -51,11 +48,18 @@ private:
 	QString d_orgDirectory;
 	QString d_objectName;
 	QString d_objectNumber;
+
+	QString d_tunedBkgDirectory;
+	QString d_tunedAirDirectory;
+
+	QString d_workDir;
+
 public:
 	LineDetScanManager(int _rayId, int _lineDetId, 
 		const std::vector<ScanMode>& _scanMode, SetupData* _setupData, 
 		LineDetNetWork* _lineDetNetWork, ControllerInterface* _controller, LineDetImageProcess* _lineDetImageProcess,
-		const QString& _tunedDirectory, const QString& _orgDirectory/*, const QString& _objectName, const QString& _objectNumber*/, 
+		const QString& _tunedDirectory, const QString& _orgDirectory, const QString& _tunedBkgDirectory,
+		const QString& _tunedAirDirectory, const QString& _workDirectory/*, const QString& _objectName, const QString& _objectNumber*/,
 		QWidget *widgetParent = nullptr, QObject *objectParent = nullptr);
 	~LineDetScanManager();
 	QWidget* getWidget();
@@ -65,6 +69,7 @@ public:
 
 private slots:
 	void ct3ScanSlot();
+	void ct2ScanSlot();
 	void drScanSlot();
 	void stopButtonSlot();
 	void LoadCt3TemplateButtonSlot();

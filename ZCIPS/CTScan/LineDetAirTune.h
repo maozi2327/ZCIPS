@@ -4,7 +4,6 @@ class LineDetAirTune :
 	public LineDetScanInterface
 {
 protected:
-	virtual void saveFile();
 	virtual bool caculateParemeterAndSetGenerialFileHeader();
 	virtual void sendCmdToControl();
 	virtual void saveTempFile(LineDetList* _listHead) override;
@@ -13,5 +12,6 @@ public:
 		const SetupData* _setupData, int _lineDetIndex, LineDetImageProcess* _lineDetImageProcess);
 	~LineDetAirTune();
 	virtual void stopScan();
+	virtual void saveFile();
 };
 

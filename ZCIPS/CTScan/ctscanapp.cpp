@@ -126,11 +126,14 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 		connect(manager, &PanelDetScanManager::objectNameNumberChangedSignal, this, &CTScanApp::objectNameNumberChangedSlot);
 	}
 
+	d_tunedLineBkgPath = d_workDir + QString::fromLocal8Bit("correctedLine/bkg/");
+	d_tunedLineAirPath = d_workDir + QString::fromLocal8Bit("correctedLine/air/");
+
 	for (auto& mode : d_lineDetScanModeMap)
 	{
 		auto manager = new LineDetScanManager(mode.first.first, mode.first.second,
 			d_lineDetScanModeMap[mode.first], d_setupData.get(), d_lineDetNetWorkMap[0].get(), d_controller.get(), d_lineDetImageProcess.get(),
-			d_tunedFilePath, d_orgPath);
+			d_tunedFilePath, d_orgPath, d_tunedLineBkgPath, d_tunedLineAirPath, d_workDir);
 		d_lineDetScanManagerMap[mode.first] = manager;
 		connect(manager, &LineDetScanManager::objectNameNumberChangedSignal, this, &CTScanApp::objectNameNumberChangedSlot);
 	}
@@ -155,11 +158,15 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 		this, &CTScanApp::switchToPanelWidgetSlot);
 	connect(d_mainWidget, &CTScanWidget::switchToLineWidgetSignal,
 		this, &CTScanApp::switchToLineWidgetSlot);
-
+	
 	buildMenuBar();
 	d_timer = new QTimer();
 	d_timer->start(200);	
 	connect(d_timer, &QTimer::timeout, this, &CTScanApp::updateSystemStatusSlot);
+
+	for(int i = 0; i != d_lineDetNetWorkMap.size(); ++i)
+		d_lineDetRestartTime[i] = std::chrono::steady_clock::now();
+
 	LOG_INFO("Èí¼þÆô¶¯");
 }
 
@@ -436,6 +443,19 @@ void CTScanApp::updateSystemStatusSlot()
 
 	for (auto& scanManager : d_lineDetScanManagerMap)
 	{
+		bool lineDetConnect = d_lineDetNetWorkMap[scanManager.first.second]->getConnected();
+		auto timeNow = std::chrono::steady_clock::now();
+
+		if (!lineDetConnect)
+		{
+
+			if (std::chrono::duration_cast<std::chrono::minutes>(timeNow - d_lineDetRestartTime[scanManager.first.second]).count() > 1)
+			{
+				d_controller->restartLineDet(scanManager.first.second);
+				d_lineDetRestartTime[scanManager.first.second] = timeNow;
+			}
+		}
+
 		scanManager.second->updateStatus(controlConnected && idle && ready && d_lineDetNetWorkMap[scanManager.first.second]->getConnected());
 	}
 

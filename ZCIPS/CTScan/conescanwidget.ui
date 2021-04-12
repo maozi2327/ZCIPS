@@ -34,7 +34,7 @@
   <property name="windowTitle">
    <string>锥束扫描</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QWidget" name="panelWidget" native="true">
      <property name="sizePolicy">
@@ -967,30 +967,37 @@
     </widget>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QLabel" name="scanMessageLabel">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
+    <widget class="QLabel" name="scanMessageLabel">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Box</enum>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string/>
+        <string>当前进度</string>
        </property>
       </widget>
      </item>
-     <item>
+     <item row="0" column="1">
       <widget class="QProgressBar" name="coneScanProgressBar">
        <property name="value">
         <number>0</number>
@@ -1000,7 +1007,14 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>总体进度</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
       <widget class="QProgressBar" name="coneScanAllProgressBar">
        <property name="value">
         <number>0</number>

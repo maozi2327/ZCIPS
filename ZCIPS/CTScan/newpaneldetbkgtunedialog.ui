@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>NewPanelDetBkgTuneDialog</string>
+   <string>面阵背景校正</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

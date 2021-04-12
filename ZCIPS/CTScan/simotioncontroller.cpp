@@ -471,8 +471,7 @@ void SimotionController::decodePackages(char* _package, int _size)
 
 void SimotionController::restartLineDet(int _detNum)
 {
-	//char data = char(_detNum);
-	//fillInCmdStructAndFillCmdList(CMD_RESTART_DET, (char*)(&data), 1, false);
+	fillInCmdStructAndFillCmdList(CMD_RESTART_LINE_DET, nullptr, 0, false);
 }
 
 void SimotionController::switchRayDetCouple(int _couple)

@@ -15,7 +15,7 @@ private:
 protected:
 	virtual void sendCmdToControl() override;
 	virtual bool caculateParemeterAndSetGenerialFileHeader() override;
-	virtual void saveFile() override;
 	virtual void saveTempFile(LineDetList* _listHead) override;
+	virtual void saveFile();
 };
 

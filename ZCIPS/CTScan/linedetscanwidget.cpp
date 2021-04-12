@@ -128,7 +128,7 @@ std::pair<std::vector<float>, bool> LineDetScanWidget::getLayer()
 }
 void LineDetScanWidget::enableScan(bool _sts)
 {
-	ui.Ct3StartButton->setEnabled(_sts);
+	ui.lineDetScanStartButton->setEnabled(_sts);
 
 	if (!_sts)
 	{
@@ -137,15 +137,15 @@ void LineDetScanWidget::enableScan(bool _sts)
 			"background-color: rgb(255, 170, 127);"
 			"border-radius:3px; "
 		);
-		ui.Ct3StartButton->setStyleSheet(style);
+		ui.lineDetScanStartButton->setStyleSheet(style);
 	}
 	else
-		ui.Ct3StartButton->setStyleSheet("");
+		ui.lineDetScanStartButton->setStyleSheet("");
 
 }
 void LineDetScanWidget::setScanButtonToolTip(const QString & _tip)
 {
-	ui.Ct3StartButton->setToolTip(_tip);
+	ui.lineDetScanStartButton->setToolTip(_tip);
 }
 void LineDetScanWidget::switchCt3MultilayerEquallayerShowHide(unsigned char _mode)
 {
@@ -199,9 +199,14 @@ void LineDetScanWidget::useCt3Item(const Ct3TemplateData& _templateData)
 
 //不判断是否能进行扫描，自动判断设备状态使能和禁止扫描按钮，
 //只要按钮有效则都可以进行扫描
-void LineDetScanWidget::on_Ct3StartButton_clicked()
+void LineDetScanWidget::on_lineDetScanStartButton_clicked()
 {
-	emit ct3ScanSignal();
+	if (ui.scanModeTab->currentWidget() == ui.ct3Tab)
+		emit ct3ScanSignal();
+	else if (ui.scanModeTab->currentWidget() == ui.drTab)
+		emit drScanSignal();
+	else if (ui.scanModeTab->currentWidget() == ui.ct2Tab)
+		;
 }
 
 void LineDetScanWidget::on_saveDirButton_clicked()
@@ -265,10 +270,10 @@ void LineDetScanWidget::on_ct3LayerPosListWidget_itemDoubleClicked(QListWidgetIt
 	ui.ct3LayerPosListWidget->removeItemWidget(_item);
 }
 
-void LineDetScanWidget::updateCT3ProgresserSlot(int _currentSamplePercent, int _allSamplePercent)
+void LineDetScanWidget::updateCT3ProgresserSlot(int _graduationAcquiredThisRound, int _graduationThisRound, int _graduationAcquiredAll, int _graduationALL, QString message)
 {
-	ui.Ct3ScanNowProgressBar->setValue(_currentSamplePercent);
-	ui.Ct3ScanAllProgressBar->setValue(_allSamplePercent);
+	ui.Ct3ScanNowProgressBar->setValue(100 * _graduationAcquiredThisRound / _graduationThisRound);
+	ui.Ct3ScanAllProgressBar->setValue(100 * _graduationAcquiredAll / _graduationALL);
 }
 
 void LineDetScanWidget::showMotorTable()

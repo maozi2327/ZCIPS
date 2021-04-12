@@ -381,6 +381,12 @@ void LineDetNetWork::DecodePackages(char * _buff, int _size)
 	}
 }
 
+void LineDetNetWork::reConnect()
+{
+	d_connected = false;
+	d_server->reAccept();
+}
+
 int LineDetNetWork::getListItemSize()
 {
 	return (d_channelNum + 2);

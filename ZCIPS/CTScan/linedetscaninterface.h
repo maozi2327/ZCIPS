@@ -64,7 +64,8 @@ protected:
 	const ConfigData* d_configData;
 	static ICT_HEADER23 d_ictHeader;
 	virtual void scanThread();
-	virtual void saveOrgFile(LineDetList* _list, const QString& _fileName);
+	void saveOrgFile(LineDetList* _list, const QString& _fileName);
+	void saveOrgFile();
 	virtual bool scanFinished();
 	virtual bool caculateParemeterAndSetGenerialFileHeader();
 	virtual void sendCmdToControl() = 0;
@@ -74,7 +75,7 @@ protected:
 	virtual void saveTempFile(LineDetList* _listHead) = 0;
 	virtual void saveFile() = 0;
 signals:
-	void samplePercentCountSignal(int _currentSamplePercent, int _allSamplePercent);
+	void scanProgressSignal(int _graduationAcquiredThisRound, int _graduationThisRound, int _graduationAcquiredAll, int _graduationALL, QString message);
 	void scanThreadQuitSignal(int _sts);
 	LOGSIGNAL
 

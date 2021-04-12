@@ -225,7 +225,8 @@ public:
 	bool stopInternalTrigAcquire();
 	void stopAcquire(bool _finished);
 	void DecodePackages(char* _buff, int _size);
-
+	void reConnect();
+		
 	int getListItemSize();
 	int getListItemNum();
 	int getGraduationCount();

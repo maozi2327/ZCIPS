@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "linedetfilenamedialog.h"
+#include "../Public/util/functions.h"
+#include "../Public/util/messagebox.h"
 
 LineDetFileNameDialog::LineDetFileNameDialog(QString& _objectName, QString& _objectNumber, QString& _fileNumber, 
 	QString& _comment, QWidget *parent)
@@ -10,6 +12,10 @@ LineDetFileNameDialog::LineDetFileNameDialog(QString& _objectName, QString& _obj
 	ui.objectNumberEdit->setText(_objectNumber);
 	ui.fileNumberEdit->setText(_fileNumber);
 	ui.commentEdit->setText(_comment);
+	setLineEditValidaterNoSpecialChar(ui.objectNameEdit);
+	setLineEditValidaterNoSpecialChar(ui.objectNumberEdit);
+	setLineEditValidaterNoSpecialChar(ui.fileNumberEdit);
+	setLineEditValidaterNoSpecialChar(ui.commentEdit);
 }
 
 LineDetFileNameDialog::~LineDetFileNameDialog()

@@ -86,6 +86,7 @@ private:
 	QTimer* d_timer;
 	ColimateController* d_colimateController = nullptr;
 	ColimateControlDialog* d_colimateControlDialog = nullptr;
+	std::map<int, std::chrono::steady_clock::time_point> d_lineDetRestartTime;
 	
 	QMenuBar* d_menuBar;
 	QMenu* d_systemMenu;
@@ -109,6 +110,9 @@ private:
 	
 	QString d_orgPath;
 	QString d_tunedFilePath;
+	QString d_tunedLineBkgPath;
+	QString d_tunedLineAirPath;
+
 	QString d_tunedPanelBkgPath;
 	QString d_tunedPanelAirPath;
 	QString d_tunedPanelConeJointAirPath;

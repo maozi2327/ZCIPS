@@ -27,16 +27,8 @@ int LineDetImageProcess::createAirDat(const QString& _sourceFile, const QString&
 
 	if (ret == 0)
 	{
-		std::regex reg("[^/]+(?=\\.)");
-		std::smatch result;
-		std::string fileName = _sourceFile.toLocal8Bit();
-		std::regex_search(fileName, result, reg);
-		fileName = result.str();
-		QString pureFileName = fileName.c_str();
-		QFile::copy(d_workDirectory + pureFileName + QString::fromLocal8Bit(".dat"), 
-			_destPath + pureFileName + QString::fromLocal8Bit(".dat"));
-		QFile::rename(d_workDirectory + pureFileName + QString::fromLocal8Bit(".dat"),
-			d_workDirectory + QString::fromLocal8Bit("air.dat"));
+		QString pureFileName = getPureFileNameFromFullName(_sourceFile);
+		QFile::copy(d_workDirectory + QString::fromLocal8Bit("air.dat"), _destPath + pureFileName + QString::fromLocal8Bit(".dat"));
 		return 0;
 	}
 
@@ -50,16 +42,8 @@ int LineDetImageProcess::createBkgDat(const QString& _sourceFile, const QString&
 
 	if (ret == 0)
 	{
-		std::regex reg("[^/]+(?=\\.)");
-		std::smatch result;
-		std::string fileName = _sourceFile.toLocal8Bit();
-		std::regex_search(fileName, result, reg);
-		fileName = result.str();
-		QString pureFileName = fileName.c_str();
-		QFile::copy(d_workDirectory + pureFileName + QString::fromLocal8Bit(".dat"),
-			_destPath + pureFileName + QString::fromLocal8Bit(".dat"));
-		QFile::rename(d_workDirectory + pureFileName + QString::fromLocal8Bit(".dat"),
-			d_workDirectory + QString::fromLocal8Bit("bkg.dat"));
+		QString pureFileName = getPureFileNameFromFullName(_sourceFile);
+		QFile::copy(d_workDirectory + QString::fromLocal8Bit("bkg.dat"), _destPath + pureFileName + QString::fromLocal8Bit(".dat"));
 		return 0;
 	}
 

@@ -40,7 +40,7 @@ private:
 	void useCt3Item(const Ct3TemplateData& _templateData);
 private slots:
 	void showMotorTable();
-	void on_Ct3StartButton_clicked();
+	void on_lineDetScanStartButton_clicked();
 	void on_saveDirButton_clicked();
 	void on_ct3MultiLayerComboBox_currentIndexChanged(const QString& _text);
 	void on_ct3LayerPosLineEdit_returnPressed();
@@ -53,11 +53,12 @@ private slots:
 	void on_ct3LayerPosListWidget_itemDoubleClicked(QListWidgetItem* _item);
 
 public slots:
-	void updateCT3ProgresserSlot(int _currentSamplePercent, int _allSamplePercent);
+	void updateCT3ProgresserSlot(int _graduationAcquiredThisRound, int _graduationThisRound, int _graduationAcquiredAll, int _graduationALL, QString message);
 signals:
 	void readyToScanSignal(bool _sts);
 	void ct3ScanSignal();
 	void drScanSignal();
+	void ct2ScanSignal();
 	void stopButtonSignal();
 	void LoadCt3TemplateButtonSignal();
 	void bkgTuneSignal();

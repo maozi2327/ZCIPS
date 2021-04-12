@@ -21,5 +21,6 @@ private:
 private slots:
 	void on_startButton_clicked();
 	void on_stopButton_clicked();
-	void on_updateProgressSlot(int _progress);
+	void on_updateProgressSlot(int _graduationAcquiredThisRound, int _graduationThisRound, int _graduationAcquiredAll, int _graduationALL, QString message);
+	void scanFinishedSlot(int _flag);
 };

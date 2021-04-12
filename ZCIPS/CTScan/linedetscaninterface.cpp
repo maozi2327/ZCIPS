@@ -13,7 +13,7 @@ std::chrono::minutes LineDetScanInterface::d_intervalForSaveTempFile = std::chro
 
 LineDetScanInterface::LineDetScanInterface(ControllerInterface * _controller, LineDetNetWork* _lineDetNetWork,
 	const SetupData* _setupData, int _lineDetIndex, LineDetImageProcess* _lineDetImageProcess)
-	: d_controller(_controller), d_lineDetNetWork(_lineDetNetWork), d_setupData(_setupData), d_scanThread(nullptr)
+	: d_controller(_controller), d_lineDetNetWork(_lineDetNetWork), d_setupData(_setupData), d_scanThread(nullptr), d_saveOrg(true)
 	, d_lineDetIndex(_lineDetIndex), d_lineDetImageProcess(_lineDetImageProcess)
 {
 
@@ -77,8 +77,7 @@ void LineDetScanInterface::scanThread()
 			}
 
 			int graduationCount = d_lineDetNetWork->getGraduationCount();
-			emit(samplePercentCountSignal(float(100) * graduationCount / d_currentScanTotalSamples, 
-				float(100) * (d_samplesBefore + graduationCount) / d_allScanTotalSamples));
+			emit scanProgressSignal(graduationCount, d_currentScanTotalSamples, d_samplesBefore + graduationCount,  d_allScanTotalSamples, QString(""));
 
 			if (d_controller->readSaveStatus())
 			{
@@ -114,9 +113,9 @@ void LineDetScanInterface::scanThread()
 
 void LineDetScanInterface::saveOrgFile(LineDetList* _List, const QString& _fileName)
 {
-	QString fileFullName(_fileName);
+ 	QString fileFullName(_fileName);
 	d_ictHeader.DataFormat.TotalLines = d_lineDetNetWork->getListItemNum();
-	auto ret = d_lineDetImageProcess->saveOrgFile(_fileName, &d_ictHeader, _List, 1);
+	d_lineDetImageProcess->saveOrgFile(_fileName, &d_ictHeader, _List, 1);
 }
 
 bool LineDetScanInterface::scanFinished()
@@ -287,4 +286,9 @@ bool LineDetScanInterface::canScan()
 int LineDetScanInterface::loadTempFile()
 {
 	return 0;
+}
+
+void LineDetScanInterface::saveOrgFile()
+{
+	saveOrgFile(d_lineDetNetWork->getRowList(), d_orgName);
 }

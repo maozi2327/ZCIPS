@@ -9,7 +9,6 @@ NewLineDetBkgTuneDialog::NewLineDetBkgTuneDialog(const QString& _orgPath, const 
 	, d_orgPath(_orgPath), d_filePath(_filePath)
 {
 	ui.setupUi(this);
-	setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
 NewLineDetBkgTuneDialog::~NewLineDetBkgTuneDialog()
@@ -20,8 +19,10 @@ NewLineDetBkgTuneDialog::~NewLineDetBkgTuneDialog()
 void NewLineDetBkgTuneDialog::on_startButton_clicked()
 {
 	d_bkgScan->setFileName(d_orgPath + QString::fromLocal8Bit("bkg.org"), d_filePath);
-	connect(d_bkgScan, &LineDetBkgTune::samplePercentCountSignal, this, &NewLineDetBkgTuneDialog::on_updateProgressSlot);
+	connect(d_bkgScan, &LineDetBkgTune::scanProgressSignal, this, &NewLineDetBkgTuneDialog::on_updateProgressSlot);
+	connect(d_bkgScan, &LineDetBkgTune::scanThreadQuitSignal, this, &NewLineDetBkgTuneDialog::scanFinishedSlot);
 	d_bkgScan->beginScan();
+	ui.startButton->setEnabled(false);
 }
 
 void NewLineDetBkgTuneDialog::on_stopButton_clicked()
@@ -29,7 +30,14 @@ void NewLineDetBkgTuneDialog::on_stopButton_clicked()
 	d_bkgScan->stopScan();
 }
 
-void NewLineDetBkgTuneDialog::on_updateProgressSlot(int _progress)
+void NewLineDetBkgTuneDialog::on_updateProgressSlot(int _graduationAcquiredThisRound, int _graduationThisRound, int _graduationAcquiredAll, int _graduationALL, QString message)
 {
-	ui.progressBar->setValue(float(_progress));
+	ui.progressBar->setValue(100 * _graduationAcquiredThisRound / _graduationThisRound);
+	ui.startButton->setEnabled(false);
 }
+
+void NewLineDetBkgTuneDialog::scanFinishedSlot(int _flag)
+{
+	ui.startButton->setEnabled(true);
+}
+

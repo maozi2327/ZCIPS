@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>colimateControlDialog</string>
+   <string>准直器控制</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>

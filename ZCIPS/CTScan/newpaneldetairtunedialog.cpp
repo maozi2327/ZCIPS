@@ -11,9 +11,7 @@ NewPanelDetAirTuneDialog::NewPanelDetAirTuneDialog(const QString& _bkgPath, cons
 	, d_orgPath(_orgPath), d_tunedFilePath(_filePath)
 {
 	ui.setupUi(this);
-	QRegExp rx = QRegExp("[^\\\\/:*?\"<>|_]*");
-	QRegExpValidator* validator = new QRegExpValidator(rx);
-	ui.nameEdit->setValidator(validator);
+	setLineEditValidaterNoSpecialChar(ui.nameEdit);
 	loadBKgNames();
 }
 

@@ -3,6 +3,9 @@
 #include <qdatetime.h>
 #include <regex>
 #include <qdir.h>
+#include "messagebox.h"
+#include <QRegExp>
+#include <QValidator>
 
 #define MB 1024*1024
 QByteArray getByteArray(QString & _fileName)
@@ -18,13 +21,13 @@ quint64 getDiskFreeSpace(QString & _folder)
 	return (quint64)freeDiskSpaceAvailable.QuadPart / MB;
 }
 
-
 QString replaceSlashToBslash(const QString& _str)
 {
 	QString ret = _str;
 	ret.replace('/', '\\');
 	return ret;
 }
+
 QString getTimeWithUnderline()
 {
 	QString fileNameTime = QDateTime::currentDateTime().time().toString();
@@ -103,4 +106,41 @@ int browseAllFiles(const QString& path, std::vector<QString>& fileNames)
 
 		i++;
 	} while (i < list.size());
+}
+
+bool legalInputFloatOnly(const QString& _input)
+{
+	QRegExp exp(QString::fromLocal8Bit("^(\\d+)(\\.\\d+)?$"));
+
+	if (exp.exactMatch(_input))
+		return true;
+
+	return false;
+}
+
+bool legalInputIntegerOnly(const QString& _input)
+{
+	QRegExp exp(QString::fromLocal8Bit("^[1-9]\\d*$"));
+
+	if (exp.exactMatch(_input))
+		return true;
+
+	return false;
+}
+
+bool legalInputNoneSpecialChar(const QString& _input)
+{
+	QRegExp exp(QString::fromLocal8Bit("[\\\\/:*\\?<>|]"));
+
+	if (_input.contains(exp))
+		return false;
+
+	return true;
+}
+
+void setLineEditValidaterNoSpecialChar(QLineEdit * _lineEdit)
+{
+	QRegExp rx = QRegExp("[^\\\\/:*?\"<>|_]*");
+	QRegExpValidator* validator = new QRegExpValidator(rx);
+	_lineEdit->setValidator(validator);
 }

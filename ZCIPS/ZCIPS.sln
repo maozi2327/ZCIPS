@@ -18,6 +18,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SiYuan", "SiYuan\SiYuan.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PanelDector", "PanelDetector\PanelDll.vcxproj", "{5173E06F-DF86-4E83-A5DD-F92674EDE9FE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Functions", "Functions\Functions.vcxproj", "{DD1385FD-AD40-4BA3-BA11-3FC64C194A94}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -58,6 +60,12 @@ Global
 		{5173E06F-DF86-4E83-A5DD-F92674EDE9FE}.Release|x64.Build.0 = Release|x64
 		{5173E06F-DF86-4E83-A5DD-F92674EDE9FE}.Release|x86.ActiveCfg = Release|Win32
 		{5173E06F-DF86-4E83-A5DD-F92674EDE9FE}.Release|x86.Build.0 = Release|Win32
+		{DD1385FD-AD40-4BA3-BA11-3FC64C194A94}.Debug|x64.ActiveCfg = Debug|x64
+		{DD1385FD-AD40-4BA3-BA11-3FC64C194A94}.Debug|x64.Build.0 = Debug|x64
+		{DD1385FD-AD40-4BA3-BA11-3FC64C194A94}.Debug|x86.ActiveCfg = Debug|x64
+		{DD1385FD-AD40-4BA3-BA11-3FC64C194A94}.Release|x64.ActiveCfg = Release|x64
+		{DD1385FD-AD40-4BA3-BA11-3FC64C194A94}.Release|x64.Build.0 = Release|x64
+		{DD1385FD-AD40-4BA3-BA11-3FC64C194A94}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

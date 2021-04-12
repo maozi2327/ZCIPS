@@ -30,7 +30,7 @@ bool ColimateController::switchFrontHorizontalToPanel()
 
 bool ColimateController::switchFrontVerticalToLine()
 {
-	return leiSaiMotor->aixAbsMove(AXISFRONTVERTICAL, 15.0 / 2);
+	return leiSaiMotor->aixAbsMove(AXISFRONTVERTICAL, 18.0 / 2);
 }
 
 bool ColimateController::switchFrontHorizontalToLine()

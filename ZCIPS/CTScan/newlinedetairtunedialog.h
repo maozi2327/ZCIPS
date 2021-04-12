@@ -24,17 +24,8 @@ private:
 private slots:
 	void on_startButton_clicked();
 	void on_stopButton_clicked();
-	void on_nameLineEdit_textChanged(QString _str);
-	void on_voltageLineEdit_textChanged(QString _str);
-	void on_ct3LayerThickness_2_textChanged(QString _str);
-	void on_comentEdit_textChanged(QString _str);
-	void on_updateProgressSlot(int _progress);
+	void on_updateProgressSlot(int _graduationAcquiredThisRound, int _graduationThisRound, int _graduationAcquiredAll, int _graduationALL, QString message);
+	void scanFinishedSlot();
 public slots:
 	void updateScanButtonSlot(bool _sts);
-
-private:
-	static NewLineDetAirTuneDialog* d_ref;
-
-protected:
-	virtual void closeEvent(QCloseEvent*_event) override;
 };

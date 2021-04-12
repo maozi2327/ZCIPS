@@ -52,13 +52,6 @@ void LineDetAirTune::sendCmdToControl()
 	d_controller->sendToControl(CMD_RAY_TUNE, nullptr, 0, false);
 }
 
-
-void LineDetAirTune::saveFile()
-{
-	saveOrgFile(d_lineDetNetWork->getRowList(), d_orgName);
-	d_lineDetImageProcess->createAirDat(d_orgName, d_filePath);
-}
-
 void LineDetAirTune::saveTempFile(LineDetList * _listHead)
 {
 }
@@ -66,4 +59,18 @@ void LineDetAirTune::saveTempFile(LineDetList * _listHead)
 void LineDetAirTune::stopScan()
 {
 	LineDetScanInterface::stopScan();
+}
+
+void LineDetAirTune::saveFile()
+{
+	saveOrgFile();
+	QDir dir;
+
+	if (!dir.exists(d_filePath))
+		dir.mkpath(d_filePath);
+
+	d_lineDetImageProcess->createAirDat(d_orgName, d_filePath);
+
+	if (!d_saveOrg)
+		QFile::remove(d_orgName);
 }

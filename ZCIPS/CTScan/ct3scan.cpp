@@ -137,71 +137,19 @@ void CT3Scan::sendCmdToControl()
 
 void CT3Scan::saveFile()
 {
-	//TODO_DJ：断续扫描合成完整文件
-	//std::unique_ptr<RowList> finalList(new RowList);
+	saveOrgFile();
 
-	//for (auto& tempFile : d_tempFileVec)
-	//{
-	//	QFile file;
-	//	file.setFileName(tempFile);
-	//	file.open(QIODevice::ReadWrite);
-	//	auto byteArray = file.readAll();
-	//	int listItemNum = byteArray.size() / d_lineDetNetWork->getListItemSize();
-	//	auto listItemSize = d_lineDetNetWork->getListItemSize();
-	//	char* memory = new char[byteArray.size()];
-	//	memcpy(memory, byteArray.data(), byteArray.size());
-
-	//	for (int i = 0; i != listItemNum; ++i)
-	//		finalList->push_back((unsigned long*)(memory + listItemSize * i));
-	//}	
-	//
-	//saveOrgFile(finalList.get()->getList());
-	//TODO_DJ：断续扫描合成完整文件
-
-	//从数据库中检索文件当天扫描的文件编号，如果有同名文件就当前最大编号+1，无同名文件就新建编号0000
-	//auto number = d_fileDB->getNumber(d_fileName);
-
-	QDir  dir;
-	QString orgPath = d_orgName.left(d_orgName.lastIndexOf('/') + 1);
-
-	if (!dir.exists(orgPath))
-		dir.mkpath(d_orgName.left(d_orgName.lastIndexOf('/') + 1));
+	QDir dir;
 
 	if (!dir.exists(d_filePath))
 		dir.mkpath(d_filePath);
 
-	//QDir dir(d_filePath);
-	//int filesNumber = 0;
-	//dir.setFilter(QDir::Dirs | QDir::Files);
-	//dir.setSorting(QDir::DirsFirst);
-	//int fileNumber = dir.count();
-	d_orgName = orgPath + getTimeWithUnderline() + d_orgName.right(d_orgName.length() - d_orgName.lastIndexOf('_'));
-	saveOrgFile(d_lineDetNetWork->getRowList(), d_orgName);
-
-	//TODO_DJ：保存ORG记录到数据库
-	//OrgRecord orgRecord;
-	//orgRecord.path = d_orgPath;
-	//orgRecord.fileName = d_fileName;
-	//orgRecord.number = number.toInt();
-	//orgRecord.type = static_cast<char>(ScanMode::CT3_SCAN);
-	//d_fileDB->writeOrgRecord(orgRecord);
-	//TODO_DJ：保存ORG记录到数据库
-	
-	//拷贝空气文件到校正参数路径
 	QFile::copy(d_airFile, d_installDirectory + "air.dat");
 	d_lineDetImageProcess->ct3Tune(d_orgName, d_filePath);
-	++d_imageScaned;
+	++d_imageScaned;	
 	
-	//TODO_DJ：保存CT记录到数据库
-	//CT3Record ct3Record;
-	//ct3Record.path = d_filePath;
-	//ct3Record.fileName = d_fileName;
-	//ct3Record.number = orgRecord.number;
-	//ct3Record.view = d_viewDiameter;
-	//ct3Record.matrix = d_matrix;
-	//ct3Record.sampleTime = d_sampleTime;
-	//ct3Record.layer = d_layer;
-	//TODO_DJ：保存CT记录到数据库
+	if (!d_saveOrg)
+		QFile::remove(d_orgName);
 }
 
 bool CT3Scan::caculateParemeterAndSetGenerialFileHeader()
