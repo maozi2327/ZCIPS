@@ -87,7 +87,9 @@ private:
 	ColimateController* d_colimateController = nullptr;
 	ColimateControlDialog* d_colimateControlDialog = nullptr;
 	std::map<int, std::chrono::steady_clock::time_point> d_lineDetRestartTime;
-	
+	std::map<int, bool> d_lineDetRestartFlag;
+	std::map<int, int> d_lineDetRestartIntervel;
+
 	QMenuBar* d_menuBar;
 	QMenu* d_systemMenu;
 	QAction* d_initiliseSystemAction;

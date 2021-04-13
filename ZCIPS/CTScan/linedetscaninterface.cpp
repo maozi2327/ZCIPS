@@ -8,7 +8,7 @@
 #include "filedb.h"
 #include <algorithm>
 
-ICT_HEADER23 LineDetScanInterface::d_ictHeader;
+ICT_HEADER LineDetScanInterface::d_ictHeader;
 std::chrono::minutes LineDetScanInterface::d_intervalForSaveTempFile = std::chrono::minutes(30);
 
 LineDetScanInterface::LineDetScanInterface(ControllerInterface * _controller, LineDetNetWork* _lineDetNetWork,
@@ -77,7 +77,9 @@ void LineDetScanInterface::scanThread()
 			}
 
 			int graduationCount = d_lineDetNetWork->getGraduationCount();
-			emit scanProgressSignal(graduationCount, d_currentScanTotalSamples, d_samplesBefore + graduationCount,  d_allScanTotalSamples, QString(""));
+			int timeRemain = (d_allScanTotalSamples - (d_samplesBefore + graduationCount)) * d_sampleTime / 1000 / 60 + 1;
+			QString message = makeFormatQString("剩余时间：%d分", timeRemain);
+			emit scanProgressSignal(graduationCount, d_currentScanTotalSamples, d_samplesBefore + graduationCount,  d_allScanTotalSamples, message);
 
 			if (d_controller->readSaveStatus())
 			{
@@ -113,7 +115,6 @@ void LineDetScanInterface::scanThread()
 
 void LineDetScanInterface::saveOrgFile(LineDetList* _List, const QString& _fileName)
 {
- 	QString fileFullName(_fileName);
 	d_ictHeader.DataFormat.TotalLines = d_lineDetNetWork->getListItemNum();
 	d_lineDetImageProcess->saveOrgFile(_fileName, &d_ictHeader, _List, 1);
 }
@@ -194,13 +195,15 @@ bool LineDetScanInterface::caculateParemeterAndSetGenerialFileHeader()
 	d_ictHeader.ScanParameter.NumberOfTranslation = 0;
 	d_ictHeader.ReconstructParameter.NumberOfGraduationOfCt2 = 0;
 	d_ictHeader.ReconstructParameter.SerialOfGraduationOfCt2 = 0;
-	d_ictHeader.ScanParameter.ViewDiameter = d_viewDiameter;
 	d_ictHeader.ScanParameter.NumberOfTable = 1;
 	d_ictHeader.ScanParameter.LargeViewCenterOffset = 0;
 	d_ictHeader.ScanParameter.Pixels = d_matrix;
 	d_ictHeader.ScanParameter.GraduationDirection = P_DIR;
 	d_ictHeader.ScanParameter.DelaminationMode = 0;
-	CalculateView_ValidDetector(d_view);
+	
+	d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector = 
+		CalculateView_ValidDetector(d_view, d_ictHeader.ScanParameter.ViewDiameter);
+	
 	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
 	d_ictHeader.ScanParameter.NumberOfInterpolation =
 		(float)d_matrix / d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector + 1;
@@ -220,7 +223,7 @@ bool LineDetScanInterface::caculateParemeterAndSetGenerialFileHeader()
 	return true;
 }
 
-void LineDetScanInterface::CalculateView_ValidDetector(float _diameter)
+int LineDetScanInterface::CalculateView_ValidDetector(float _diameter, float& _viewDatmeter)
 {
 	int systemDetector = d_setupData->lineDetData[d_lineDetIndex].NumberOfSystemHorizontalDetector;
 	int calibrateDetector = d_setupData->lineDetData[d_lineDetIndex].NumberOfCalibrateHorizontalDetector;
@@ -229,11 +232,10 @@ void LineDetScanInterface::CalculateView_ValidDetector(float _diameter)
 
 	int leftMiddle = d_ictHeader.ScanParameter.SerialNo1OfMiddleHorizontalDetector;
 	int rightMiddle = d_ictHeader.ScanParameter.SerialNo2OfMiddleHorizontalDetector;
+	int Nv;
 
 	if (false)		//确定3代扫描有效探测器数Nv
 	{
-		int	Nv;
-
 		if (leftMiddle == rightMiddle)
 			Nv = 2 * std::min<int>(rightMiddle, systemDetector - rightMiddle - 1) + 1;
 		else
@@ -245,7 +247,6 @@ void LineDetScanInterface::CalculateView_ValidDetector(float _diameter)
 	else 
 	{
 		float beta = (float)(2 * asin(_diameter / 2 / 980));        //计算视场D占用的扇角beta
-		int	Nv;
 
 		if (leftMiddle == rightMiddle)
 			Nv = 2 * (int)(beta / 2 / delta) + 1;
@@ -258,8 +259,9 @@ void LineDetScanInterface::CalculateView_ValidDetector(float _diameter)
 		d_ictHeader.ScanParameter.NumberOfValidHorizontalDetector = Nv;
 		_diameter = 2 * 980 * (float)sin(delta*(Nv - 1) / 2);
 	}
-	//TODO_DJ
-	d_ictHeader.ScanParameter.ViewDiameter = (float)((int)(100.0 * _diameter)) / 100;
+	
+	_viewDatmeter = (float)((int)(100.0 * _diameter)) / 100;
+	return Nv;
 }
 
 bool LineDetScanInterface::canScan()

@@ -448,13 +448,22 @@ void CTScanApp::updateSystemStatusSlot()
 
 		if (!lineDetConnect)
 		{
-
-			if (std::chrono::duration_cast<std::chrono::minutes>(timeNow - d_lineDetRestartTime[scanManager.first.second]).count() > 1)
+			if (!d_lineDetRestartFlag[scanManager.first.second] && 
+				std::chrono::duration<double>(timeNow - d_lineDetRestartTime[scanManager.first.second]).count() > 10)
+			{
+				d_controller->restartLineDet(scanManager.first.second);
+				d_lineDetRestartFlag[scanManager.first.second] = true;
+				d_lineDetRestartTime[scanManager.first.second] = timeNow;
+			}
+			else if (d_lineDetRestartFlag[scanManager.first.second] &&
+				std::chrono::duration<double>(timeNow - d_lineDetRestartTime[scanManager.first.second]).count() > 30)
 			{
 				d_controller->restartLineDet(scanManager.first.second);
 				d_lineDetRestartTime[scanManager.first.second] = timeNow;
 			}
 		}
+		else
+			d_lineDetRestartFlag[scanManager.first.second] = false;
 
 		scanManager.second->updateStatus(controlConnected && idle && ready && d_lineDetNetWorkMap[scanManager.first.second]->getConnected());
 	}
@@ -462,9 +471,10 @@ void CTScanApp::updateSystemStatusSlot()
 	for (auto& scanManager : d_panelDetScanManagerMap)
 	{
 		scanManager.second->updateControlSystemStatus(controlConnected && idle && ready);
-		scanManager.second->updatePanelStatus(d_panelDetMap[scanManager.first.second]->getConnected() && idle);
+		scanManager.second->updatePanelStatus(d_panelDetMap[scanManager.first.second]->getConnected());
 	}
 
+	d_axisStatusWidget->updateControlSts(controlConnected && idle && ready);
 	//QString tip;
 
 	//if (!controlConnected)

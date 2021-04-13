@@ -12,7 +12,8 @@ class AxisControlwidget : public QWidget
 public:
 	AxisControlwidget(ControllerInterface* _controller, const std::map<Axis, AxisData>& _axisDataMap, QWidget *parent = Q_NULLPTR);
 	~AxisControlwidget();
-
+	
+	void updateControlSts(bool _enable);
 private:
 	Ui::AxisControlwidget ui;
 	

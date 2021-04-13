@@ -5,6 +5,7 @@
 #include "LineDetNetWork.h"
 #include "../Public/headers/setupData.h"
 #include "ct3scan.h"
+#include "ct2scan.h"
 #include "drscan.h"
 #include "linedetbkgtune.h"
 #include "linedetairtune.h"
@@ -124,7 +125,30 @@ void LineDetScanManager::ct3ScanSlot()
 }
 void LineDetScanManager::ct2ScanSlot()
 {
+	QString fileNumber{ QString::fromLocal8Bit("55AA5A") };
 
+	if (!getFileNameFromDialog(d_objectName, d_objectNumber, fileNumber, d_fileNameComment))
+		return;
+
+	QString orgFileName = d_orgDirectory + QDateTime::currentDateTime().date().toString(Qt::ISODate) + '/' +
+		d_objectName + '/' + d_objectNumber + '/' + fileNumber + QString::fromLocal8Bit("_") + d_fileNameComment + QString::fromLocal8Bit(".org");
+	QString destFilePath = d_tunedFileDirectory + QDateTime::currentDateTime().date().toString(Qt::ISODate) + '/' +
+		d_objectName + '/' + d_objectNumber + '/';
+
+	float layer = d_lineDetScanWidget->ui.ct2LayerPosLineEdit->text().toFloat();
+	int matrix = d_lineDetScanWidget->ui.ct2MatrixComboBox->currentText().toInt();
+	int view = d_lineDetScanWidget->ui.ct2ViewComboBox->currentText().toInt();
+	int sampleTime = d_lineDetScanWidget->ui.ct2SampleTimeComboBox->currentText().toInt();
+	float angle = d_lineDetScanWidget->ui.ct2AngleLineEdit->text().toFloat();
+	d_scan.reset(new Ct2Scan(d_controller, d_lineDetNetWork, d_setupData, d_detNum, d_lineDetImageProcess));
+
+	if (!dynamic_cast<Ct2Scan*>(d_scan.get())->setScanParameter(layer, matrix, view, sampleTime, angle, 0))
+		return;
+
+	d_scan->setFileName(orgFileName, destFilePath);
+
+	connect(d_scan.get(), &Ct2Scan::scanProgressSignal, d_lineDetScanWidget, &LineDetScanWidget::updateCT3ProgresserSlot);
+	d_scan->beginScan();
 }
 
 void LineDetScanManager::drScanSlot()

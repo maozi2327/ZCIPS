@@ -39,7 +39,6 @@ protected:
 	float d_SDD;
 	float d_colimateSize;
 	float d_layerThickness;
-	float d_viewDiameter;
 	float d_angle;
 	int d_matrix;
 	int d_currentScanTotalSamples;
@@ -48,7 +47,6 @@ protected:
 	int d_sampleTime;
 	int d_channelNum;
 	int d_imageScaned;
-	int d_currentSamples;
 	int d_samplesBefore;
 	bool d_saveOrg;
 
@@ -62,14 +60,14 @@ protected:
 	RayType d_rayType;
 	const SetupData* d_setupData;
 	const ConfigData* d_configData;
-	static ICT_HEADER23 d_ictHeader;
+	static ICT_HEADER d_ictHeader;
 	virtual void scanThread();
 	void saveOrgFile(LineDetList* _list, const QString& _fileName);
 	void saveOrgFile();
 	virtual bool scanFinished();
 	virtual bool caculateParemeterAndSetGenerialFileHeader();
 	virtual void sendCmdToControl() = 0;
-	void CalculateView_ValidDetector(float _diameter);
+	int CalculateView_ValidDetector(float _diameter, float& _viewDatmeter);
 	virtual bool canScan();
 	virtual int loadTempFile();
 	virtual void saveTempFile(LineDetList* _listHead) = 0;

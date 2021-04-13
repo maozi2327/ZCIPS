@@ -66,6 +66,6 @@ int LineDetImageProcess::generalTune(const QString& _orgFile, const QString& _de
 	QByteArray destDirectoryByte = replaceSlashToBslash(_destPath).toLocal8Bit();
 	QByteArray workDirectory = replaceSlashToBslash(d_workDirectory).toLocal8Bit();
 	unsigned short setupWord = EN_BKGTUNE | EN_AIRTUNE | EN_RANGE | EN_CROSSTALK | EN_PULSEDOSE | EN_HARDEN | EN_ABNORMALDETECTOR | EN_SENSITIVE;
-	char szFullPathDesFileName[MAX_PATH];							//全路径目的文件名
+	char szFullPathDesFileName[MAX_PATH];
 	return fDataDispose(workDirectory.data(), orgFileName.data(), destDirectoryByte.data(), szFullPathDesFileName, setupWord);
 }

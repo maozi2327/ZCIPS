@@ -137,14 +137,19 @@ void CT3Scan::sendCmdToControl()
 
 void CT3Scan::saveFile()
 {
-	saveOrgFile();
+	QDir  dir;
+	QString orgPath = d_orgName.left(d_orgName.lastIndexOf('/') + 1);
 
-	QDir dir;
+	if (!dir.exists(orgPath))
+		dir.mkpath(orgPath);
+
+	QString timeName = getTimeWithUnderline();
+	d_orgName = orgPath + timeName + d_orgName.right(d_orgName.length() - d_orgName.lastIndexOf('_'));
+	saveOrgFile();
 
 	if (!dir.exists(d_filePath))
 		dir.mkpath(d_filePath);
 
-	QFile::copy(d_airFile, d_installDirectory + "air.dat");
 	d_lineDetImageProcess->ct3Tune(d_orgName, d_filePath);
 	++d_imageScaned;	
 	
@@ -163,12 +168,16 @@ bool CT3Scan::caculateParemeterAndSetGenerialFileHeader()
 	d_ictHeader.ScanParameter.Azimuth = d_angle;
 	d_ictHeader.ScanParameter.NumberofValidVerticalDetector = d_channelNum;
 	//对无关参数设置默认值
-	d_ictHeader.ScanParameter.ViewDiameter = d_viewDiameter;
 	d_ictHeader.ScanParameter.Pixels = d_matrix;
 	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
 	d_ictHeader.ScanParameter.ScanMode = static_cast<char>(ScanMode::CT3_SCAN);
 	d_ictHeader.ScanParameter.TotalLayers = d_layer.size();
-	d_currentScanTotalSamples = (d_ictHeader.ScanParameter.NumberOfInterpolation + 1) * d_matrix;
+
+	if (d_ictHeader.ScanParameter.InterpolationFlag == 1)
+		d_currentScanTotalSamples = (d_ictHeader.ScanParameter.NumberOfInterpolation + 1) * d_matrix;
+	else
+		d_currentScanTotalSamples = d_ictHeader.ScanParameter.NumberOfInterpolation * d_matrix;
+
 	d_allScanTotalSamples = d_currentScanTotalSamples * d_layer.size();
 	int N = d_ictHeader.ScanParameter.NumberOfSystemHorizontalDetector;
 	float d = PI * d_ictHeader.ScanParameter.HorizontalSectorAngle / (180 * (N - 1));

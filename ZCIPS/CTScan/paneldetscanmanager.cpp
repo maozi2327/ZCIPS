@@ -262,12 +262,12 @@ void PanelDetScanManager::updateObjectNameNumber(const QString & _objectName, co
 void PanelDetScanManager::updateControlSystemStatus(bool readyToScan)
 {
 	d_coneScanWidget->ui.coneScanBeginSampleButton->setEnabled(readyToScan);
+	d_coneScanWidget->ui.airTuneButton->setEnabled(readyToScan);
+	d_coneScanWidget->ui.bkgTuneButton->setEnabled(readyToScan);
 }
 
 void PanelDetScanManager::updatePanelStatus(bool readyToScan)
 {
-	d_coneScanWidget->ui.airTuneButton->setEnabled(readyToScan);
-	d_coneScanWidget->ui.bkgTuneButton->setEnabled(readyToScan);
 	d_coneScanWidget->ui.previewButton->setEnabled(readyToScan);
 	d_coneScanWidget->ui.frameShotButton->setEnabled(readyToScan);
 	d_coneScanWidget->ui.previewButton->setEnabled(readyToScan);

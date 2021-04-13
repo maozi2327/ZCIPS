@@ -12,10 +12,13 @@ LineDetFileNameDialog::LineDetFileNameDialog(QString& _objectName, QString& _obj
 	ui.objectNumberEdit->setText(_objectNumber);
 	ui.fileNumberEdit->setText(_fileNumber);
 	ui.commentEdit->setText(_comment);
-	setLineEditValidaterNoSpecialChar(ui.objectNameEdit);
-	setLineEditValidaterNoSpecialChar(ui.objectNumberEdit);
-	setLineEditValidaterNoSpecialChar(ui.fileNumberEdit);
-	setLineEditValidaterNoSpecialChar(ui.commentEdit);
+
+	std::vector<QLineEdit*> nonSpecialLineEditVec
+	{
+		ui.objectNameEdit, ui.objectNumberEdit, ui.fileNumberEdit, ui.commentEdit
+	};
+
+	setLineEditValidaterNoSpecialChar(nonSpecialLineEditVec);
 }
 
 LineDetFileNameDialog::~LineDetFileNameDialog()

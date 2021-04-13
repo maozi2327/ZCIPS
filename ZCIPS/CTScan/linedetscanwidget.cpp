@@ -3,6 +3,7 @@
 #include "CT3TemplateDialog.h"
 #include "linedetairtunedialog.h"
 #include "scantemplate.h"
+#include "../Public/util/functions.h"
 
 LineDetScanWidget::LineDetScanWidget(QWidget *parent)
 	: QWidget(parent)
@@ -11,6 +12,15 @@ LineDetScanWidget::LineDetScanWidget(QWidget *parent)
 	initiliseControls();
 	setFixedHeight(470);
 	ui.ct3LayerPosListWidget->setSortingEnabled(true);
+	
+	std::vector<QLineEdit*> floatOnlyLineEditVec
+	{
+		ui.ct2LayerPosLineEdit, ui.ct3LayerPosLineEdit, ui.drStartPosLineEdit, ui.ct3LayerSpaceLineEdit,
+		ui.drLayerSpaceLineEdit, ui.ct2AngleLineEdit, ui.ct3AngleLineEdit, ui.drAngleLineEdit, ui.drScanLenthLineEdit
+	};
+
+	setLineEditValidaterFloatChar(floatOnlyLineEditVec);
+	setLineEditValidaterFloatChar(ui.ct3LayerNumLineEdit);
 }
 
 LineDetScanWidget::~LineDetScanWidget()
@@ -129,6 +139,9 @@ std::pair<std::vector<float>, bool> LineDetScanWidget::getLayer()
 void LineDetScanWidget::enableScan(bool _sts)
 {
 	ui.lineDetScanStartButton->setEnabled(_sts);
+	ui.bkgTuneButton->setEnabled(_sts);
+	ui.airTuneButton->setEnabled(_sts);
+	ui.loadTuneDataButton->setEnabled(_sts);
 
 	if (!_sts)
 	{
@@ -206,7 +219,7 @@ void LineDetScanWidget::on_lineDetScanStartButton_clicked()
 	else if (ui.scanModeTab->currentWidget() == ui.drTab)
 		emit drScanSignal();
 	else if (ui.scanModeTab->currentWidget() == ui.ct2Tab)
-		;
+		emit ct2ScanSignal();
 }
 
 void LineDetScanWidget::on_saveDirButton_clicked()
@@ -274,6 +287,7 @@ void LineDetScanWidget::updateCT3ProgresserSlot(int _graduationAcquiredThisRound
 {
 	ui.Ct3ScanNowProgressBar->setValue(100 * _graduationAcquiredThisRound / _graduationThisRound);
 	ui.Ct3ScanAllProgressBar->setValue(100 * _graduationAcquiredAll / _graduationALL);
+	ui.scanMessageLabel->setText(message);
 }
 
 void LineDetScanWidget::showMotorTable()

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "axiscontrolwidget.h"
 #include "controllerinterface.h"
+#include "../Public/util/functions.h"
 
 AxisControlwidget::AxisControlwidget(ControllerInterface* _controller, const std::map<Axis, AxisData>& _axisDataMap, QWidget *parent)
 	: QWidget(parent), d_controller(_controller)
@@ -121,6 +122,8 @@ AxisControlwidget::AxisControlwidget(ControllerInterface* _controller, const std
 
 	connect(d_axisRadioButtonGroup, SIGNAL(buttonClicked(QAbstractButton*)),
 		this, SLOT(onRadionButtonClicked(QAbstractButton*)));
+
+	setLineEditValidaterFloatChar(d_posLineEdit);
 	d_timer = new QTimer(this);
 	d_timer->start(100);
 	connect(d_timer, &QTimer::timeout, this, &AxisControlwidget::updateStatus);
@@ -128,6 +131,13 @@ AxisControlwidget::AxisControlwidget(ControllerInterface* _controller, const std
 
 AxisControlwidget::~AxisControlwidget()
 {
+}
+
+void AxisControlwidget::updateControlSts(bool _enable)
+{
+	d_negativePosButton->setEnabled(_enable);
+	d_positivePosButton->setEnabled(_enable);
+	d_absPosButton->setEnabled(_enable);
 }
 
 void AxisControlwidget::on_negativePosButton_clicked()

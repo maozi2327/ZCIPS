@@ -74,6 +74,9 @@ bool LineDetNetWork::setParameterAfterConnect(SOCKET _sock)
 		return false;
 
 	//TODO_DJ:启动的时候挂了
+	while (!d_server)
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
 	if (!ARMTest()) return false;
 	if (!ChannelSelect()) return false;
 	if (!ChannelDepthSet()) return false;

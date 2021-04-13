@@ -128,9 +128,7 @@ void ConeScanInterface::imageProcessThread()
 				d_imageProcess->mirrorYDataToData(memory, d_height, d_width);
 				saveFile(memory);
 				int timeRemain = (d_round * d_graduation * d_framesPerGraduation - (d_graduationCount + 1)) * d_posTime / 1000 / 60 + 1;
-				char mes[255];
-				sprintf(mes, "已经采集%d幅，剩余时间：%d分", d_graduationCount + 1, timeRemain);
-				QString message = QString::fromLocal8Bit(mes);
+				QString message = makeFormatQString("已经采集%d幅，剩余时间：%d分", d_graduationCount + 1, timeRemain);
 				emit scanProgressSignal(d_graduationCount + 1, d_graduation * d_framesPerGraduation, d_graduationCount + 1,
 					d_round * d_graduation * d_framesPerGraduation, message);
 			}

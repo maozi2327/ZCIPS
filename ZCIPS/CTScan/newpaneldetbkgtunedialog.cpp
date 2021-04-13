@@ -2,6 +2,7 @@
 #include "newpaneldetbkgtunedialog.h"
 #include "panelbkgtune.h"
 #include "../Public/util/messagebox.h"
+#include "../Public/util/functions.h"
 
 NewPanelDetBkgTuneDialog::NewPanelDetBkgTuneDialog(const QString& _orgPath, const QString& _filePath, PanelBkgTune* panelBkgTune, 
 	int _cycleTime, unsigned short _gainFactor, QWidget *parent)
@@ -9,9 +10,7 @@ NewPanelDetBkgTuneDialog::NewPanelDetBkgTuneDialog(const QString& _orgPath, cons
 	, d_cycleTime(_cycleTime), d_gainFactor(_gainFactor)
 {
 	ui.setupUi(this);
-	QRegExp rx = QRegExp("[^\\\\/:*?\"<>|_]*");
-	QRegExpValidator* validator = new QRegExpValidator(rx);
-	ui.nameEdit->setValidator(validator);
+	setLineEditValidaterNoSpecialChar(ui.nameEdit);
 }
 
 NewPanelDetBkgTuneDialog::~NewPanelDetBkgTuneDialog()

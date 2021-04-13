@@ -73,7 +73,7 @@
 	<LineDetScanModeSection>
 		<RayDetCouple Ray="0" LineDet="0">
 			<ScanType Type="CT2">
-				<View>800</View>
+				<View>400</View>
 				<Matrix>1024,2048</Matrix>
 				<translationModeDefine>BI_DIR</translationModeDefine>
 			</ScanType>
@@ -124,8 +124,8 @@
 			<a>
 				<RayId>0</RayId>
 				<LineDetId>0</LineDetId>
-				<View>800</View>
-				<Matrix>1024,2048</Matrix>
+				<View>400</View>
+				<Matrix>128,1024,2048</Matrix>
 				<translationModeDefine>1</translationModeDefine>
 				<SampleTime>25,45,65,85,125</SampleTime>
 			</a>

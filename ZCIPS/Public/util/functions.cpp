@@ -74,7 +74,7 @@ int browseAllFiles(const QString& path, std::vector<QString>& fileNames)
 
 	if (!dir.exists())
 	{
-		return false;
+		return -1;
 	}
 
 	dir.setFilter(QDir::Dirs | QDir::Files);
@@ -106,6 +106,8 @@ int browseAllFiles(const QString& path, std::vector<QString>& fileNames)
 
 		i++;
 	} while (i < list.size());
+
+	return filesNumber;
 }
 
 bool legalInputFloatOnly(const QString& _input)
@@ -143,4 +145,45 @@ void setLineEditValidaterNoSpecialChar(QLineEdit * _lineEdit)
 	QRegExp rx = QRegExp("[^\\\\/:*?\"<>|_]*");
 	QRegExpValidator* validator = new QRegExpValidator(rx);
 	_lineEdit->setValidator(validator);
+}
+
+void setLineEditValidaterFloatChar(QLineEdit * _lineEdit)
+{
+	QRegExp rx(QString::fromLocal8Bit("^(\\d+)(\\.\\d+)?$"));
+	QRegExpValidator* validator = new QRegExpValidator(rx);
+	_lineEdit->setValidator(validator);
+}
+
+void setLineEditValidaterIntegerChar(QLineEdit * _lineEdit)
+{
+	QRegExp rx(QString::fromLocal8Bit("^[1-9]\\d*$"));
+	QRegExpValidator* validator = new QRegExpValidator(rx);
+	_lineEdit->setValidator(validator);
+}
+
+void setLineEditValidaterNoSpecialChar(std::vector<QLineEdit*>& _lineEdit)
+{
+	QRegExp rx = QRegExp("[^\\\\/:*?\"<>|_]*");
+	QRegExpValidator* validator = new QRegExpValidator(rx);
+	
+	for(auto itr : _lineEdit)
+		itr->setValidator(validator);
+}
+
+void setLineEditValidaterFloatChar(std::vector<QLineEdit*>& _lineEdit)
+{
+	QRegExp rx(QString::fromLocal8Bit("^(\\d+)(\\.\\d+)?$"));
+	QRegExpValidator* validator = new QRegExpValidator(rx);
+
+	for (auto itr : _lineEdit)
+		itr->setValidator(validator);
+}
+
+void setLineEditValidaterIntegerChar(std::vector<QLineEdit*>& _lineEdit)
+{
+	QRegExp rx(QString::fromLocal8Bit("^[1-9]\\d*$"));
+	QRegExpValidator* validator = new QRegExpValidator(rx);
+
+	for (auto itr : _lineEdit)
+		itr->setValidator(validator);
 }

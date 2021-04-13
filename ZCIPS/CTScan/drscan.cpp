@@ -35,14 +35,9 @@ bool DrScan::caculateParemeterAndSetGenerialFileHeader()
 	d_ictHeader.ScanParameter.Azimuth = d_angle;
 	d_ictHeader.ScanParameter.NumberofValidVerticalDetector = d_channelNum;
 	//对无关参数设置默认值
-	d_ictHeader.ScanParameter.ViewDiameter = d_viewDiameter;
 	d_ictHeader.ScanParameter.Pixels = d_matrix;
-	CalculateView_ValidDetector(d_view);
 	d_ictHeader.ScanParameter.InterpolationFlag = d_setupData->lineDetData[d_lineDetIndex].StandartInterpolationFlag;
-
 	d_ictHeader.ScanParameter.ScanMode = static_cast<char>(ScanMode::DR_SCAN);
-	CalculateView_ValidDetector(d_view);
-	d_currentScanTotalSamples = (d_ictHeader.ScanParameter.NumberOfInterpolation + 1) * d_matrix;
 	int N = d_ictHeader.ScanParameter.NumberOfSystemHorizontalDetector;
 	float d = PI * d_ictHeader.ScanParameter.HorizontalSectorAngle / (180 * (N - 1));
 	d *= d_ictHeader.ScanParameter.SourceDetectorDistance;
@@ -63,6 +58,12 @@ bool DrScan::caculateParemeterAndSetGenerialFileHeader()
 		d_ictHeader.ScanParameter.SpaceBetweenLayer = d_layerSpace;
 	
 	d_ictHeader.ScanParameter.TotalLayers	= d_layerLenth / d_ictHeader.ScanParameter.SpaceBetweenLayer;
+
+	if (d_ictHeader.ScanParameter.InterpolationFlag == 1)
+		d_allScanTotalSamples = d_currentScanTotalSamples = (d_ictHeader.ScanParameter.NumberOfInterpolation + 1) * d_ictHeader.ScanParameter.TotalLayers;
+	else 
+		d_allScanTotalSamples = d_currentScanTotalSamples = d_ictHeader.ScanParameter.NumberOfInterpolation * d_ictHeader.ScanParameter.TotalLayers;
+
 	return true;
 }
 
@@ -88,7 +89,7 @@ void DrScan::sendCmdToControl()
 	cmdData.stsBit.s.biDirScan = d_setupData->drScanData[d_lineDetIndex].drScanModeDefine;
 	cmdData.stsBit.s.btnStartScan = 0;
 	cmdData.stsBit.s.autoStopBeam = 0;
-	cmdData.interpolationAmount	= d_ictHeader.ScanParameter.NumberOfInterpolation + 1;
+	cmdData.interpolationAmount	= d_ictHeader.ScanParameter.NumberOfInterpolation;
 	cmdData.projectionAmount = d_ictHeader.ScanParameter.TotalLayers;
 	cmdData.angleAmount = 1;
 	cmdData.sampleTime	= 1000 * d_ictHeader.ScanParameter.SampleTime;
@@ -105,14 +106,20 @@ void DrScan::sendCmdToControl()
 
 void DrScan::saveFile()
 {
-	saveOrgFile();
+	d_ictHeader.ScanParameter.Azimuth = d_controller->readAxisPostion(Axis::objRotation);
+	QDir  dir;
+	QString orgPath = d_orgName.left(d_orgName.lastIndexOf('/') + 1);
 
-	QDir dir;
+	if (!dir.exists(orgPath))
+		dir.mkpath(orgPath);
+
+	QString timeName = getTimeWithUnderline();
+	d_orgName = orgPath + timeName + d_orgName.right(d_orgName.length() - d_orgName.lastIndexOf('_'));
+	saveOrgFile();
 
 	if (!dir.exists(d_filePath))
 		dir.mkpath(d_filePath);
 
-	QFile::copy(d_airFile, d_installDirectory + "air.dat");
 	d_lineDetImageProcess->drTune(d_orgName, d_filePath);
 
 	if (!d_saveOrg)
