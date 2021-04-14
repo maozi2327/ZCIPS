@@ -41,6 +41,8 @@ private:
 	virtual void frameShotCallback(unsigned short* _image);
 	bool getFileNameFromDialog(QString& _objectName, QString& _objectNumber, QString& _fileNumber, QString& _comment);
 	IMAGEDIALOGHANDLE d_imageDialogHandle;
+	bool d_loadTunedDataFlag;
+	bool d_loadConeJointTunedDataFlag;
 
 	QString d_defectFileName;
 

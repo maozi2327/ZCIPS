@@ -8,7 +8,8 @@
 
 static in_addr hostAddr;
 
-LineDetNetWork::LineDetNetWork(unsigned short _port, unsigned long _fifoMask, unsigned short _channelDepth, unsigned short _delayTime,
+LineDetNetWork::LineDetNetWork(unsigned short _port, unsigned long _fifoMask, unsigned short _channelDepth, 
+	unsigned short _delayTime,
 	unsigned short _sampleTime, unsigned short _ampSize, std::vector<unsigned int> _blockModuleVec, int _detNum)
 	: d_fifoMask(_fifoMask), d_channelDepth(_channelDepth)
 	, d_delayTime(_delayTime), d_sampleTime(_sampleTime), d_ampSize(_ampSize)

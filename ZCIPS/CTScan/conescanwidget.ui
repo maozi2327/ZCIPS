@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>460</height>
+    <height>523</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,6 +35,9 @@
    <string>锥束扫描</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>6</number>
+   </property>
    <item>
     <widget class="QWidget" name="panelWidget" native="true">
      <property name="sizePolicy">
@@ -249,6 +252,18 @@
        <string>锥束扫描</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
+        <number>6</number>
+       </property>
+       <property name="spacing">
+        <number>6</number>
+       </property>
        <item row="0" column="0">
         <widget class="QPushButton" name="coneScanLeakSamplePushButton">
          <property name="minimumSize">
@@ -474,6 +489,18 @@
        <string>锥束转台平移</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
+        <number>6</number>
+       </property>
        <item row="1" column="0">
         <widget class="QLabel" name="coneJointRotScanGraduationStaticLabel">
          <property name="minimumSize">
@@ -668,6 +695,18 @@
        <string>面阵平移</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
+        <number>6</number>
+       </property>
        <item row="0" column="0">
         <widget class="QPushButton" name="conJointAirTuneButton">
          <property name="minimumSize">

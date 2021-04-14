@@ -351,6 +351,56 @@ bool SetupDataParser::parseAxisDefinition(tinyxml2::XMLElement * _element)
 	return false;
 }
 
+bool SetupDataParser::parseAxisPositionDefinition(tinyxml2::XMLElement * _element)
+{
+	for (auto element = _element->FirstChildElement(); element != nullptr;
+		element = element->NextSiblingElement())
+	{
+		AxisPositionData localData;
+
+		for (auto element1 = element->FirstChildElement(); element1 != nullptr; element1 = element1->NextSiblingElement())
+		{
+			if (strcmp(element1->Value(), "RayId") == 0)
+			{
+				localData.Ray = atoi(element1->GetText());
+			}
+			else if (strcmp(element1->Value(), "DetId") == 0)
+			{
+				localData.Det = atoi(element1->GetText());
+			}
+			else
+			{
+				QString axisName = QString::fromLocal8Bit(element1->Value());
+				auto itr = AxisNameMap.find(axisName);
+
+				if (itr != AxisNameMap.end())
+				{
+					AxisPositionData::limit limit;
+
+					for (auto element11 = element1->FirstChildElement();
+						element11 != nullptr; element11 = element11->NextSiblingElement())
+					{
+						if (strcmp(element11->Value(), "Elp") == 0)
+							limit.Elp = atof(element11->GetText());
+						else if (strcmp(element11->Value(), "Eln") == 0)
+							limit.Eln = atof(element11->GetText());
+						else if (strcmp(element11->Value(), "Sdp") == 0)
+							limit.SdP = atof(element11->GetText());
+						else if (strcmp(element11->Value(), "Sdn") == 0)
+							limit.Sdn = atof(element11->GetText());
+					}
+
+					localData.Position.insert({ itr->second, limit });
+				}
+			}
+		}
+	
+		d_setupData->axisPostionData.push_back(localData);
+	}
+
+	return false;
+}
+
 bool SetupDataParser::parseCT2Data(tinyxml2::XMLElement * _element)
 {
 	d_setupData->ct2DataNum = atoi(_element->FirstChildElement()->GetText());
@@ -619,6 +669,11 @@ bool SetupDataParser::parseSetupXMLFile()
 		else if (strcmp(element->Value(), "AxisDefinition") == 0)
 		{
 			parseAxisDefinition(element);
+			continue;
+		}
+		else if (strcmp(element->Value(), "AxisPositionSection") == 0)
+		{
+			parseAxisPositionDefinition(element);
 			continue;
 		}
 	}

@@ -134,6 +134,8 @@ private:
 	void buildMenuBar();
 	bool saveAppSettingData();
 	bool getAppSettingDataFromFile();
+	void axisRelMove(Axis _axis, float pos);
+	bool legalPosCmd(Axis _axis, float pos);
 private slots:
 	void on_initiliseSystemAction_triggered();
 	void on_filePathSettingAction_triggered();
@@ -146,6 +148,12 @@ private slots:
 	void on_autoAlignLayerAction_triggered();
 	void on_laserInterferometerAction_triggered();
 	void on_colimateZeroAjustAction_triggered();
+
+	void negativePosButtonSlot();
+	void positivePosButtonSlot();
+	void stopButtonSlot();
+	void absPosButtonSlot();
+
 	void updateSystemStatusSlot();
 	void objectNameNumberChangedSlot(const QString& _objectName, const QString& _objectNumber);
 };

@@ -487,9 +487,6 @@
     <QtMoc Include="colimatezeroajustdialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="loadtunedatadialog.h">
-      <Filter>public</Filter>
-    </QtMoc>
     <QtMoc Include="linedetairtunedialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -497,7 +494,10 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="loadlinedettunedatadialog.h">
-      <Filter>public</Filter>
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="loadtunedatadialog.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

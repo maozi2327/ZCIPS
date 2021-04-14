@@ -6,6 +6,8 @@
 #include "../PanelDetector/panel.h"
 
 
+//锥束拼接扫描只是依靠视场大小进行扫描而不提供在任意位置进行扫描的原因是，拼接扫描需要一定的重合区域，在任意位置进行
+//扫描，依靠操作人员判断视场能否包下工件无法确定重叠区域
 ConeJointScan::ConeJointScan(Panel* _panel, ControllerInterface* _controller, PanelImageProcess* _ctTune, bool _bkgTuneFlag,
 	bool _airTuneFlag, bool _defectTuneFlag, PanDetData _pandetData, const QString& _airFileNameA, const QString& _airFileNameB)
 	: ConeScanInterface(_panel, _controller, _ctTune, _bkgTuneFlag, _airTuneFlag, _defectTuneFlag, _pandetData)

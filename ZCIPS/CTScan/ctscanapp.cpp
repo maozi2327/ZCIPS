@@ -29,6 +29,7 @@
 #include "colimatecontroller.h"
 #include "colimatezeroajustdialog.h"
 #include "colimatecontroldialog.h"
+#include "../Public/util/messagebox.h"
 
 QString str(QCoreApplication::applicationDirPath());
 
@@ -69,6 +70,11 @@ CTScanApp::CTScanApp(QWidget* d_upper, QObject *parent)
 
 	d_controller.reset(new SimotionController(d_axisDataMap));
 	d_axisStatusWidget = new AxisControlwidget(d_controller.get(), d_axisDataMap);
+
+	connect(d_axisStatusWidget, &AxisControlwidget::positivePosButtonSignal, this, &CTScanApp::positivePosButtonSlot);
+	connect(d_axisStatusWidget, &AxisControlwidget::negativePosButtonSignal, this, &CTScanApp::negativePosButtonSlot);
+	connect(d_axisStatusWidget, &AxisControlwidget::stopButtonSignal, this, &CTScanApp::stopButtonSlot);
+	connect(d_axisStatusWidget, &AxisControlwidget::absPosButtonSignal, this, &CTScanApp::absPosButtonSlot);
 
 	for (int i = 0; i != d_setupData->lineDetNum; ++i)
 	{
@@ -388,6 +394,36 @@ bool CTScanApp::getAppSettingDataFromFile()
 	return true;
 }
 
+void CTScanApp::axisRelMove(Axis _axis, float pos)
+{
+	if (_axis == Axis::layer1layer2)
+		d_controller->sliceRelMove(pos);
+	else if (_axis == Axis::rayTranslationDetTranslation)
+		d_controller->translationRelMove(pos);
+	else
+		d_controller->axisRelMove(_axis, pos);
+}
+
+bool CTScanApp::legalPosCmd(Axis _axis, float pos)
+{
+	auto itr = std::find_if(d_setupData->axisPostionData.begin(), d_setupData->axisPostionData.end(),
+		[=](const AxisPositionData _data)
+		{
+			return d_appSettingData.rayId == _data.Ray && d_appSettingData.detId == _data.Det;
+		});
+
+	if (pos > itr->Position[_axis].Elp || pos < itr->Position[_axis].Eln)
+	{
+		auto nameItr = AxisDataMap.find(_axis);
+		QByteArray byteName = nameItr->second.axisCaption.toLocal8Bit();
+		messageBox(QString::fromLocal8Bit("超行程"), makeFormatQString("%s轴有效行程范围是%.1f到%.1f",
+			byteName.data(), itr->Position[_axis].Eln, itr->Position[_axis].Elp));
+		return false;
+	}
+		
+	return true;
+}
+
 void CTScanApp::on_axisZeroCoordinateAction_triggered()
 {
 	if(d_axisZeroCoordinationDialog == nullptr)
@@ -423,6 +459,52 @@ void CTScanApp::on_colimateZeroAjustAction_triggered()
 	d_colimateZeroAjustDialog.exec();
 }
 
+void CTScanApp::negativePosButtonSlot()
+{
+	auto axis = d_axisStatusWidget->d_axisSelected;
+	float posRel = -d_axisStatusWidget->d_posLineEdit->text().toFloat();
+	float pos = posRel + d_controller->readAxisPostion(d_axisStatusWidget->d_axisSelected);
+
+	if(legalPosCmd(axis, pos))
+		axisRelMove(axis, posRel);
+}
+
+void CTScanApp::positivePosButtonSlot()
+{
+	auto axis = d_axisStatusWidget->d_axisSelected;
+	float posRel = d_axisStatusWidget->d_posLineEdit->text().toFloat();
+	float pos = posRel + d_controller->readAxisPostion(d_axisStatusWidget->d_axisSelected);
+
+	if (legalPosCmd(axis, pos))
+		axisRelMove(axis, posRel);
+}
+
+void CTScanApp::stopButtonSlot()
+{
+	d_controller->stopAll();
+}
+
+void CTScanApp::absPosButtonSlot()
+{
+	auto axis = d_axisStatusWidget->d_axisSelected;
+	float pos = d_axisStatusWidget->d_posLineEdit->text().toFloat();
+
+	if (d_axisStatusWidget->d_axisSelected == Axis::layer1layer2)
+	{
+		d_controller->sliceAbsMove(pos);
+	}
+	else if (d_axisStatusWidget->d_axisSelected == Axis::rayTranslationDetTranslation)
+	{
+
+		d_controller->translationAbsMove(d_axisStatusWidget->d_posLineEdit->text().toFloat());
+	}
+	else
+	{
+		if(legalPosCmd(axis, pos))
+			d_controller->axisAbsMove(axis, pos);
+	}
+}
+
 void CTScanApp::updateSystemStatusSlot()
 {
 	bool controlConnected = d_controller->getConnected();
@@ -432,6 +514,8 @@ void CTScanApp::updateSystemStatusSlot()
 	int rayId = d_appSettingData.rayId;
 	int detId;
 
+	std::map<Axis, float> axisPos = d_controller->readAxisPostion();
+	d_axisStatusWidget->updateStatus(axisPos);
 	//TODO_DJ：更新上下线阵面阵对应编号
 	if (d_appSettingData.detType == ARC_DETECTOR)
 		detId = 0;
@@ -474,7 +558,7 @@ void CTScanApp::updateSystemStatusSlot()
 		scanManager.second->updatePanelStatus(d_panelDetMap[scanManager.first.second]->getConnected());
 	}
 
-	d_axisStatusWidget->updateControlSts(controlConnected && idle && ready);
+	//d_axisStatusWidget->updateControlSts(controlConnected && idle && ready);
 	//QString tip;
 
 	//if (!controlConnected)

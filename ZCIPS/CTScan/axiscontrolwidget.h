@@ -15,6 +15,7 @@ public:
 	
 	void updateControlSts(bool _enable);
 private:
+	friend class CTScanApp;
 	Ui::AxisControlwidget ui;
 	
 	struct AxisControl
@@ -47,12 +48,17 @@ private:
 	QHBoxLayout* d_horizontalLayout;
 
 	ControllerInterface* d_controller;
-	void updateStatus();
+	void updateStatus(const std::map<Axis, float>& _axisPos);
 	void updateAxisStatus();
-	void axisRelMove(Axis _axis, float pos);
 	QTimer* d_timer;
 	QButtonGroup* d_axisRadioButtonGroup;
 	Axis d_axisSelected;
+
+signals:
+	void negativePosButtonSignal();
+	void positivePosButtonSignal();
+	void stopButtonSignal();
+	void absPosButtonSignal();
 
 private slots:
 	void on_negativePosButton_clicked();

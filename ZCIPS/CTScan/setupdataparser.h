@@ -23,6 +23,7 @@ private:
 	bool parseAcceleratorData(tinyxml2::XMLElement* _element, int _number, AcceleratorData& _accData);
 	bool parseScanModeSection(tinyxml2::XMLElement* _element);
 	bool parseAxisDefinition(tinyxml2::XMLElement* _element);
+	bool parseAxisPositionDefinition(tinyxml2::XMLElement* _element);
 	bool parseCT2Data(tinyxml2::XMLElement* _element);
 	bool parseCT3Data(tinyxml2::XMLElement* _element);
 	bool parseDRData(tinyxml2::XMLElement* _element);

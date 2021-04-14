@@ -319,6 +319,22 @@ struct CT2Data
 	unsigned char translationModeDefine;
 	unsigned char Ct2ScanMode;
 };
+
+struct AxisPositionData
+{
+	struct limit
+	{
+		float SdP;
+		float Sdn;
+		float Elp;
+		float Eln;
+	};
+
+	unsigned short Ray;
+	unsigned short Det;
+	std::map<Axis, limit> Position;
+};
+
 struct CT3Data
 {
 	unsigned short Ray;
@@ -367,6 +383,7 @@ struct SetupData
 	std::vector<AcceleratorData> acceleratorData;
 	std::vector<LineDetData> lineDetData;
 	std::vector<PanDetData> panDetData;
+	std::vector<AxisPositionData> axisPostionData;
 	std::multimap<rayDetScanmode, int> matrix;
 	std::multimap<rayDetScanmode, int> scanview;
 	std::multimap<rayDetScanmode, int> sampleTime;

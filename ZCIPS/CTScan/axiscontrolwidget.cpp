@@ -14,7 +14,7 @@ AxisControlwidget::AxisControlwidget(ControllerInterface* _controller, const std
 		//controlsCombo->radioButton->setFixedHeight(20);
 		//controlsCombo->axisNameLabel->setMinimumSize(QSize(60, 0));
 		//controlsCombo->axisNameLabel->setMaximumSize(QSize(60, 16777215));
-		//controlsCombo->axisPosLabel->setMinimumSize(QSize(60, 0));
+		controlsCombo->axisPosLabel->setMinimumSize(QSize(60, 20));
 		//controlsCombo->axisPosLabel->setMaximumSize(QSize(60, 16777215));
 		//controlsCombo->axisPosLabel->setFixedHeight(20);
 		controlsCombo->axisPosLabel->setFrameShape(QFrame::Box);
@@ -124,9 +124,6 @@ AxisControlwidget::AxisControlwidget(ControllerInterface* _controller, const std
 		this, SLOT(onRadionButtonClicked(QAbstractButton*)));
 
 	setLineEditValidaterFloatChar(d_posLineEdit);
-	d_timer = new QTimer(this);
-	d_timer->start(100);
-	connect(d_timer, &QTimer::timeout, this, &AxisControlwidget::updateStatus);
 }
 
 AxisControlwidget::~AxisControlwidget()
@@ -142,51 +139,40 @@ void AxisControlwidget::updateControlSts(bool _enable)
 
 void AxisControlwidget::on_negativePosButton_clicked()
 {
-	axisRelMove(d_axisSelected, -d_posLineEdit->text().toFloat());
+	emit negativePosButtonSignal();
 }
-void AxisControlwidget::updateStatus()
+void AxisControlwidget::updateStatus(const std::map<Axis, float>& _axisPos)
 {
-	std::map<Axis, float> axisPos = d_controller->readAxisPostion();
-
 	for (auto& itr : d_axisControls)
 	{
 		auto axisPosEnumItr = AxisNamePosMap.find(itr->axis);
 
-		if(axisPosEnumItr != AxisNamePosMap.end())
-			itr->axisPosLabel->
-			setText(QString("%1").arg(axisPos[itr->axis], 0, 'f', 2));
+		if (axisPosEnumItr != AxisNamePosMap.end())
+		{
+			auto axisItr = _axisPos.find(itr->axis);
+
+			if(axisItr != _axisPos.end())
+				itr->axisPosLabel->
+					setText(QString("%1").arg(axisItr->second, 0, 'f', 2));
+		}
 	}
 }
 void AxisControlwidget::updateAxisStatus()
 {
 }
 
-void AxisControlwidget::axisRelMove(Axis _axis, float pos)
-{
-	if (_axis == Axis::layer1layer2)
-		d_controller->sliceRelMove(pos);
-	else if (_axis == Axis::rayTranslationDetTranslation)
-		d_controller->translationRelMove(pos);
-	else
-		d_controller->axisRelMove(_axis, pos);
-}
 
 void AxisControlwidget::on_positivePosButton_clicked()
 {
-	axisRelMove(d_axisSelected, d_posLineEdit->text().toFloat());
+	emit positivePosButtonSignal();
 }
 void AxisControlwidget::on_stopButton_clicked()
 {
-	d_controller->stopAll();
+	emit stopButtonSignal();
 }
 void AxisControlwidget::on_absPosButton_clicked()
 {
-	if (d_axisSelected == Axis::layer1layer2)
-		d_controller->sliceAbsMove(d_posLineEdit->text().toFloat());
-	else if (d_axisSelected == Axis::rayTranslationDetTranslation)
-		d_controller->translationAbsMove(d_posLineEdit->text().toFloat());
-	else
-		d_controller->axisAbsMove(d_axisSelected, d_posLineEdit->text().toFloat());
+	emit absPosButtonSignal();
 }
 void AxisControlwidget::onRadionButtonClicked(QAbstractButton * _button)
 {

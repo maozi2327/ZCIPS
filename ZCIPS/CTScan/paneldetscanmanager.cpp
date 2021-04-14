@@ -4,6 +4,7 @@
 #include "conescan.h"
 #include "controllerinterface.h"
 #include "../PanelDetector/panel.h"
+#include "../Public/util/messagebox.h"
 #include "panelframeshot.h"
 #include "ImageDialogManager.h"
 #include "linedetfilenamedialog.h"
@@ -79,6 +80,13 @@ void PanelDetScanManager::coneScanBeginSlot()
 {
 	d_panel->stopAcquire();
 	bool correctFlag = d_coneScanWidget->ui.allTuneCheckBox->isChecked();
+
+	if (correctFlag && !d_loadTunedDataFlag)
+	{
+		messageBox(QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("未加载校正数据"));
+		return;
+	}
+
 	QString fileNumber{ QString::fromLocal8Bit("55AA5A") };
 
 	if (!getFileNameFromDialog(d_objectName, d_objectNumber, fileNumber, d_fileNameComment))
@@ -119,6 +127,12 @@ void PanelDetScanManager::coneJointScanBeginSlot()
 	d_panel->stopAcquire();
 	bool correctFlag = d_coneScanWidget->ui.allTuneCheckBox->isChecked();
 	QString fileNumber{ QString::fromLocal8Bit("55AA5A") };
+
+	if (correctFlag && !d_loadConeJointTunedDataFlag)
+	{
+		messageBox(QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("未加载校正数据"));
+		return;
+	}
 
 	if (!getFileNameFromDialog(d_objectName, d_objectNumber, fileNumber, d_fileNameComment))
 		return;
@@ -221,6 +235,7 @@ void PanelDetScanManager::loadTuneDataSlot()
 	{
 		d_panelImageProcess->loadBkgData(bkgName);
 		d_panelImageProcess->loadAirData(airName);
+		d_loadTunedDataFlag = true;
 	}
 }
 
@@ -236,6 +251,7 @@ void PanelDetScanManager::loadConeJointScanTuneDataSlot()
 		QString namePerfix = airName.left(airName.lastIndexOf("_") + 1);
 		d_airFileNameA = namePerfix + QString::fromLocal8Bit("0.tif");
 		d_airFileNameB = namePerfix + QString::fromLocal8Bit("1.tif");
+		d_loadConeJointTunedDataFlag = true;
 	}
 }
 
@@ -273,7 +289,8 @@ void PanelDetScanManager::updatePanelStatus(bool readyToScan)
 	d_coneScanWidget->ui.previewButton->setEnabled(readyToScan);
 }
 
-bool PanelDetScanManager::getFileNameFromDialog(QString& _objectName, QString& _objectNumber, QString& _fileNumber, QString& _comment)
+bool PanelDetScanManager::getFileNameFromDialog(QString& _objectName, QString& _objectNumber, 
+	QString& _fileNumber, QString& _comment)
 {
 	LineDetFileNameDialog dlg(_objectName, _objectNumber, _fileNumber, _comment, nullptr);
 	
