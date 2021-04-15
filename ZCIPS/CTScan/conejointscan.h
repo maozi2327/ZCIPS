@@ -22,6 +22,9 @@ protected:
 	QString d_pathDest;
 	QString d_airFileNameA;
 	QString d_airFileNameB;
+	QString d_currentOrgPath, d_currentTunedPath;
+	QString d_timeName;
+
 
 	int d_spliceProgress;
 	int d_sampleCount;

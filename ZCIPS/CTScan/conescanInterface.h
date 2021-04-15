@@ -92,6 +92,9 @@ protected:
 	int d_framesPerGraduation;
 	int d_graduation;
 	int d_graduationCount;
+	int d_imageReceivedCountThisRound;
+	int d_imageReceivedCountBefore;
+	int d_imageProcessedThisRound;
 	int d_round;
 	int d_imageProcessSleep;
 	int d_posTime;
@@ -115,9 +118,18 @@ protected:
 	std::atomic<bool> d_imageProcessThreadRun;
 	std::atomic<bool> d_scanThreadRun;
 	std::atomic<bool> d_imageProcessThreadFlag;
-	TheQueue<unsigned short*> d_imageList;
+
+	struct rawImageData
+	{
+		unsigned short* Image;
+		QString OrgName;
+		QString TunedFileName;
+	};
+
+	TheQueue<rawImageData> d_imageList;
 	std::condition_variable d_con;
 	mutable std::mutex d_hmtxQ;
+
 
 	Panel* d_panel;
 	ControllerInterface* d_controller;
@@ -132,7 +144,7 @@ protected:
 	virtual void sendCmdToController() = 0;
 	virtual bool writeParameterFile(const QString& _path);
 	virtual bool makeParameterText();
-	virtual bool saveFile(unsigned short* _image);
+	virtual bool saveFile(unsigned short* _image, const QString& _orgFileName, const QString& _tunedFileName);
 	virtual void createFileName(QString& _orgFileName, QString& _tunedFileName);
 	bool checkMemory();
 	bool setCommonScanParameter(int _graduation, int _framesPerGraduation, int _round, int _posTime, int _cycleTime,

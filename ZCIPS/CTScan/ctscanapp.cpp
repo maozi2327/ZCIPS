@@ -406,20 +406,20 @@ void CTScanApp::axisRelMove(Axis _axis, float pos)
 
 bool CTScanApp::legalPosCmd(Axis _axis, float pos)
 {
-	auto itr = std::find_if(d_setupData->axisPostionData.begin(), d_setupData->axisPostionData.end(),
-		[=](const AxisPositionData _data)
-		{
-			return d_appSettingData.rayId == _data.Ray && d_appSettingData.detId == _data.Det;
-		});
+	//auto itr = std::find_if(d_setupData->axisPostionData.begin(), d_setupData->axisPostionData.end(),
+	//	[=](const AxisPositionData _data)
+	//	{
+	//		return d_appSettingData.rayId == _data.Ray && d_appSettingData.detId == _data.Det;
+	//	});
 
-	if (pos > itr->Position[_axis].Elp || pos < itr->Position[_axis].Eln)
-	{
-		auto nameItr = AxisDataMap.find(_axis);
-		QByteArray byteName = nameItr->second.axisCaption.toLocal8Bit();
-		messageBox(QString::fromLocal8Bit("超行程"), makeFormatQString("%s轴有效行程范围是%.1f到%.1f",
-			byteName.data(), itr->Position[_axis].Eln, itr->Position[_axis].Elp));
-		return false;
-	}
+	//if (pos > itr->Position[_axis].Elp || pos < itr->Position[_axis].Eln)
+	//{
+	//	auto nameItr = AxisDataMap.find(_axis);
+	//	QByteArray byteName = nameItr->second.axisCaption.toLocal8Bit();
+	//	messageBox(QString::fromLocal8Bit("超行程"), makeFormatQString("%s轴有效行程范围是%.1f到%.1f",
+	//		byteName.data(), itr->Position[_axis].Eln, itr->Position[_axis].Elp));
+	//	return false;
+	//}
 		
 	return true;
 }

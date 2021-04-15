@@ -147,14 +147,14 @@ void PanelDetScanManager::coneJointScanBeginSlot()
 	d_scan->setFileName(orgFileName, destFilePath);
 	int cycleTime = d_panel->getSampleTimeSet();
 	auto graduationTime = d_panel->caculateExTriggerSampleTime(cycleTime);
-	int graduation = d_coneScanWidget->ui.coneScanGraduationComboBox->currentText().toInt();
-	int framesPerGraduation = d_coneScanWidget->ui.coneScanframesComboBox->currentText().toInt();
-	float oriencInc = d_coneScanWidget->ui.orientIncEdit->text().toFloat();
+	int graduation = d_coneScanWidget->ui.coneJointGraduationComboBox->currentText().toInt();
+	int framesPerGraduation = d_coneScanWidget->ui.coneJointFramesComboBox->currentText().toInt();
+	float oriencInc = d_coneScanWidget->ui.coneJointOrientIncEdit->text().toFloat();
 	auto gainFactor = d_panel->getGainFactorSet();
-	float slicePos = d_coneScanWidget->ui.slicePosEdit->text().toFloat();
+	float slicePos = d_coneScanWidget->ui.coneJointSlicePosEdit->text().toFloat();
 	connect(d_scan.get(), &ConeScanInterface::scanProgressSignal, this, &PanelDetScanManager::scanProgressSlot);
-	static_cast<ConeJointScan*>(d_scan.get())->beginScan(graduation, framesPerGraduation, 1, graduationTime, cycleTime, gainFactor, oriencInc, slicePos,
-		d_controller->readAxisPostion(Axis::objRadial), d_controller->readAxisPostion(Axis::detRadial), -50, 50);
+	static_cast<ConeJointScan*>(d_scan.get())->beginScan(graduation, framesPerGraduation, 2, graduationTime, cycleTime, gainFactor, oriencInc, slicePos,
+		d_controller->readAxisPostion(Axis::objRadial), d_controller->readAxisPostion(Axis::detRadial), -50, 100);
 }
 
 void PanelDetScanManager::frameShotSlot()

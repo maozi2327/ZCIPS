@@ -407,19 +407,14 @@ void SimotionController::netCheckSlot()
 {
 	if (++d_timeoutCount * 1000 > 5000)
 	{
-		if (d_connected == true)
-		{
-			d_connected = false;
-			emit netWorkStsSginal(false);
-		}
+		d_connected = false;
+		emit netWorkStsSginal(false);
+		reconnect();
 	}
 	else
 	{
-		if (d_connected == false)
-		{
-			d_connected = true;
-			emit netWorkStsSginal(true);
-		}
+		d_connected = true;
+		emit netWorkStsSginal(true);
 	}
 }
 

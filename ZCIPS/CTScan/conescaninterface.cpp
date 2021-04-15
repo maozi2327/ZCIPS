@@ -23,24 +23,21 @@ ConeScanInterface::~ConeScanInterface()
 	//TODO_DJ：扫描停止后重新这里会析构，析构后Thread里面stopThread会挂，mutex
 }
 
-bool ConeScanInterface::saveFile(unsigned short * _image)
+bool ConeScanInterface::saveFile(unsigned short * _image, const QString& _orgFileName, const QString& _tunedFileName)
 {
-	QString orgFileName, tunedFileName;
-	createFileName(orgFileName, tunedFileName);
-
 	if (d_saveOrg)
-		d_imageProcess->saveSingleBitmapDataToFile(_image, orgFileName, d_height, d_width);
+		d_imageProcess->saveSingleBitmapDataToFile(_image, _orgFileName, d_height, d_width);
 
 	if (d_defectTuneFlag)
-		d_imageProcess->bkgAirDefectTuneDataToFile(_image, tunedFileName, d_height, d_width);
+		d_imageProcess->bkgAirDefectTuneDataToFile(_image, _tunedFileName, d_height, d_width);
 	else if (d_airTuneFlag)
-		d_imageProcess->bkgAirTuneDataToFile(_image, orgFileName, d_height, d_width);
+		d_imageProcess->bkgAirTuneDataToFile(_image, _orgFileName, d_height, d_width);
 	else
 	{
 		if (d_saveOrg)
-			QFile::copy(orgFileName, tunedFileName);
+			QFile::copy(_orgFileName, _tunedFileName);
 		else
-			d_imageProcess->saveSingleBitmapDataToFile(_image, tunedFileName, d_height, d_width);
+			d_imageProcess->saveSingleBitmapDataToFile(_image, _tunedFileName, d_height, d_width);
 	}
 
 	return false;
@@ -48,7 +45,7 @@ bool ConeScanInterface::saveFile(unsigned short * _image)
 
 void ConeScanInterface::createFileName(QString& _orgFileName, QString& _tunedFileName)
 {
-	if (d_graduationCount == 0)
+	if (d_imageReceivedCountThisRound == 0)
 	{
 		QString orgPath = d_orgName.left(d_orgName.lastIndexOf('/') + 1);
 		QString timeName = getTimeWithUnderline();
@@ -63,7 +60,7 @@ void ConeScanInterface::createFileName(QString& _orgFileName, QString& _tunedFil
 	}
 
 	QString index;
-	index.sprintf("%04d", int(d_graduationCount));
+	index.sprintf("%04d", int(d_imageProcessedThisRound));
 	_orgFileName = d_orgName + index + QString::fromLocal8Bit(".tif");
 	_tunedFileName = d_tunedFilePath + d_pureDirectoryName + index + QString::fromLocal8Bit(".tif");
 }
@@ -111,30 +108,35 @@ void ConeScanInterface::frameProcessCallback(unsigned short * _image)
 {
 	unsigned short* memory = new unsigned short[d_width * d_height];
 	memcpy(memory, _image, sizeof(unsigned short) * d_width * d_height);
-	d_imageList.push(memory);
+	QString orgName, tunedFileName;
+	createFileName(orgName, tunedFileName);
+
+	if(d_imageReceivedCountThisRound++ < d_graduation)
+		d_imageList.push(rawImageData{memory, orgName, tunedFileName});
 }
 
 void ConeScanInterface::imageProcessThread()
 {
 	while (d_imageProcessThreadRun)
 	{
-		unsigned short* memory;
+		rawImageData data;
 
-		if (d_imageList.pop(memory))
+		if (d_imageList.pop(data))
 		{
 			if (d_graduationCount < d_round * d_graduation * d_framesPerGraduation)
 			{
 				//TODO_DJ：添加旋转或者对称标志到配置文件
-				d_imageProcess->mirrorYDataToData(memory, d_height, d_width);
-				saveFile(memory);
+				d_imageProcess->mirrorYDataToData(data.Image, d_height, d_width);
+				saveFile(data.Image, data.OrgName, data.TunedFileName);
 				int timeRemain = (d_round * d_graduation * d_framesPerGraduation - (d_graduationCount + 1)) * d_posTime / 1000 / 60 + 1;
 				QString message = makeFormatQString("已经采集%d幅，剩余时间：%d分", d_graduationCount + 1, timeRemain);
-				emit scanProgressSignal(d_graduationCount + 1, d_graduation * d_framesPerGraduation, d_graduationCount + 1,
+				emit scanProgressSignal(d_imageReceivedCountThisRound, d_graduation * d_framesPerGraduation, d_graduationCount + 1,
 					d_round * d_graduation * d_framesPerGraduation, message);
 			}
 
-			delete[] memory;
+			delete[] data.Image;
 			++d_graduationCount;
+			++d_imageProcessedThisRound;
 			//TODO_DJ：round
 		}
 	}
@@ -194,6 +196,7 @@ bool ConeScanInterface::makeParameterText()
 		QString::fromLocal8Bit(";--------------------------------------------;\n"), 
 		QString::fromLocal8Bit(";  扫描参数\n"),
 		QString::fromLocal8Bit(";--------------------------------------------;\n"),
+		QString::fromLocal8Bit("[SCANPARA]\n"),
 		QString::fromLocal8Bit(";  探测器参数\n"),
 		QString::fromLocal8Bit("[DETECTORS]\n"),
 		makeFormatQString("Width=%d\t\t\t;探测器横向单元数量\n", d_width), 
@@ -286,6 +289,8 @@ bool ConeScanInterface::beginScan(int _graduation, int _framesPerGraduation, int
 
 	//if (!loadAirData())
 	//	return false;
+	d_imageReceivedCountThisRound = 0;
+	d_imageProcessedThisRound = 0;
 	setCommonScanParameter(_graduation, _framesPerGraduation, _round, _posTime, _cycleTime, _gainFactor, _orientInc, _slicePos, _sod, _sdd);
 	sendCmdToController();
 	detachScanProcessThread();

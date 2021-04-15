@@ -39,13 +39,15 @@ void ConeJointScan::scanThread()
 			//延时1s，因为上面一步发出onstartnextscan后，ctrlSysSts.s.waitNextScan可能还没有更新
 			//还处在waitNextScan为true等待下位机发送定位到下个扫描位置阶段，而不是等待启动旋转阶段，因此延时等待下位机更新后继续
 			//如果下位机定位到扫描位置，waitNextScan为true,下位机延时2s后开始旋转扫描采集，
-			if (d_controller->readReadyStatus()) 
+			//避免图片还没处理完就更新了文件名
+			if (d_controller->readWaitNextScanStatus())
 			{
-				if (d_scanTime == 0)
+				if (d_sampleCount == 0)
 					d_imageProcess->loadAirData(d_airFileNameA);
-				else if(d_scanTime == 1)
+				else if(d_sampleCount == 1)
 					d_imageProcess->loadAirData(d_airFileNameB);
 
+				d_imageReceivedCountThisRound = 0;
 				d_panel->beginExTriggerAcquire(frameCallback, d_cycleTime, 2);
 				d_scanProc = 8;
 			}
@@ -56,34 +58,36 @@ void ConeJointScan::scanThread()
 			d_scanProc = 12;
 			break;
 		case 12:
-			if (d_controller->readSaveStatus()) 
+			
+			if (d_controller->readSaveStatus())
+			{
+				d_sampleCount++;
+				d_panel->stopAcquire();
 				d_scanProc = 14;
+			}
 
 			break;
 		case 14:
-			if (d_graduationCount >= d_graduation)
-			{
-				if (++d_sampleCount == d_round)
-					d_scanProc = 16;
-				else
-					d_scanProc = 0;
-			}
+			
+			if(d_sampleCount != d_round)
+				d_scanProc = 0;
+			else if (d_imageList.size() == 0)
+				//校正保存完成后才开始拼接，而不是下位机发送保存命令后就开始，避免还没有校正保存完成就拼接，导致拼接失败
+				d_scanProc = 16;
+
 			break;
 		case 16:
 			std::this_thread::sleep_for(std::chrono::seconds(2));
 			d_panel->stopAcquire();
-
-			spliceThread = 	std::thread(
-				std::bind(&PanelImageProcess::dataSplice, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5),
-				d_imageProcess, d_pathA, d_pathB, d_pathDest, std::ref(d_spliceProgress));
-
-			spliceThread.detach();
+			std::thread([this](QString& _a, QString& _b,
+				QString& _c, int& _pro) { d_imageProcess->dataSplice(_a, _b, _c, _pro); }, d_pathA, d_pathB, d_pathDest, std::ref(d_spliceProgress)).detach();
 			d_scanProc = 20;
 			break;
 		case 20:
 			QString spliceProgress = QString::number(d_spliceProgress);
 			spliceProgress = QString::fromLocal8Bit("拼接进度") + spliceProgress + QString::fromLocal8Bit("%");
-			emit scanProgressSignal(d_graduationCount, d_graduation, d_graduationCount, d_round * d_graduation * d_framesPerGraduation, spliceProgress);
+			emit scanProgressSignal(d_imageReceivedCountThisRound, d_graduation, 
+				d_graduationCount, d_round * d_graduation * d_framesPerGraduation, spliceProgress);
 			break;
 		}
 
@@ -91,38 +95,41 @@ void ConeJointScan::scanThread()
 	}
 }
 
+//前提是不能丢图
 void ConeJointScan::createFileName(QString& _orgFileName, QString& _tunedFileName)
 {
-	if (d_graduationCount % d_graduation == 0)
+	QDir dir;
+
+	if (d_imageReceivedCountThisRound == 0)
 	{
 		QString orgPath = d_orgName.left(d_orgName.lastIndexOf('/') + 1);
-		QString timeName = getTimeWithUnderline();
-		d_pureDirectoryName = timeName + d_orgName.right(d_orgName.length() - d_orgName.lastIndexOf('_')) + QString::fromLocal8Bit("/");
-		d_orgName = orgPath + d_pureDirectoryName;
+		d_pureDirectoryName = d_timeName + d_orgName.right(d_orgName.length() - d_orgName.lastIndexOf('_')) + QString::fromLocal8Bit("/");
 		QDir dir;
-		QString currentOrgPath, currentTunedPath;
 
 		if (d_sampleCount == 0)
 		{
-			currentOrgPath = d_pathA = orgPath + d_pureDirectoryName + QString::number(d_sampleCount) + QString::fromLocal8Bit("/");
+			d_currentOrgPath = d_pathA = orgPath + d_pureDirectoryName + QString::number(0) + QString::fromLocal8Bit("/");
+			d_currentTunedPath = d_tunedFilePath + d_pureDirectoryName + QString::number(0) + QString::fromLocal8Bit("/");
 		}
-		else if (d_sampleCount == 1)
+		else
 		{
-			currentOrgPath = d_pathB = orgPath + d_pureDirectoryName + QString::number(d_sampleCount) + QString::fromLocal8Bit("/");
+			d_currentOrgPath = d_pathB = orgPath + d_pureDirectoryName + QString::number(1) + QString::fromLocal8Bit("/");
+			d_pathDest = d_tunedFilePath + d_pureDirectoryName + QString::fromLocal8Bit("joint") + QString::fromLocal8Bit("/");
+			dir.mkpath(d_pathDest);
+			d_currentTunedPath = d_tunedFilePath + d_pureDirectoryName + QString::number(1) + QString::fromLocal8Bit("/");
 		}
 
-		dir.mkpath(currentOrgPath);
+		dir.mkpath(d_currentOrgPath);
 		makeParameterText();
-		writeParameterFile(currentOrgPath);
-		currentTunedPath = d_tunedFilePath + d_pureDirectoryName + QString::number(d_sampleCount) + QString::fromLocal8Bit("/");
-		dir.mkpath(currentTunedPath);
-		writeParameterFile(currentTunedPath);
+		writeParameterFile(d_currentOrgPath);
+		dir.mkpath(d_currentTunedPath);
+		writeParameterFile(d_currentTunedPath);
 	}
-
+	
 	QString index;
-	index.sprintf("%04d", int(d_graduationCount % d_graduation));
-	_orgFileName = d_orgName + QString::number(d_sampleCount) + QString::fromLocal8Bit("/") + index + QString::fromLocal8Bit(".tif");
-	_tunedFileName = d_tunedFilePath + d_pureDirectoryName + QString::number(d_sampleCount) + QString::fromLocal8Bit("/") + index + QString::fromLocal8Bit(".tif");
+	index.sprintf("%04d", d_imageReceivedCountThisRound);
+	_orgFileName = d_currentOrgPath + index + QString::fromLocal8Bit(".tif");
+	_tunedFileName = d_currentTunedPath + index + QString::fromLocal8Bit(".tif");
 }
 
 void ConeJointScan::sendCmdToController()
@@ -152,9 +159,12 @@ void ConeJointScan::sendCmdToController()
 bool ConeJointScan::makeParameterText()
 {
 	ConeScanInterface::makeParameterText();
-	auto itr = std::find(d_parameterText.begin(), d_parameterText.end(), QString::fromLocal8Bit("[GEOMETRY]\n"));
-	QString panelTransPos = makeFormatQString("Translation=%.3f\t\t\t;转台旋转加平移拼接扫描平移距离\n", d_detTransSpace);
-	d_parameterText.insert(itr, panelTransPos);
+	auto itr = std::find(d_parameterText.begin(), d_parameterText.end(), QString::fromLocal8Bit("[SCANPARA]\n"));
+	QString string = QString::fromLocal8Bit("ScanMode=锥束面阵拼接扫描 \t\t\t;扫描方式\n");
+	d_parameterText.insert(++itr, string);
+	itr = std::find(d_parameterText.begin(), d_parameterText.end(), QString::fromLocal8Bit("[GEOMETRY]\n"));
+	string = makeFormatQString("Translation=%.3f\t\t\t;转台旋转加平移拼接扫描平移距离\n", d_detTransSpace);
+	d_parameterText.insert(++itr, string);
 	return false;
 }
 
@@ -164,9 +174,11 @@ bool ConeJointScan::beginScan(int _graduation, int _framesPerGraduation, int _ro
 	setCommonScanParameter(_graduation, _framesPerGraduation, _round, _posTime, _cycleTime, _gainFactor, _orientInc, _slicePos, _sod, _sdd);
 	d_detTransStart = _detTranStart;
 	d_detTransSpace = _detTranSpace;
-	d_scanTime = 0;
+	d_sampleCount = 0;
+	d_imageReceivedCountThisRound = 0;
 	sendCmdToController();
 	detachScanProcessThread();
+	d_timeName = getTimeWithUnderline();
 	return true;
 }
 

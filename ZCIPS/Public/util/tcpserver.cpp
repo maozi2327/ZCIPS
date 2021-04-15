@@ -110,8 +110,6 @@ void TcpServer::recvThreadPacketHead(std::promise<bool>& _promise)
 			if(ret > 0)
 				d_dataHandlerCallBack(buffer, ret);
 		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds{ 100 });
 	}
 
 	delete[] buffer;
