@@ -41,7 +41,7 @@ class Panel	: public QObject
 signals:
 	LOGSIGNAL
 public:
-    Panel();
+    Panel(); 
 	virtual ~Panel() = 0;
 	virtual bool connectPanel() = 0;
 	virtual bool setCycleTime(int _milliseconds) = 0;
@@ -67,7 +67,9 @@ public:
 	virtual void setFrameCallback(std::function<void(unsigned short*)> _imageProcessCallBack) =  0;
 	virtual int caculateExTriggerSampleTime(int _cycleTime) = 0;
 	virtual QWidget* getWidget() = 0;
-	virtual int getFramesSet() = 0;
+	virtual QWidget* getTempWidget() = 0;
+	virtual int getTempGainFactorSet() = 0;
+	virtual int getTempSampleTimeSet() = 0;
 	virtual int getSampleTimeSet() = 0;
 	virtual int getGainFactorSet() = 0;
 };

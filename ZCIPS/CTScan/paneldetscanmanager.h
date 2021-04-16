@@ -4,6 +4,7 @@
 #include <memory>
 #include "ui_conescanwidget.h"
 #include "../Public/headers/setupdata.h"
+#include "saveconescanconfigdialog.h"
 
 #define IMAGEDIALOGHANDLE void*
 
@@ -62,14 +63,21 @@ private:
 	//面阵空气扫描的空气文件名
 	QString d_airFileNameA;
 	QString d_airFileNameB;
+
+	QString d_airName;
+	QString d_bkgName;
+
+	QString d_coneScanConfigFileName;
 public:
 	QWidget* getWidget();
+	void updateFileDirectory(const QString& _orgPath, const QString& _tunedFileDirectory);
 	void updateObjectNameNumber(const QString& _objectName, const QString& _objectNumber);
 	void updateControlSystemStatus(bool readyToScan);
 	void updatePanelStatus(bool readyToScan);
 private slots:
 	void coneScanBeginSlot();
 	void coneJointScanBeginSlot();
+	void saveConeScanConfigSlot();
 	//void scanProgressUpdatedSlot();
 	void frameShotSlot();
 	void coneScanStopSlot();

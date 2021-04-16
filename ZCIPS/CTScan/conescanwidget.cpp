@@ -10,7 +10,7 @@ ConeScanWidget::ConeScanWidget(Panel* _panel, QWidget* _panelWidget, QWidget *pa
 	ui.panelWidget->setLayout(d_panelWidget->layout());
 	ui.coneScanGraduationComboBox->setCurrentText("256");
 	ui.coneScanframesComboBox->setCurrentText("1");
-	ui.orientIncEdit->setText("0");
+	ui.coneScanOrientIncEdit->setText("0");
 	//d_initialHeight = minimumHeight();
 	//d_panelWidget->setParent(ui.panelWidget);
 	//ui.panelWidget->setFixedSize(d_panelWidget->width(), d_panelWidget->height());
@@ -110,4 +110,9 @@ void ConeScanWidget::on_loadTuneDataButton_clicked()
 void ConeScanWidget::on_coneJointLoadTuneDataButton_clicked()
 {
 	emit loadConeJointTuneDataSignal();
+}
+
+void ConeScanWidget::on_saveConeScanConfigButton_clicked()
+{
+	emit saveConeScanConfigSignal();
 }

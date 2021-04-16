@@ -49,6 +49,7 @@ PanelDetScanManager::PanelDetScanManager(int _rayId, int _panelDetId, const std:
 	}
 
 	connect(d_coneScanWidget, &ConeScanWidget::coneScanBeginSignal,	this, &PanelDetScanManager::coneScanBeginSlot);
+	connect(d_coneScanWidget, &ConeScanWidget::saveConeScanConfigSignal, this, &PanelDetScanManager::saveConeScanConfigSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::coneJointScanBeginSignal, this, &PanelDetScanManager::coneJointScanBeginSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::frameShotSignal,	this, &PanelDetScanManager::frameShotSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::coneScanStopSignal, this, &PanelDetScanManager::coneScanStopSlot);
@@ -74,6 +75,12 @@ void PanelDetScanManager::frameShotCallback(unsigned short * _image)
 QWidget * PanelDetScanManager::getWidget()
 {
 	return d_coneScanWidget;
+}
+
+void PanelDetScanManager::updateFileDirectory(const QString& _orgPath, const QString& _tunedFileDirectory)
+{
+	d_orgDirectory = _orgPath;
+	d_tunedFileDirectory = _tunedFileDirectory;
 }
 
 void PanelDetScanManager::coneScanBeginSlot()
@@ -103,7 +110,7 @@ void PanelDetScanManager::coneScanBeginSlot()
 	auto graduationTime = d_panel->caculateExTriggerSampleTime(cycleTime);
 	int graduation = d_coneScanWidget->ui.coneScanGraduationComboBox->currentText().toInt();
 	int framesPerGraduation = d_coneScanWidget->ui.coneScanframesComboBox->currentText().toInt();
-	float oriencInc = d_coneScanWidget->ui.orientIncEdit->text().toFloat();
+	float oriencInc = d_coneScanWidget->ui.coneScanOrientIncEdit->text().toFloat();
 	auto gainFactor = d_panel->getGainFactorSet();
 	float slicePos = d_coneScanWidget->ui.slicePosEdit->text().toFloat();
 	connect(d_scan.get(), &ConeScanInterface::scanProgressSignal, this, &PanelDetScanManager::scanProgressSlot);
@@ -157,10 +164,88 @@ void PanelDetScanManager::coneJointScanBeginSlot()
 		d_controller->readAxisPostion(Axis::objRadial), d_controller->readAxisPostion(Axis::detRadial), -50, 100);
 }
 
+struct ConeScanDataRawItem
+{
+	QByteArray byteArrayData;
+	ConeScanDataRawItem(const coneScanDataItem& item)
+	{
+		QByteArray itemNameByte = item.itemName.toLocal8Bit();
+		QByteArray airNameByte = item.airName.toLocal8Bit();
+		int itemNameLenth = itemNameByte.size();
+		int airNameLenth = airNameByte.size();
+		byteArrayData += QByteArray(sizeof(int), 0);
+		byteArrayData += QByteArray::fromRawData((char*)(&itemNameLenth), sizeof(int));
+		byteArrayData += QByteArray::fromRawData(itemNameByte.data(), itemNameLenth);
+		byteArrayData += QByteArray::fromRawData((char*)(&item.rayIndex), sizeof(int));
+		byteArrayData += QByteArray::fromRawData((char*)(&item.paneldetIndex), sizeof(int));
+		byteArrayData += QByteArray::fromRawData((char*)(&item.graduationComboxIndex), sizeof(int));
+		byteArrayData += QByteArray::fromRawData((char*)(&item.frameComboxIndex), sizeof(int));
+		byteArrayData += QByteArray::fromRawData((char*)(&item.orient), sizeof(float));
+		byteArrayData += QByteArray::fromRawData((char*)(&item.sod), sizeof(float));
+		byteArrayData += QByteArray::fromRawData((char*)(&item.sdd), sizeof(float));
+		byteArrayData += QByteArray::fromRawData((char*)(&airNameLenth), sizeof(int));
+		byteArrayData += QByteArray::fromRawData(airNameByte.data(), sizeof(int));
+		byteArrayData += QByteArray::fromRawData(0, 10 * sizeof(float));
+		byteArrayData += QByteArray::fromRawData((char*)(&item.panelData.gainFactorIndex), sizeof(int));
+		byteArrayData += QByteArray::fromRawData((char*)(&item.panelData.cycleTime), sizeof(int));
+		byteArrayData += QByteArray::fromRawData(0, 10 * sizeof(float));
+	}
+
+	char* getRawData(int& lenth)
+	{
+		lenth = byteArrayData.size();
+		return byteArrayData.data();
+	}
+	//int currentItemLenth;
+	//int itemNameLenth;
+	///*char* itemName;*/
+	//int rayIndex;
+	//int paneldetIndex;
+	//int graduationComboxIndex;
+	//int frameComboxIndex;
+	//float orient;
+	//float sod;
+	//float sdd;
+	//int airNameLenth;
+	///*char* airName; */
+	//float re[10];
+	//int gainFactorIndex;
+	//float cycleTime;
+	//float re[10];
+};
+
+char* charSeek(char* pos, int lenth)
+{
+	return pos + lenth;
+}
+
+void PanelDetScanManager::saveConeScanConfigSlot()
+{
+	coneScanDataItem item;
+	SaveConeScanConfigDialog dialog(d_rayNum, d_detNum, d_coneScanWidget->ui.slicePosEdit->text().toFloat(),
+		d_coneScanWidget->ui.coneScanOrientIncEdit->text().toFloat(), d_controller->readAxisPostion(Axis::objRadial), 
+		d_controller->readAxisPostion(Axis::detRadial), d_panel, &item, d_coneScanWidget->ui.coneScanGraduationComboBox,
+		d_coneScanWidget->ui.coneScanframesComboBox, d_airName, d_tunedAirDirectory);
+
+	if (dialog.exec() == QDialog::Accepted)
+	{
+		d_coneScanConfigFileName = QString::fromLocal8Bit("d:\\config.dat");
+		QFile configFile(d_coneScanConfigFileName);
+		configFile.open(QFile::ReadWrite);
+		QByteArray byteArray = configFile.readAll();
+		char* fileRawData = byteArray.data();
+		*(int*)(fileRawData + 4) = *(int*)(fileRawData + 4) + 1;
+		int itemLenth;
+		char* rawData = ConeScanDataRawItem(item).getRawData(itemLenth);
+		configFile.write(rawData, itemLenth);
+		configFile.close();
+	}
+}
+
 void PanelDetScanManager::frameShotSlot()
 {
 	//DEBUG：测试面板dll导出widget临时注释
-	int frames = d_panel->getFramesSet();
+	int frames = 1;
 	auto cycleTime = d_panel->getSampleTimeSet();
 	auto gainFactor = d_panel->getGainFactorSet();
 	QString fileNumber{ QString::fromLocal8Bit("55AA5A") };
@@ -228,11 +313,15 @@ void PanelDetScanManager::airTuneSlot()
 
 void PanelDetScanManager::loadTuneDataSlot()
 {
-	QString airName, bkgName;
-	LoadTuneDataDialog loadTuneDataDialog(d_tunedBkgDirectory, d_tunedAirDirectory, airName, bkgName);
+	QString airName;
+	LoadTuneDataDialog loadTuneDataDialog(d_tunedAirDirectory, airName);
 
 	if (loadTuneDataDialog.exec() == QDialog::Accepted)
 	{
+		QString bkgName = d_tunedBkgDirectory +
+			airName.right(airName.size() - (airName.indexOf(QString::fromLocal8Bit("_55AA5A_")) + QString::fromLocal8Bit("_55AA5A_").size()));
+		d_airName = airName;
+		d_bkgName = bkgName;
 		d_panelImageProcess->loadBkgData(bkgName);
 		d_panelImageProcess->loadAirData(airName);
 		d_loadTunedDataFlag = true;
@@ -242,11 +331,12 @@ void PanelDetScanManager::loadTuneDataSlot()
 void PanelDetScanManager::loadConeJointScanTuneDataSlot()
 {
 	QString airName, bkgName;
-	LoadTuneDataDialog loadTuneDataDialog(d_tunedBkgDirectory, d_tunedConeJointAirDirectory, airName, bkgName);
+	LoadTuneDataDialog loadTuneDataDialog(d_tunedConeJointAirDirectory, airName);
 
 	if (loadTuneDataDialog.exec() == QDialog::Accepted)
 	{
-		bkgName = bkgName.left(bkgName.lastIndexOf("_")) + QString::fromLocal8Bit(".tif");
+		QString bkgName = d_tunedBkgDirectory +
+			airName.right(airName.size() - (airName.indexOf(QString::fromLocal8Bit("_55AA5A_")) + QString::fromLocal8Bit("_55AA5A_").size()));
 		d_panelImageProcess->loadBkgData(bkgName);
 		QString namePerfix = airName.left(airName.lastIndexOf("_") + 1);
 		d_airFileNameA = namePerfix + QString::fromLocal8Bit("0.tif");
@@ -259,6 +349,7 @@ void PanelDetScanManager::scanProgressSlot(int _framesAcquiredThisRound, int _fr
 {
 	d_coneScanWidget->setConeScanProgress(100 * _framesAcquiredThisRound / _framesThisRound, 100 * _framesAcquiredAll / _framesALL, _message);
 }
+
 
 void PanelDetScanManager::showImageSlot(unsigned short* _image, int _width, int _height)
 {

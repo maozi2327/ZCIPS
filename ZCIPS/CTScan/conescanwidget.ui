@@ -35,9 +35,6 @@
    <string>锥束扫描</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>6</number>
-   </property>
    <item>
     <widget class="QWidget" name="panelWidget" native="true">
      <property name="sizePolicy">
@@ -239,7 +236,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <property name="iconSize">
       <size>
@@ -249,23 +246,27 @@
      </property>
      <widget class="QWidget" name="coneScanTab">
       <attribute name="title">
+       <string>R</string>
+      </attribute>
+      <attribute name="toolTip">
        <string>锥束扫描</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
-       <property name="leftMargin">
-        <number>6</number>
-       </property>
-       <property name="topMargin">
-        <number>6</number>
-       </property>
-       <property name="bottomMargin">
-        <number>6</number>
-       </property>
-       <property name="spacing">
-        <number>6</number>
-       </property>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="coneScanLeakSamplePushButton">
+       <item row="0" column="0" colspan="2">
+        <spacer name="horizontalSpacer_24">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>112</width>
+           <height>17</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="2" colspan="2">
+        <widget class="QPushButton" name="saveConeScanConfigButton">
          <property name="minimumSize">
           <size>
            <width>60</width>
@@ -279,22 +280,28 @@
           </size>
          </property>
          <property name="text">
-          <string>缺图采集</string>
+          <string>保存配置</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1" colspan="2">
-        <spacer name="horizontalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
+       <item row="0" column="4">
+        <widget class="QPushButton" name="loadCurrentScanConfigButton">
+         <property name="minimumSize">
           <size>
-           <width>157</width>
-           <height>20</height>
+           <width>60</width>
+           <height>25</height>
           </size>
          </property>
-        </spacer>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>使用配置</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="coneScanGraduationStaticLabel">
@@ -315,20 +322,20 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="1" column="1" colspan="2">
         <spacer name="horizontalSpacer_5">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>119</width>
-           <height>20</height>
+           <width>111</width>
+           <height>17</height>
           </size>
          </property>
         </spacer>
        </item>
-       <item row="1" column="2">
+       <item row="1" column="3" colspan="2">
         <widget class="QComboBox" name="coneScanGraduationComboBox">
          <property name="minimumSize">
           <size>
@@ -363,7 +370,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="2" column="1" colspan="2">
         <spacer name="horizontalSpacer_7">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -376,7 +383,7 @@
          </property>
         </spacer>
        </item>
-       <item row="2" column="2">
+       <item row="2" column="3" colspan="2">
         <widget class="QComboBox" name="coneScanframesComboBox">
          <property name="minimumSize">
           <size>
@@ -417,7 +424,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="3" column="1" colspan="2">
         <spacer name="horizontalSpacer_8">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -430,7 +437,7 @@
          </property>
         </spacer>
        </item>
-       <item row="3" column="2">
+       <item row="3" column="3" colspan="2">
         <widget class="QLineEdit" name="slicePosEdit">
          <property name="maximumSize">
           <size>
@@ -459,7 +466,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="4" column="1" colspan="2">
         <spacer name="horizontalSpacer_9">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -472,8 +479,8 @@
          </property>
         </spacer>
        </item>
-       <item row="4" column="2">
-        <widget class="QLineEdit" name="orientIncEdit">
+       <item row="4" column="3" colspan="2">
+        <widget class="QLineEdit" name="coneScanOrientIncEdit">
          <property name="maximumSize">
           <size>
            <width>80</width>
@@ -486,53 +493,12 @@
      </widget>
      <widget class="QWidget" name="coneJointRotScanTab">
       <attribute name="title">
+       <string>RT</string>
+      </attribute>
+      <attribute name="toolTip">
        <string>锥束转台平移</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
-       <property name="leftMargin">
-        <number>6</number>
-       </property>
-       <property name="topMargin">
-        <number>6</number>
-       </property>
-       <property name="rightMargin">
-        <number>6</number>
-       </property>
-       <property name="bottomMargin">
-        <number>6</number>
-       </property>
-       <item row="1" column="0">
-        <widget class="QLabel" name="coneJointRotScanGraduationStaticLabel">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>分度数</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" colspan="3">
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>157</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
        <item row="0" column="0">
         <widget class="QPushButton" name="coneJointRotScanleakSamplePushButton">
          <property name="minimumSize">
@@ -552,8 +518,37 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="2" colspan="2">
-        <widget class="QLineEdit" name="orientIncEdit_2"/>
+       <item row="0" column="1" colspan="2">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>157</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="coneJointRotScanGraduationStaticLabel">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>分度数</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="1">
         <spacer name="horizontalSpacer_4">
@@ -568,6 +563,28 @@
          </property>
         </spacer>
        </item>
+       <item row="1" column="2">
+        <widget class="QComboBox" name="coneJointRotScanMatrixComboBox">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="inputMethodHints">
+          <set>Qt::ImhNone</set>
+         </property>
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
        <item row="2" column="0">
         <widget class="QLabel" name="coneJointRotScanFramesStaticLabel">
          <property name="maximumSize">
@@ -578,6 +595,41 @@
          </property>
          <property name="text">
           <string>帧数</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <spacer name="horizontalSpacer_20">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>119</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="2">
+        <widget class="QComboBox" name="coneJointRotScanframesComboBox">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="inputMethodHints">
+          <set>Qt::ImhNone</set>
+         </property>
+         <property name="editable">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -600,6 +652,35 @@
          </property>
         </widget>
        </item>
+       <item row="3" column="1">
+        <spacer name="horizontalSpacer_22">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>119</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="2">
+        <widget class="QSpinBox" name="coneJointRotScanFrameAverageSpinBox">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>25</height>
+          </size>
+         </property>
+        </widget>
+       </item>
        <item row="4" column="0">
         <widget class="QLabel" name="coneScanFrameAverageStaticLabel_3">
          <property name="minimumSize">
@@ -619,63 +700,26 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="3">
-        <widget class="QComboBox" name="coneJointRotScanframesComboBox">
-         <property name="minimumSize">
+       <item row="4" column="1">
+        <spacer name="horizontalSpacer_23">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
           <size>
-           <width>80</width>
-           <height>0</height>
+           <width>119</width>
+           <height>20</height>
           </size>
          </property>
+        </spacer>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLineEdit" name="orientIncEdit_2">
          <property name="maximumSize">
           <size>
            <width>80</width>
            <height>16777215</height>
           </size>
-         </property>
-         <property name="inputMethodHints">
-          <set>Qt::ImhNone</set>
-         </property>
-         <property name="editable">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="3">
-        <widget class="QSpinBox" name="coneJointRotScanFrameAverageSpinBox">
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>25</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QComboBox" name="coneJointRotScanMatrixComboBox">
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="inputMethodHints">
-          <set>Qt::ImhNone</set>
-         </property>
-         <property name="editable">
-          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -689,10 +733,16 @@
       <zorder>coneJointRotScanframesComboBox</zorder>
       <zorder>orientIncEdit_2</zorder>
       <zorder>coneScanFrameAverageStaticLabel_3</zorder>
+      <zorder>horizontalSpacer_20</zorder>
+      <zorder>horizontalSpacer_22</zorder>
+      <zorder>horizontalSpacer_23</zorder>
      </widget>
      <widget class="QWidget" name="coneJointScanTab">
       <attribute name="title">
-       <string>面阵平移</string>
+       <string>RDT</string>
+      </attribute>
+      <attribute name="toolTip">
+       <string>锥束面阵平移</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
        <property name="leftMargin">
@@ -746,6 +796,12 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
          </property>
          <property name="text">
           <string>加载校正数据</string>
@@ -1005,6 +1061,276 @@
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="widget">
+      <attribute name="title">
+       <string>RL</string>
+      </attribute>
+      <attribute name="toolTip">
+       <string>锥束大视场</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="1" column="2">
+        <widget class="QComboBox" name="coneconeScanTabScanViewComboBox">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="inputMethodHints">
+          <set>Qt::ImhNone</set>
+         </property>
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="coneScanFrameAverageStaticLabel_6">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>起始角度</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <spacer name="horizontalSpacer_16">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>143</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="2">
+        <widget class="QComboBox" name="coneLargeViewFramesComboBox">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="inputMethodHints">
+          <set>Qt::ImhNone</set>
+         </property>
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <property name="currentText">
+          <string>1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLineEdit" name="coneLargeViewOrientIncEdit">
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="coneScanFramesStaticLabel_3">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>帧数</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <spacer name="horizontalSpacer_18">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>143</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="1">
+        <spacer name="horizontalSpacer_21">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>143</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="1">
+        <spacer name="horizontalSpacer_19">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>143</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="coneScanFrameAverageStaticLabel_7">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>断层位置</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="coneScanGraduationStaticLabel_5">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>视场</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <spacer name="horizontalSpacer_17">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>143</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLineEdit" name="coneLargeViewSlicePosEdit">
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="coneScanGraduationStaticLabel_4">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>分度数</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QComboBox" name="coneLargeViewGraduationComboBox">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="inputMethodHints">
+          <set>Qt::ImhNone</set>
+         </property>
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <property name="currentText">
+          <string>50</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>RH</string>
+      </attribute>
+      <attribute name="toolTip">
+       <string>锥束螺旋</string>
+      </attribute>
      </widget>
     </widget>
    </item>

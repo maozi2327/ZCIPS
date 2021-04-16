@@ -640,6 +640,10 @@ void CTScanApp::on_filePathSettingAction_triggered()
 
 		for (auto& i : d_lineDetScanManagerMap)
 			i.second->updateFileDirectory(d_orgPath, d_tunedFilePath);
+
+		for (auto& i : d_panelDetScanManagerMap)
+			i.second->updateFileDirectory(d_orgPath, d_tunedFilePath);
+
 	}
 }
 

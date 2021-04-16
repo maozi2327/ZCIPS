@@ -193,10 +193,6 @@ void PESiPanel::OnEndPESiDetFrameCallback(HACQDESC hAcqDesc)
 			Acquisition_SetFrameSync(hAcqDesc);
 	}
 }
-int PESiPanel::getFramesSet()
-{
-	return d_widget->ui.singleShotFramesSpinBox->value();
-}
 int PESiPanel::getSampleTimeSet()
 {
 	return d_widget->ui.cycleTimeEdit->text().toInt();
@@ -204,6 +200,14 @@ int PESiPanel::getSampleTimeSet()
 int PESiPanel::getGainFactorSet()
 {
 	return d_gainFactor;
+}
+int PESiPanel::getTempGainFactorSet()
+{
+	return d_tempWidget->ui.gainComboBox->currentIndex();
+}
+int PESiPanel::getTempSampleTimeSet()
+{
+	return d_tempWidget->ui.cycleTimeEdit->text().toInt();
 }
 void PESiPanel::OnEndPESiDetAcqCallback(HACQDESC hAcqDesc)
 {
@@ -403,6 +407,14 @@ bool PESiPanel::setPanelSize(int _width, int _height)
 QWidget * PESiPanel::getWidget()
 {
 	return d_widget;
+}
+
+QWidget * PESiPanel::getTempWidget()
+{
+	d_tempWidget = new PEsiPanelWidget();
+	d_tempWidget->ui.cycleTimeEdit->setText(d_widget->ui.cycleTimeEdit->text());
+	d_tempWidget->ui.gainComboBox->setCurrentIndex(d_widget->ui.gainComboBox->currentIndex());
+	return d_tempWidget;
 }
 
 void PESiPanel::setCycleTimeSlot(int _milliseconds)

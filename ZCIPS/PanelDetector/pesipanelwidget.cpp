@@ -8,8 +8,6 @@ PEsiPanelWidget::PEsiPanelWidget(QWidget *parent)
 	ui.cycleTimeEdit->setText("500");
 	QStringList gainGroupItem{"0.25pF", "0.5pF", "1pF", "2pF", "4pF", "8pF"};
 	ui.gainComboBox->addItems(gainGroupItem);
-	ui.singleShotFramesSpinBox->setValue(1);
-
 }
 PEsiPanelWidget::~PEsiPanelWidget()
 {
