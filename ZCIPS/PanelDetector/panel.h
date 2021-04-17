@@ -68,10 +68,12 @@ public:
 	virtual int caculateExTriggerSampleTime(int _cycleTime) = 0;
 	virtual QWidget* getWidget() = 0;
 	virtual QWidget* getTempWidget() = 0;
-	virtual int getTempGainFactorSet() = 0;
-	virtual int getTempSampleTimeSet() = 0;
+	virtual QWidget* getTempShowWidget() = 0;
+	virtual void setShowWidget(QWidget* _widget, int _gainFactorIndex, int _sampleTime) = 0;
 	virtual int getSampleTimeSet() = 0;
 	virtual int getGainFactorSet() = 0;
+	virtual int getTempGainFactorSet() = 0;
+	virtual int getTempSampleTimeSet() = 0;
 };
 class PANELDLL_EXPORT PanelFactory
 {

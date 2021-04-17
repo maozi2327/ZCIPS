@@ -14,6 +14,7 @@
 #include "panelairtune.h"
 #include "loadtunedatadialog.h"
 #include "conejointscan.h"
+#include "loadconescanconfigdatadialog.h"
 
 PanelDetScanManager::PanelDetScanManager(int _rayId, int _panelDetId, const std::vector<ScanMode>& _scanMode, 
 	SetupData* _setupData, Panel* _panel, ControllerInterface* _controller, ImageDialogManager* _imageWidgetManager,
@@ -50,6 +51,7 @@ PanelDetScanManager::PanelDetScanManager(int _rayId, int _panelDetId, const std:
 
 	connect(d_coneScanWidget, &ConeScanWidget::coneScanBeginSignal,	this, &PanelDetScanManager::coneScanBeginSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::saveConeScanConfigSignal, this, &PanelDetScanManager::saveConeScanConfigSlot);
+	connect(d_coneScanWidget, &ConeScanWidget::loadConeScanConfigSignal , this, &PanelDetScanManager::loadConeScanConfigSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::coneJointScanBeginSignal, this, &PanelDetScanManager::coneJointScanBeginSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::frameShotSignal,	this, &PanelDetScanManager::frameShotSlot);
 	connect(d_coneScanWidget, &ConeScanWidget::coneScanStopSignal, this, &PanelDetScanManager::coneScanStopSlot);
@@ -109,7 +111,7 @@ void PanelDetScanManager::coneScanBeginSlot()
 	int cycleTime = d_panel->getSampleTimeSet();
 	auto graduationTime = d_panel->caculateExTriggerSampleTime(cycleTime);
 	int graduation = d_coneScanWidget->ui.coneScanGraduationComboBox->currentText().toInt();
-	int framesPerGraduation = d_coneScanWidget->ui.coneScanframesComboBox->currentText().toInt();
+	int framesPerGraduation = d_coneScanWidget->ui.coneScanFramesSpinBox->value();
 	float oriencInc = d_coneScanWidget->ui.coneScanOrientIncEdit->text().toFloat();
 	auto gainFactor = d_panel->getGainFactorSet();
 	float slicePos = d_coneScanWidget->ui.slicePosEdit->text().toFloat();
@@ -164,82 +166,19 @@ void PanelDetScanManager::coneJointScanBeginSlot()
 		d_controller->readAxisPostion(Axis::objRadial), d_controller->readAxisPostion(Axis::detRadial), -50, 100);
 }
 
-struct ConeScanDataRawItem
-{
-	QByteArray byteArrayData;
-	ConeScanDataRawItem(const coneScanDataItem& item)
-	{
-		QByteArray itemNameByte = item.itemName.toLocal8Bit();
-		QByteArray airNameByte = item.airName.toLocal8Bit();
-		int itemNameLenth = itemNameByte.size();
-		int airNameLenth = airNameByte.size();
-		byteArrayData += QByteArray(sizeof(int), 0);
-		byteArrayData += QByteArray::fromRawData((char*)(&itemNameLenth), sizeof(int));
-		byteArrayData += QByteArray::fromRawData(itemNameByte.data(), itemNameLenth);
-		byteArrayData += QByteArray::fromRawData((char*)(&item.rayIndex), sizeof(int));
-		byteArrayData += QByteArray::fromRawData((char*)(&item.paneldetIndex), sizeof(int));
-		byteArrayData += QByteArray::fromRawData((char*)(&item.graduationComboxIndex), sizeof(int));
-		byteArrayData += QByteArray::fromRawData((char*)(&item.frameComboxIndex), sizeof(int));
-		byteArrayData += QByteArray::fromRawData((char*)(&item.orient), sizeof(float));
-		byteArrayData += QByteArray::fromRawData((char*)(&item.sod), sizeof(float));
-		byteArrayData += QByteArray::fromRawData((char*)(&item.sdd), sizeof(float));
-		byteArrayData += QByteArray::fromRawData((char*)(&airNameLenth), sizeof(int));
-		byteArrayData += QByteArray::fromRawData(airNameByte.data(), sizeof(int));
-		byteArrayData += QByteArray::fromRawData(0, 10 * sizeof(float));
-		byteArrayData += QByteArray::fromRawData((char*)(&item.panelData.gainFactorIndex), sizeof(int));
-		byteArrayData += QByteArray::fromRawData((char*)(&item.panelData.cycleTime), sizeof(int));
-		byteArrayData += QByteArray::fromRawData(0, 10 * sizeof(float));
-	}
-
-	char* getRawData(int& lenth)
-	{
-		lenth = byteArrayData.size();
-		return byteArrayData.data();
-	}
-	//int currentItemLenth;
-	//int itemNameLenth;
-	///*char* itemName;*/
-	//int rayIndex;
-	//int paneldetIndex;
-	//int graduationComboxIndex;
-	//int frameComboxIndex;
-	//float orient;
-	//float sod;
-	//float sdd;
-	//int airNameLenth;
-	///*char* airName; */
-	//float re[10];
-	//int gainFactorIndex;
-	//float cycleTime;
-	//float re[10];
-};
-
-char* charSeek(char* pos, int lenth)
-{
-	return pos + lenth;
-}
-
 void PanelDetScanManager::saveConeScanConfigSlot()
 {
-	coneScanDataItem item;
-	SaveConeScanConfigDialog dialog(d_rayNum, d_detNum, d_coneScanWidget->ui.slicePosEdit->text().toFloat(),
-		d_coneScanWidget->ui.coneScanOrientIncEdit->text().toFloat(), d_controller->readAxisPostion(Axis::objRadial), 
-		d_controller->readAxisPostion(Axis::detRadial), d_panel, &item, d_coneScanWidget->ui.coneScanGraduationComboBox,
-		d_coneScanWidget->ui.coneScanframesComboBox, d_airName, d_tunedAirDirectory);
 
-	if (dialog.exec() == QDialog::Accepted)
-	{
-		d_coneScanConfigFileName = QString::fromLocal8Bit("d:\\config.dat");
-		QFile configFile(d_coneScanConfigFileName);
-		configFile.open(QFile::ReadWrite);
-		QByteArray byteArray = configFile.readAll();
-		char* fileRawData = byteArray.data();
-		*(int*)(fileRawData + 4) = *(int*)(fileRawData + 4) + 1;
-		int itemLenth;
-		char* rawData = ConeScanDataRawItem(item).getRawData(itemLenth);
-		configFile.write(rawData, itemLenth);
-		configFile.close();
-	}
+}
+
+void PanelDetScanManager::loadConeScanConfigSlot()
+{
+	LoadConeScanConfigDataDialog dialog(d_rayNum, d_detNum, d_coneScanWidget->ui.slicePosEdit->text().toFloat(),
+		d_coneScanWidget->ui.coneScanOrientIncEdit->text().toFloat(), d_controller->readAxisPostion(Axis::objRadial),
+		d_controller->readAxisPostion(Axis::detRadial), d_panel, d_coneScanWidget->ui.coneScanGraduationComboBox,
+		d_coneScanWidget->ui.coneScanFramesSpinBox->value(), d_airName, d_tunedAirDirectory, d_coneScanConfigFileName, cone);
+
+	dialog.exec();
 }
 
 void PanelDetScanManager::frameShotSlot()

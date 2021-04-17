@@ -252,6 +252,9 @@
     <ClCompile Include="saveconescanconfigdialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="loadconescanconfigdatadialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\lib\tinyxml2.h">
@@ -505,6 +508,9 @@
     <QtMoc Include="saveconescanconfigdialog.h">
       <Filter>public</Filter>
     </QtMoc>
+    <QtMoc Include="loadconescanconfigdatadialog.h">
+      <Filter>public</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="conescanwidget.ui">
@@ -586,6 +592,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="saveconescanconfigdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="loadconescanconfigdatadialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

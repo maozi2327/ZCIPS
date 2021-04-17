@@ -78,6 +78,7 @@ private slots:
 	void coneScanBeginSlot();
 	void coneJointScanBeginSlot();
 	void saveConeScanConfigSlot();
+	void loadConeScanConfigSlot();
 	//void scanProgressUpdatedSlot();
 	void frameShotSlot();
 	void coneScanStopSlot();

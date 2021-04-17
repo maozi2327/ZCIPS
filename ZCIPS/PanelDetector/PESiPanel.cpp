@@ -2,6 +2,7 @@
 #include "PESiPanel.h"
 #include "../Public/util/Thread.h"
 #include "../Public/util/messagebox.h"
+#include "pesishowwidget.h"
 
 #pragma comment(lib, "./public/lib/xisl.lib")
 
@@ -209,6 +210,18 @@ int PESiPanel::getTempSampleTimeSet()
 {
 	return d_tempWidget->ui.cycleTimeEdit->text().toInt();
 }
+QWidget * PESiPanel::getTempShowWidget()
+{
+	PESiShowWidget* widget = new PESiShowWidget();
+	return widget;
+}
+void PESiPanel::setShowWidget(QWidget * _widget, int _gainFactorIndex, int _sampleTime)
+{
+	auto text = d_widget->ui.gainComboBox->itemText(_gainFactorIndex);
+	static_cast<PESiShowWidget*>(_widget)->ui.gainEdit->setText(text);
+	static_cast<PESiShowWidget*>(_widget)->ui.cycleTimeEdit->setText(QString::number(_sampleTime));
+}
+
 void PESiPanel::OnEndPESiDetAcqCallback(HACQDESC hAcqDesc)
 {
 

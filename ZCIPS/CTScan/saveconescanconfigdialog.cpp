@@ -5,7 +5,7 @@
 
 SaveConeScanConfigDialog::SaveConeScanConfigDialog(int _rayIndex, int _panelDetIndex, 
 	float _slicePos, float _orient,	float _sod, float _sdd, Panel* _panel, coneScanDataItem *_item, QComboBox* _graduationCombox,
-	QComboBox* _framesCombox, const QString& _airName, const QString& _tunedAirDirectory, QWidget *parent)
+	int _frames, const QString& _airName, const QString& _tunedAirDirectory, QWidget *parent)
 	: QDialog(parent), d_panelWidget(_panel->getTempWidget()), d_rayIndex(_rayIndex), d_panelDetIndex(_panelDetIndex), d_item(_item)
 	, d_tunedAirDirectory(_tunedAirDirectory), d_panel(_panel), d_airName(_airName)
 {
@@ -16,11 +16,7 @@ SaveConeScanConfigDialog::SaveConeScanConfigDialog(int _rayIndex, int _panelDetI
 		ui.graduationComboBox->addItem(_graduationCombox->itemText(i));
 
 	ui.graduationComboBox->setCurrentIndex(_graduationCombox->currentIndex());
-
-	for (int i = 0; i != _framesCombox->count(); ++i)
-		ui.framesComboBox->addItem(_framesCombox->itemText(i));
-
-	ui.framesComboBox->setCurrentIndex(_framesCombox->currentIndex());
+	ui.framesSpinBox->setValue(_frames);
 	setLineEditValidaterFloatChar(std::vector<QLineEdit*>{ ui.slicePosEdit, ui.orientIncEdit, ui.sodEdit, ui.sddEdit });
 	auto pureName = getPureFileNameFromFullName(_airName);
 	int index = pureName.indexOf(QString::fromLocal8Bit("_55AA5A"));
@@ -58,7 +54,7 @@ void SaveConeScanConfigDialog::on_okButton_clicked()
 	d_item->rayIndex = d_rayIndex;
 	d_item->paneldetIndex = d_panelDetIndex;
 	d_item->graduationComboxIndex = ui.graduationComboBox->currentIndex();
-	d_item->frameComboxIndex = ui.framesComboBox->currentIndex();
+	d_item->frames = ui.framesSpinBox->value();
 	d_item->slicePos = ui.slicePosEdit->text().toFloat();
 	d_item->orient = ui.orientIncEdit->text().toFloat();
 	d_item->sod = ui.sodEdit->text().toFloat();

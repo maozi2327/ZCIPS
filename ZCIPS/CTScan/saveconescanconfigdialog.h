@@ -4,7 +4,7 @@
 #include "ui_saveconescanconfigdialog.h"
 #include "../PanelDetector/panel.h"
 //锥束扫描文件结构
-//0x55AA5A   //4字节
+//0x0155AA5A   //4字节
 //Item个数	 //4字节
 //coneScanDataItem依次排列
 
@@ -14,14 +14,14 @@ struct coneScanDataItem
 	struct panel
 	{
 		int gainFactorIndex;
-		float cycleTime;
+		int cycleTime;
 		float re[10];
 	};
 
 	int rayIndex;
 	int paneldetIndex;
 	int graduationComboxIndex;
-	int frameComboxIndex;
+	int frames;
 	float slicePos;
 	float orient;
 	float sod;
@@ -37,7 +37,7 @@ class SaveConeScanConfigDialog : public QDialog
 
 public:
 	SaveConeScanConfigDialog(int rayIndex, int panelDetIndex, float _slicePos, float _orient, 
-		float _sod, float _sdd, Panel* _panel, coneScanDataItem *item, QComboBox* d_graduationCombox, QComboBox* d_framesCombox, 
+		float _sod, float _sdd, Panel* _panel, coneScanDataItem *item, QComboBox* d_graduationCombox, int _frames, 
 		const QString& _airName, const QString& d_tunedAirDirectory, QWidget *parent = Q_NULLPTR);
 	~SaveConeScanConfigDialog();
 

@@ -38,8 +38,10 @@ private slots:
 	void on_loadTuneDataButton_clicked();
 	void on_coneJointLoadTuneDataButton_clicked();
 	void on_saveConeScanConfigButton_clicked();
+	void on_loadCurrentScanConfigButton_clicked();
 signals:
 	void saveConeScanConfigSignal();
+	void loadConeScanConfigSignal();
 	void coneScanBeginSignal();
 	void coneJointScanBeginSignal();
 	void loadConeJointTuneDataSignal();

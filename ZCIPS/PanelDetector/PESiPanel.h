@@ -68,6 +68,8 @@ public:
 	virtual int getGainFactorSet();
 	virtual int getTempGainFactorSet();
 	virtual int getTempSampleTimeSet();
+	virtual QWidget* getTempShowWidget();
+	virtual void setShowWidget(QWidget* _widget, int _gainFactorIndex, int _sampleTime);
 
 public slots:
 	void setCycleTimeSlot(int _milliseconds);

@@ -34,8 +34,8 @@
   <property name="windowTitle">
    <string>锥束扫描</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
     <widget class="QWidget" name="panelWidget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -54,7 +54,7 @@
      </property>
     </widget>
    </item>
-   <item>
+   <item row="1" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,0,0,0">
      <item>
       <widget class="QCheckBox" name="allTuneCheckBox">
@@ -96,7 +96,7 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QPushButton" name="bkgTuneButton">
@@ -164,7 +164,7 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="3" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QPushButton" name="frameShotButton">
@@ -212,7 +212,7 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="4" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -265,7 +265,7 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="2" colspan="2">
+       <item row="0" column="2">
         <widget class="QPushButton" name="saveConeScanConfigButton">
          <property name="minimumSize">
           <size>
@@ -284,7 +284,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="4">
+       <item row="0" column="3">
         <widget class="QPushButton" name="loadCurrentScanConfigButton">
          <property name="minimumSize">
           <size>
@@ -335,7 +335,7 @@
          </property>
         </spacer>
        </item>
-       <item row="1" column="3" colspan="2">
+       <item row="1" column="3">
         <widget class="QComboBox" name="coneScanGraduationComboBox">
          <property name="minimumSize">
           <size>
@@ -383,25 +383,10 @@
          </property>
         </spacer>
        </item>
-       <item row="2" column="3" colspan="2">
-        <widget class="QComboBox" name="coneScanframesComboBox">
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="inputMethodHints">
-          <set>Qt::ImhNone</set>
-         </property>
-         <property name="editable">
-          <bool>true</bool>
+       <item row="2" column="3">
+        <widget class="QSpinBox" name="coneScanFramesSpinBox">
+         <property name="minimum">
+          <number>1</number>
          </property>
         </widget>
        </item>
@@ -437,7 +422,7 @@
          </property>
         </spacer>
        </item>
-       <item row="3" column="3" colspan="2">
+       <item row="3" column="3">
         <widget class="QLineEdit" name="slicePosEdit">
          <property name="maximumSize">
           <size>
@@ -479,7 +464,7 @@
          </property>
         </spacer>
        </item>
-       <item row="4" column="3" colspan="2">
+       <item row="4" column="3">
         <widget class="QLineEdit" name="coneScanOrientIncEdit">
          <property name="maximumSize">
           <size>
@@ -498,7 +483,7 @@
       <attribute name="toolTip">
        <string>锥束转台平移</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
+      <layout class="QGridLayout" name="gridLayout_6">
        <item row="0" column="0">
         <widget class="QPushButton" name="coneJointRotScanleakSamplePushButton">
          <property name="minimumSize">
@@ -1334,7 +1319,7 @@
      </widget>
     </widget>
    </item>
-   <item>
+   <item row="5" column="0">
     <widget class="QLabel" name="scanMessageLabel">
      <property name="minimumSize">
       <size>
@@ -1356,7 +1341,7 @@
      </property>
     </widget>
    </item>
-   <item>
+   <item row="6" column="0">
     <layout class="QGridLayout" name="gridLayout_4">
      <item row="0" column="0">
       <widget class="QLabel" name="label_4">
@@ -1394,7 +1379,7 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="7" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <widget class="QPushButton" name="coneScanBeginSampleButton">

@@ -202,6 +202,7 @@
     <ClCompile Include="panel.cpp" />
     <ClCompile Include="PESiPanel.cpp" />
     <ClCompile Include="pesipanelwidget.cpp" />
+    <ClCompile Include="pesishowwidget.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -213,6 +214,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="panelHeaders.h" />
+    <QtMoc Include="pesishowwidget.h" />
     <ClInclude Include="varianpanel.h" />
     <QtMoc Include="varianwidget.h" />
     <QtMoc Include="pesipanelwidget.h" />
@@ -230,6 +232,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="pesipanelwidget.ui" />
+    <QtUic Include="pesishowwidget.ui" />
     <QtUic Include="varianwidget.ui" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
